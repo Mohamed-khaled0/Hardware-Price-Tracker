@@ -11,6 +11,7 @@ const Footer = () => {
           <div className="col-span-1">
             <img 
               src="/lovable-uploads/logo.png" 
+              loading="lazy"
               alt="TECO Logo" 
               className="h-12 mb-4 object-contain"
             />

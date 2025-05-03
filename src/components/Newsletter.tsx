@@ -33,6 +33,8 @@ const Newsletter = () => {
           <div className="md:w-1/4 hidden md:block">
             <img 
               src="/lovable-uploads/mobile.png" 
+              loading="lazy"
+
               alt="Newsletter" 
               className="max-h-[200px] object-cover rounded-lg ml-auto"
             />

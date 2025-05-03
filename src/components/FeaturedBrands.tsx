@@ -39,6 +39,7 @@ const FeaturedBrands = () => {
             <div key={brand.id} className="w-24 md:w-32">
               <img 
                 src={brand.logo} 
+                loading="lazy"
                 alt={brand.name} 
                 className="w-full h-auto object-contain max-h-16"
               />

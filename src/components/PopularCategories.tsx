@@ -6,37 +6,37 @@ const categories = [
   {
     id: 1,
     name: "Laptops",
-    image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?q=80&w=2071",
+    image: "/lovable-uploads/laptop.webp",
     link: "/categories/laptops",
   },
   {
     id: 2,
     name: "Smartphones",
-    image: "https://images.unsplash.com/photo-1511707171634-5f897ff02ff9?q=80&w=1780",
+    image: "/lovable-uploads/smartphone.webp",
     link: "/categories/smartphones",
   },
   {
     id: 3,
     name: "Cameras",
-    image: "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?q=80&w=1770",
+    image: "/lovable-uploads/camera.webp",
     link: "/categories/cameras",
   },
   {
     id: 4,
     name: "Headphones",
-    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=1770",
+    image: "/lovable-uploads/headphone.webp",
     link: "/categories/headphones",
   },
   {
     id: 5,
     name: "Smart TV",
-    image: "https://images.unsplash.com/photo-1461151304267-38535e780c79?q=80&w=1933",
+    image: "/lovable-uploads/display2.webp",
     link: "/categories/smart-tv",
   },
   {
     id: 6,
     name: "Smart Watches",
-    image: "https://images.unsplash.com/photo-1579586337278-3befd40fd17a?q=80&w=1772",
+    image: "/lovable-uploads/applewatch.webp",
     link: "/categories/smart-watches",
   },
 ];
@@ -57,6 +57,7 @@ const PopularCategories = () => {
                 <img 
                   src={category.image} 
                   alt={category.name}
+                  loading="lazy"
                   className="max-h-full max-w-full object-contain"
                 />
               </div>

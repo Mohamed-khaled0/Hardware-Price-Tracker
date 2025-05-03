@@ -58,6 +58,7 @@ const Cart = () => {
                           <div className="w-24 h-24 rounded border overflow-hidden">
                             <img 
                               src={item.image} 
+                              loading="lazy"
                               alt={item.name} 
                               className="w-full h-full object-cover"
                             />

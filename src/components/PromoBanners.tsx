@@ -60,6 +60,8 @@ const PromoBanners = () => {
               </div>
               <img 
                 src="/lovable-uploads/tablet.png" 
+                loading="lazy"
+
                 alt="HP Monitor" 
                 className="absolute right-0 bottom-0 max-h-[180px] object-contain"
               />

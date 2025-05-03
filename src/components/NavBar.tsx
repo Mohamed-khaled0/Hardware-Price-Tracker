@@ -16,7 +16,8 @@ const NavBar = () => {
           <Link to="/" className="flex-shrink-0">
             <img 
               className="h-8 md:h-10 w-auto object-contain" 
-              src="/lovable-uploads/bf098ade-1f1f-4fb7-9c5e-1b97aab674b8.png" 
+              src="/lovable-uploads/logo.png" 
+              loading="lazy"
               alt="TECO Logo" 
             />
           </Link>

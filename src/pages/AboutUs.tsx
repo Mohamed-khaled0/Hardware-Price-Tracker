@@ -30,6 +30,7 @@ const AboutUs = () => {
             <div className="rounded-lg overflow-hidden shadow-lg">
               <img 
                 src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" 
+                loading="lazy"
                 alt="Team working" 
                 className="w-full h-64 object-cover"
               />

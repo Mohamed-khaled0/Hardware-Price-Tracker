@@ -17,6 +17,7 @@ const Header = () => {
             <img 
               className="h-8 md:h-10 w-auto object-contain" 
               src="/lovable-uploads/logo.png" 
+              loading="lazy"
               alt="TECO Logo" 
             />
           </Link>
