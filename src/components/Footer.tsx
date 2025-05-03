@@ -10,7 +10,7 @@ const Footer = () => {
           {/* Logo and Contact Info */}
           <div className="col-span-1">
             <img 
-              src="/lovable-uploads/bf098ade-1f1f-4fb7-9c5e-1b97aab674b8.png" 
+              src="/lovable-uploads/logo.png" 
               alt="TECO Logo" 
               className="h-12 mb-4 object-contain"
             />
@@ -61,18 +61,7 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Payment Methods */}
-        <div className="mt-8">
-          <h3 className="text-lg font-semibold mb-4">Payment method</h3>
-          <div className="flex flex-wrap gap-2">
-            <img src="https://cdn-icons-png.flaticon.com/512/196/196578.png" alt="Visa" className="h-8 w-auto object-contain" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Google_Pay_Logo_%282020%29.svg/2560px-Google_Pay_Logo_%282020%29.svg.png" alt="Google Pay" className="h-8 w-auto object-contain" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" alt="Mastercard" className="h-8 w-auto object-contain" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/PayPal.svg/2560px-PayPal.svg.png" alt="PayPal" className="h-8 w-auto object-contain" />
-            <img src="https://cdn4.iconfinder.com/data/icons/logos-and-brands/512/4_Alibaba_logo_logos-512.png" alt="Alibaba" className="h-8 w-auto object-contain" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/JCB_logo.svg/2560px-JCB_logo.svg.png" alt="JCB" className="h-8 w-auto object-contain" />
-          </div>
-        </div>
+        
       </div>
     </footer>
   );

@@ -16,7 +16,7 @@ const Header = () => {
           <Link to="/" className="flex-shrink-0">
             <img 
               className="h-8 md:h-10 w-auto object-contain" 
-              src="/lovable-uploads/bf098ade-1f1f-4fb7-9c5e-1b97aab674b8.png" 
+              src="/lovable-uploads/logo.png" 
               alt="TECO Logo" 
             />
           </Link>
@@ -93,10 +93,10 @@ const Header = () => {
         <div className="hidden md:flex max-w-7xl mx-auto">
           <nav className="flex">
             <Link to="/" className="text-white font-semibold px-5 py-3 hover:bg-[#2a405a] transition-colors">Home</Link>
-            <Link to="/categories" className="text-white font-semibold px-5 py-3 hover:bg-[#2a405a] transition-colors">Categories</Link>
             <Link to="/shop" className="text-white font-semibold px-5 py-3 hover:bg-[#2a405a] transition-colors">Shop</Link>
             <Link to="/about" className="text-white font-semibold px-5 py-3 hover:bg-[#2a405a] transition-colors">About Us</Link>
-            <Link to="/last-order" className="text-white font-semibold px-5 py-3 hover:bg-[#2a405a] transition-colors">Last order</Link>
+            <Link to="/contact" className="text-white font-semibold px-5 py-3 hover:bg-[#2a405a] transition-colors">Contact Us</Link>
+
           </nav>
         </div>
       </div>
@@ -110,10 +110,8 @@ const Header = () => {
       >
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
           <Link to="/" className="text-white block px-3 py-2 font-semibold hover:bg-[#39536f] rounded-md">Home</Link>
-          <Link to="/categories" className="text-white block px-3 py-2 font-semibold hover:bg-[#39536f] rounded-md">Categories</Link>
           <Link to="/shop" className="text-white block px-3 py-2 font-semibold hover:bg-[#39536f] rounded-md">Shop</Link>
           <Link to="/about" className="text-white block px-3 py-2 font-semibold hover:bg-[#39536f] rounded-md">About Us</Link>
-          <Link to="/last-order" className="text-white block px-3 py-2 font-semibold hover:bg-[#39536f] rounded-md">Last order</Link>
         </div>
       </div>
     </div>

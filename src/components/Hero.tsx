@@ -11,7 +11,7 @@ const heroSlides = [
     description: "Unbelievable Deals And Massive Discounts Await You At Our Mega Sales Extravaganza",
     buttonText: "Shop Now",
     buttonLink: "/shop",
-    image: "/lovable-uploads/9df4e8ef-d8dc-4c41-9cf6-44ca2ac8454e.png",
+    image: "/lovable-uploads/iphoneHero.png",
     bgColor: "bg-[#d0e0ec]",
   },
   {
@@ -20,7 +20,7 @@ const heroSlides = [
     description: "Discover the latest tech gadgets with exclusive launch offers",
     buttonText: "Explore Now",
     buttonLink: "/new-arrivals",
-    image: "/lovable-uploads/9df4e8ef-d8dc-4c41-9cf6-44ca2ac8454e.png",
+    image: "/lovable-uploads/laptopHero.png",
     bgColor: "bg-[#d8e5f0]",
   },
 ];
