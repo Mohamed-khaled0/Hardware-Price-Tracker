@@ -15,16 +15,12 @@ const PromoBanners = () => {
                 Unbelievable Deals And Massive Discounts Await You At Our Mega Sales Extravaganza
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <div className="bg-[#39536f] text-white px-6 py-1 rounded-full inline-flex items-center">
-                  <div className="mr-2 font-bold">Promo</div>
-                  <div>(Friday deal)</div>
-                </div>
                 <Button className="bg-[#39536f] hover:bg-[#2a405a]">Start Shopping</Button>
               </div>
             </div>
             <div className="md:w-1/2">
               <img 
-                src="/lovable-uploads/9df4e8ef-d8dc-4c41-9cf6-44ca2ac8454e.png" 
+                src="/lovable-uploads/iphoneHero.png" 
                 alt="Mega sales" 
                 className="h-[300px] object-contain mx-auto"
               />
@@ -45,9 +41,9 @@ const PromoBanners = () => {
                 <Button className="bg-[#39536f] hover:bg-[#2a405a]">$699 Or Off</Button>
               </div>
               <img 
-                src="https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?q=80&w=1770" 
+                src="/lovable-uploads/display.png" 
                 alt="Laptop Surface Pro" 
-                className="absolute right-0 bottom-0 max-h-[180px] object-contain"
+                className="absolute right-0 bottom-0 max-h-[220px] object-contain"
               />
             </div>
           </div>
@@ -63,7 +59,7 @@ const PromoBanners = () => {
                 <Button className="bg-[#39536f] hover:bg-[#2a405a]">Upto 50 Off</Button>
               </div>
               <img 
-                src="https://images.unsplash.com/photo-1586210579191-33b45e38fa2c?q=80&w=1770" 
+                src="/lovable-uploads/tablet.png" 
                 alt="HP Monitor" 
                 className="absolute right-0 bottom-0 max-h-[180px] object-contain"
               />

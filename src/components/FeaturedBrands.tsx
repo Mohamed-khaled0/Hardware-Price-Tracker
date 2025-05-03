@@ -20,7 +20,7 @@ const brands = [
   {
     id: 4,
     name: "Lenovo",
-    logo: "https://upload.wikimedia.org/wikipedia/commons/b/bd/Lenovo_Logo_2015.svg",
+    logo: "https://1000logos.net/wp-content/uploads/2017/03/Lenovo-Logo-768x432.png"
   },
   {
     id: 5,

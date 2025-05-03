@@ -76,7 +76,7 @@ const SignUp = () => {
           <div className="hidden md:block flex-1 mt-10 md:mt-0">
             <div className="h-full rounded-3xl overflow-hidden bg-[#dbe7f0]">
               <img 
-                src="/lovable-uploads/481a7db3-b81f-4480-8939-e411f567baa1.png" 
+                src="/lovable-uploads/login.png" 
                 alt="Modern tablet device" 
                 className="w-full h-full object-cover"
               />

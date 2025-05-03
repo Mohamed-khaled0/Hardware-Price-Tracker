@@ -112,6 +112,7 @@ const Header = () => {
           <Link to="/" className="text-white block px-3 py-2 font-semibold hover:bg-[#39536f] rounded-md">Home</Link>
           <Link to="/shop" className="text-white block px-3 py-2 font-semibold hover:bg-[#39536f] rounded-md">Shop</Link>
           <Link to="/about" className="text-white block px-3 py-2 font-semibold hover:bg-[#39536f] rounded-md">About Us</Link>
+          <Link to="/about" className="text-white block px-3 py-2 font-semibold hover:bg-[#39536f] rounded-md">Contact Us</Link>
         </div>
       </div>
     </div>

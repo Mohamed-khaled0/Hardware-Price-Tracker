@@ -105,43 +105,7 @@ const Cart = () => {
               </div>
             )}
           </div>
-          
-          {/* Order Summary - Takes up less space */}
-          <div className="lg:col-span-4">
-            <div className="bg-white p-6 rounded-lg shadow-sm">
-              <h2 className="text-xl font-bold mb-6">Payment Summary</h2>
-              
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Subtotal</span>
-                  <span className="font-medium">{subtotal.toLocaleString()} EGP</span>
-                </div>
-                
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Shipping Fees</span>
-                  <span className="text-sm">Calculated At Checkout</span>
-                </div>
-                
-                <hr className="my-4" />
-                
-                <div className="flex items-center gap-2 text-blue-500">
-                  <div className="w-5 h-5 bg-blue-500 text-white flex items-center justify-center rounded-sm text-xs">?</div>
-                  <span>Do You Have A Promocode?</span>
-                </div>
-                
-                <Link 
-                  to="#" 
-                  className="w-full block text-center bg-blue-500 text-white py-3 px-4 rounded font-medium hover:bg-blue-600 transition-colors"
-                >
-                  Proceed To Secure Checkout
-                </Link>
-                
-                <div className="text-center mt-4">
-                  <Link to="#" className="text-blue-500 hover:underline">Return And Refund Policy</Link>
-                </div>
-              </div>
-            </div>
-          </div>
+        
         </div>
       </main>
       

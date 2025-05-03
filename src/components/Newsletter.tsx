@@ -9,11 +9,7 @@ const Newsletter = () => {
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-center justify-between">
           <div className="md:w-1/4 mb-6 md:mb-0">
-            <img 
-              src="https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?q=80&w=1229" 
-              alt="Newsletter" 
-              className="max-h-[200px] object-cover rounded-lg"
-            />
+
           </div>
           
           <div className="md:w-7/12">
@@ -36,7 +32,7 @@ const Newsletter = () => {
           
           <div className="md:w-1/4 hidden md:block">
             <img 
-              src="https://images.unsplash.com/photo-1609840533114-e49be1c560c7?q=80&w=1770" 
+              src="/lovable-uploads/mobile.png" 
               alt="Newsletter" 
               className="max-h-[200px] object-cover rounded-lg ml-auto"
             />
