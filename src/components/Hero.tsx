@@ -11,7 +11,7 @@ const heroSlides = [
     description: "Unbelievable Deals And Massive Discounts Await You At Our Mega Sales Extravaganza",
     buttonText: "Shop Now",
     buttonLink: "/shop",
-    image: "/lovable-uploads/iphoneHero.webp",
+    image: "/lovable-uploads/display.webp",
     bgColor: "bg-[#d0e0ec]",
   },
   {
@@ -39,7 +39,7 @@ const Hero = () => {
   return (
     <div className="relative w-full overflow-hidden">
       <div 
-        className="flex transition-transform duration-500 ease-in-out" 
+        className="flex transition-transform duration-500 ease-in-out " 
         style={{ transform: `translateX(-${currentSlide * 100}%)` }}
       >
         {heroSlides.map((slide) => (
