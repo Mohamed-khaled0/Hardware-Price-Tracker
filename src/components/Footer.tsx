@@ -1,4 +1,3 @@
-
 import { Link } from 'react-router-dom';
 import { Mail, MapPin, Phone } from 'lucide-react';
 
@@ -7,62 +6,51 @@ const Footer = () => {
     <footer className="bg-[#e6eef1] py-10 mt-auto">
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          
           {/* Logo and Contact Info */}
           <div className="col-span-1">
-            <img 
-              src="/lovable-uploads/logo.png" 
-              loading="lazy"
-              alt="TECO Logo" 
-              className="h-12 mb-4 object-contain"
-            />
-            <div className="space-y-2 text-sm">
-              <div className="flex items-center gap-2">
-                <MapPin className="h-5 w-5 text-navy" />
-                <span>Egypt, Mansoura</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Mail className="h-5 w-5 text-navy" />
-                <span>Ahmeelmadawy32@gmail.com</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Phone className="h-5 w-5 text-navy" />
-                <span>+201024710326</span>
-              </div>
-            </div>
+             {/* Text Logo */}
+          <Link to="/" className="flex-shrink-0">
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+              {/* dark teal for ‘p’, accent for ‘RICE’, dark for ‘ t’, accent for ‘RACKER’ */}
+              <span className="text-[#39536f]">P</span>
+              <span className="text-[#6f7d95]">rice</span>
+              <span className="text-[#39536f]"> T</span>
+              <span className="text-[#6f7d95]">racker</span>
+            </h1>
+          </Link>
+            <p className="text-sm text-gray-700 mb-2">
+            Price Tracker helps you track electronics prices across Egypt’s top stores.
+            </p>
+           
           </div>
 
           {/* Products */}
           <div className="col-span-1">
-            <h3 className="text-lg font-semibold mb-4">Product</h3>
+            <h3 className="text-sm font-semibold mb-4">Categories</h3>
             <ul className="space-y-2">
               <li><Link to="/smartphones" className="hover:text-navy hover:underline">Smartphones</Link></li>
-              <li><Link to="/watches" className="hover:text-navy hover:underline">Watches</Link></li>
               <li><Link to="/laptops" className="hover:text-navy hover:underline">Laptops</Link></li>
-              <li><Link to="/camera" className="hover:text-navy hover:underline">Camera</Link></li>
+              <li><Link to="/tvs" className="hover:text-navy hover:underline">Televisions</Link></li>
+              <li><Link to="/accessories" className="hover:text-navy hover:underline">Accessories</Link></li>
             </ul>
           </div>
 
-          {/* Help */}
+          {/* Company Info */}
           <div className="col-span-1">
-            <h3 className="text-lg font-semibold mb-4">Help</h3>
+            <h3 className="text-lg font-semibold mb-4">Company</h3>
             <ul className="space-y-2">
-              <li><Link to="/faq" className="hover:text-navy hover:underline">Faq</Link></li>
-              <li><Link to="/shipping" className="hover:text-navy hover:underline">Shipping</Link></li>
-              <li><Link to="/return-policy" className="hover:text-navy hover:underline">Return And Refund Policy</Link></li>
-            </ul>
-          </div>
-
-          {/* About */}
-          <div className="col-span-1">
-            <h3 className="text-lg font-semibold mb-4">About</h3>
-            <ul className="space-y-2">
-              <li><Link to="/contact" className="hover:text-navy hover:underline">Contact Us</Link></li>
               <li><Link to="/about" className="hover:text-navy hover:underline">About Us</Link></li>
+              <li><Link to="/contact" className="hover:text-navy hover:underline">Contact Us</Link></li>
+              <li><Link to="/privacy" className="hover:text-navy hover:underline">Privacy Policy</Link></li>
             </ul>
           </div>
         </div>
 
-        
+        {/* Footer Bottom */}
+        <div className="mt-10 text-center text-sm text-gray-500">
+          &copy; {new Date().getFullYear()} Price Tracker. All rights reserved.
+        </div>
       </div>
     </footer>
   );

@@ -11,7 +11,7 @@ const heroSlides = [
     description: "Unbelievable Deals And Massive Discounts Await You At Our Mega Sales Extravaganza",
     buttonText: "Shop Now",
     buttonLink: "/shop",
-    image: "/lovable-uploads/iphoneHero.png",
+    image: "/lovable-uploads/iphoneHero.webp",
     bgColor: "bg-[#d0e0ec]",
   },
   {
@@ -20,7 +20,7 @@ const heroSlides = [
     description: "Discover the latest tech gadgets with exclusive launch offers",
     buttonText: "Explore Now",
     buttonLink: "/new-arrivals",
-    image: "/lovable-uploads/laptopHero.png",
+    image: "/lovable-uploads/laptopHero.webp",
     bgColor: "bg-[#d8e5f0]",
   },
 ];
@@ -45,7 +45,7 @@ const Hero = () => {
         {heroSlides.map((slide) => (
           <div 
             key={slide.id}
-            className={cn("min-w-full h-[400px] relative", slide.bgColor)}
+            className={cn("min-w-full h-[450px] relative", slide.bgColor)}
           >
             <div className="container mx-auto px-4 h-full flex items-center">
               <div className="max-w-lg">

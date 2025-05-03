@@ -20,7 +20,7 @@ const PromoBanners = () => {
             </div>
             <div className="md:w-1/2">
               <img 
-                src="/lovable-uploads/iphoneHero.png" 
+                src="/lovable-uploads/iphoneHero.webp" 
                 alt="Mega sales" 
                 className="h-[300px] object-contain mx-auto"
               />
@@ -41,7 +41,7 @@ const PromoBanners = () => {
                 <Button className="bg-[#39536f] hover:bg-[#2a405a]">$699 Or Off</Button>
               </div>
               <img 
-                src="/lovable-uploads/display.png" 
+                src="/lovable-uploads/display.webp" 
                 alt="Laptop Surface Pro" 
                 className="absolute right-0 bottom-0 max-h-[220px] object-contain"
               />
@@ -59,7 +59,7 @@ const PromoBanners = () => {
                 <Button className="bg-[#39536f] hover:bg-[#2a405a]">Upto 50 Off</Button>
               </div>
               <img 
-                src="/lovable-uploads/tablet.png" 
+                src="/lovable-uploads/tablet.webp" 
                 loading="lazy"
 
                 alt="HP Monitor" 

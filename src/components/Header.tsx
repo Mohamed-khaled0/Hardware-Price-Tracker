@@ -1,10 +1,9 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, User, ShoppingCart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const Header = () => {
+const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
@@ -12,30 +11,31 @@ const Header = () => {
       {/* Top Navigation Bar */}
       <div className="relative bg-white px-4 md:px-8 py-4">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
-          {/* Logo */}
+          {/* Text Logo */}
           <Link to="/" className="flex-shrink-0">
-            <img 
-              className="h-8 md:h-10 w-auto object-contain" 
-              src="/lovable-uploads/logo.png" 
-              loading="lazy"
-              alt="TECO Logo" 
-            />
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+              <span className="text-[#39536f]">P</span>
+              <span className="text-[#6f7d95]">rice</span>
+              <span className="text-[#39536f]"> T</span>
+              <span className="text-[#6f7d95]">racker</span>
+            </h1>
           </Link>
 
-          {/* Search Bar - Hidden on mobile, shown on larger screens */}
+          {/* Search Bar - Hidden on mobile */}
           <div className="hidden md:flex flex-1 max-w-3xl mx-4">
             <div className="relative w-full">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
-              <input 
+              <input
                 className="w-full pl-10 pr-4 py-3 border-2 border-[#6f7d95] rounded-l-2xl focus:outline-none text-lg"
-                type="text" 
-                placeholder="Search Product" 
+                type="text"
+                placeholder="Search Product"
               />
-              <button 
+              <button
                 className="absolute right-0 top-0 bottom-0 px-6 bg-[#39536f] text-white font-semibold rounded-r-2xl"
               >
                 Search
@@ -45,40 +45,45 @@ const Header = () => {
 
           {/* Login and Cart Buttons */}
           <div className="flex items-center gap-2">
-            <Link to="/login" className="flex items-center bg-[#39536f] text-white rounded-full px-4 py-2">
-              <User className="w-6 h-6 mr-2" />
-              <span className="font-medium">Login</span>
+            <Link to="/login">
+              <button className="flex items-center bg-[#39536f] text-white rounded-full px-4 py-2 hover:bg-[#2a405a] transition-colors">
+                <User className="w-5 h-5 mr-2" />
+                <span className="font-medium">Login</span>
+              </button>
             </Link>
-            <Link to="/cart" className="flex items-center bg-[#39536f] text-white rounded-full px-4 py-2">
-              <ShoppingCart className="w-6 h-6 mr-1" />
-              <span className="font-semibold">CART (2)</span>
+            <Link to="/cart">
+              <button className="flex items-center bg-[#39536f] text-white rounded-full px-4 py-2 hover:bg-[#2a405a] transition-colors">
+                <ShoppingCart className="w-5 h-5 mr-2" />
+                <span className="font-semibold">CART (2)</span>
+              </button>
             </Link>
           </div>
 
-          {/* Mobile menu button */}
+          {/* Mobile menu toggle */}
           <div className="md:hidden flex items-center">
-            <button 
+            <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-[#39536f] focus:outline-none"
+              className="p-2 rounded-md text-gray-700 hover:text-[#39536f] focus:outline-none"
             >
               <Menu className="h-6 w-6" />
             </button>
           </div>
 
-          {/* Mobile search - visible only on mobile */}
+          {/* Mobile search */}
           <div className="md:hidden w-full mt-2">
-            <div className="relative w-full flex">
+            <div className="relative w-full">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </div>
-              <input 
+              <input
                 className="w-full pl-10 pr-4 py-2 border-2 border-[#6f7d95] rounded-l-2xl focus:outline-none"
-                type="text" 
-                placeholder="Search Product" 
+                type="text"
+                placeholder="Search Product"
               />
-              <button 
+              <button
                 className="px-4 bg-[#39536f] text-white font-semibold rounded-r-2xl"
               >
                 Search
@@ -97,15 +102,14 @@ const Header = () => {
             <Link to="/shop" className="text-white font-semibold px-5 py-3 hover:bg-[#2a405a] transition-colors">Shop</Link>
             <Link to="/about" className="text-white font-semibold px-5 py-3 hover:bg-[#2a405a] transition-colors">About Us</Link>
             <Link to="/contact" className="text-white font-semibold px-5 py-3 hover:bg-[#2a405a] transition-colors">Contact Us</Link>
-
           </nav>
         </div>
       </div>
 
-      {/* Mobile menu dropdown */}
-      <div 
+      {/* Mobile Menu Dropdown */}
+      <div
         className={cn(
-          "md:hidden bg-[#2a405a] transition-all duration-300 ease-in-out overflow-hidden", 
+          "md:hidden bg-[#2a405a] transition-all duration-300 ease-in-out overflow-hidden",
           isMenuOpen ? "max-h-60" : "max-h-0"
         )}
       >
@@ -113,7 +117,7 @@ const Header = () => {
           <Link to="/" className="text-white block px-3 py-2 font-semibold hover:bg-[#39536f] rounded-md">Home</Link>
           <Link to="/shop" className="text-white block px-3 py-2 font-semibold hover:bg-[#39536f] rounded-md">Shop</Link>
           <Link to="/about" className="text-white block px-3 py-2 font-semibold hover:bg-[#39536f] rounded-md">About Us</Link>
-          <Link to="/about" className="text-white block px-3 py-2 font-semibold hover:bg-[#39536f] rounded-md">Contact Us</Link>
+          <Link to="/contact" className="text-white block px-3 py-2 font-semibold hover:bg-[#39536f] rounded-md">Contact Us</Link>
         </div>
       </div>
     </div>

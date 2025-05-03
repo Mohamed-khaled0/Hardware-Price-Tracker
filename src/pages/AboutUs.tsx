@@ -13,68 +13,59 @@ const AboutUs = () => {
       
       <main className="flex-1 py-8 md:py-12">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
-          <h1 className="text-3xl md:text-4xl font-bold mb-8 text-[#39536f]">About TECO</h1>
+          <h1 className="text-3xl md:text-4xl font-bold mb-8 text-[#39536f]">About Hardware Price Tracker</h1>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-            <div>
-              <h2 className="text-2xl font-semibold mb-4 text-[#39536f]">Our Story</h2>
-              <p className="text-gray-700 mb-4">
-                Founded in 2015, TECO was born out of a passion for making high-quality technology accessible to everyone. 
-                What started as a small online store has grown into a trusted destination for tech enthusiasts and everyday consumers alike.
-              </p>
-              <p className="text-gray-700">
-                Our journey began with a simple mission: to provide customers with reliable tech products at fair prices, 
-                backed by exceptional service. This mission continues to guide everything we do.
-              </p>
-            </div>
-            <div className="rounded-lg overflow-hidden shadow-lg">
-              <img 
-                src="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" 
-                loading="lazy"
-                alt="Team working" 
-                className="w-full h-64 object-cover"
-              />
-            </div>
-          </div>
-          
+          {/* Intro Section */}
           <div className="mb-12">
-            <h2 className="text-2xl font-semibold mb-4 text-[#39536f]">Our Values</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white p-6 rounded-lg shadow-md">
-                <h3 className="font-semibold text-xl mb-2">Quality</h3>
-                <p className="text-gray-600">We curate only the best products that meet our high standards for performance and reliability.</p>
-              </div>
-              <div className="bg-white p-6 rounded-lg shadow-md">
-                <h3 className="font-semibold text-xl mb-2">Integrity</h3>
-                <p className="text-gray-600">We believe in transparent pricing, honest product descriptions, and keeping our promises.</p>
-              </div>
-              <div className="bg-white p-6 rounded-lg shadow-md">
-                <h3 className="font-semibold text-xl mb-2">Customer Focus</h3>
-                <p className="text-gray-600">Your satisfaction drives our business. We're committed to providing outstanding service at every step.</p>
-              </div>
-            </div>
+            <p className="text-gray-700 mb-4">
+              At <span className="font-semibold text-[#39536f]">Hardware Price Tracker</span>, our mission is to empower tech enthusiasts and savvy shoppers to make informed purchasing decisions by delivering real‑time price data and smart insights for electronics.
+            </p>
+            <p className="text-gray-700">
+              We combine robust web scraping technologies with intuitive design and a passion for transparency—so you never miss out on the perfect deal.
+            </p>
           </div>
-          
+
+          {/* Our Vision */}
           <div className="mb-12">
-            <h2 className="text-2xl font-semibold mb-6 text-[#39536f]">What Sets Us Apart</h2>
-            <ul className="list-disc pl-5 space-y-3 text-gray-700">
-              <li>Carefully selected products from trusted global brands</li>
-              <li>Expert support team ready to help with any questions</li>
-              <li>Fast shipping and hassle-free returns</li>
-              <li>Regular deals and special offers for our loyal customers</li>
-              <li>Commitment to reducing our environmental footprint</li>
+            <h2 className="text-2xl font-semibold mb-4 text-[#39536f]">Our Vision</h2>
+            <p className="text-gray-700">
+              Become the go‑to platform for monitoring price trends, uncovering the best deals, and planning your next hardware upgrade.
+            </p>
+          </div>
+
+          {/* What We Do */}
+          <div className="mb-12">
+            <h2 className="text-2xl font-semibold mb-4 text-[#39536f]">What We Do</h2>
+            <ul className="list-disc pl-5 space-y-2 text-gray-700">
+              <li>Continuously track and aggregate prices from major eCommerce sites and local brick‑and‑mortar stores.</li>
+              <li>Provide instant alerts when prices drop below your set thresholds.</li>
+              <li>Offer powerful search, filters, and intelligent comparisons to highlight the best value.</li>
+              <li>Soon: AI‑powered price predictions, seasonal buying guides, and a personalized PC building assistant.</li>
             </ul>
           </div>
-          
+
+          {/* Why Choose Us */}
+          <div className="mb-12">
+            <h2 className="text-2xl font-semibold mb-4 text-[#39536f]">Why Choose Us?</h2>
+            <p className="text-gray-700">
+              We are committed to delivering:
+            </p>
+            <ul className="list-disc pl-5 space-y-2 text-gray-700 mt-4">
+              <li>Real-time, accurate price tracking so you get the best deals.</li>
+              <li>Intuitive, user-friendly interface on all devices.</li>
+              <li>Customizable alerts and personalized recommendations.</li>
+              <li>Expert insights and future features powered by AI.</li>
+            </ul>
+          </div>
+
+          {/* Join Us */}
           <div>
             <h2 className="text-2xl font-semibold mb-4 text-[#39536f]">Join Our Journey</h2>
             <p className="text-gray-700 mb-6">
-              We're constantly evolving to meet the changing needs of our customers and the tech landscape. 
-              As we continue to grow, we remain dedicated to our founding principles and to building lasting 
-              relationships with the people who shop with us.
+              We're constantly evolving to meet the changing needs of our customers and the tech landscape. As we continue to grow, we remain dedicated to our founding principles and to building lasting relationships with the people who shop with us.
             </p>
             <p className="text-gray-700">
-              Thank you for choosing TECO. We're excited to have you as part of our community.
+              Create your free account today and start discovering smarter ways to shop for hardware!
             </p>
           </div>
         </div>
