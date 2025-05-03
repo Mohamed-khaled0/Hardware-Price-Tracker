@@ -12,23 +12,21 @@ const ContactUs = () => {
     subject: "",
     message: ""
   });
-  
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
-  
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, you would send this data to your backend
     console.log("Form submitted:", formData);
-    
+
     toast({
       title: "Message sent!",
       description: "We'll get back to you as soon as possible.",
     });
-    
-    // Reset form
+
     setFormData({
       name: "",
       email: "",
@@ -40,11 +38,11 @@ const ContactUs = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      
+
       <main className="flex-1 py-8 md:py-12">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <h1 className="text-3xl md:text-4xl font-bold mb-8 text-[#39536f]">Contact Us</h1>
-          
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
             <div className="lg:col-span-2">
               <div className="bg-white rounded-lg shadow-md p-6 mb-8">
@@ -52,7 +50,7 @@ const ContactUs = () => {
                 <p className="text-gray-700 mb-6">
                   Have a question, feedback, or need assistance? Fill out the form below and our team will get back to you as soon as possible.
                 </p>
-                
+
                 <form onSubmit={handleSubmit}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div>
@@ -84,7 +82,7 @@ const ContactUs = () => {
                       />
                     </div>
                   </div>
-                  
+
                   <div className="mb-6">
                     <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
                       Subject
@@ -99,7 +97,7 @@ const ContactUs = () => {
                       required
                     />
                   </div>
-                  
+
                   <div className="mb-6">
                     <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
                       Message
@@ -114,7 +112,7 @@ const ContactUs = () => {
                       required
                     ></textarea>
                   </div>
-                  
+
                   <button
                     type="submit"
                     className="px-6 py-3 bg-[#39536f] text-white font-semibold rounded-md hover:bg-[#2a405a] transition-colors"
@@ -124,11 +122,57 @@ const ContactUs = () => {
                 </form>
               </div>
             </div>
-            
+
+            <div>
+              <div className="bg-white rounded-lg shadow-md p-6">
+                <h2 className="text-xl font-semibold mb-6 text-[#39536f]">Contact Information</h2>
+                <div className="space-y-4">
+                  <div className="flex items-start">
+                    <MapPin className="w-6 h-6 text-[#39536f] mr-4 mt-1" />
+                    <div>
+                      <h3 className="font-semibold">Address</h3>
+                      <p className="text-gray-700">Egypt, Mansoura</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start">
+                    <Mail className="w-6 h-6 text-[#39536f] mr-4 mt-1" />
+                    <div>
+                      <h3 className="font-semibold">Email</h3>
+                      <p className="text-gray-700">Ahmeelmadawy32@gmail.com</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start">
+                    <Phone className="w-6 h-6 text-[#39536f] mr-4 mt-1" />
+                    <div>
+                      <h3 className="font-semibold">Phone</h3>
+                      <p className="text-gray-700">+201024710326</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-8">
+                  <h3 className="font-semibold mb-4">Business Hours</h3>
+                  <div className="space-y-2 text-gray-700">
+                    <p className="flex justify-between">
+                      <span>Monday - Friday:</span>
+                      <span>9:00 AM - 6:00 PM</span>
+                    </p>
+                    <p className="flex justify-between">
+                      <span>Saturday:</span>
+                      <span>10:00 AM - 4:00 PM</span>
+                    </p>
+                    <p className="flex justify-between">
+                      <span>Sunday:</span>
+                      <span>Closed</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </main>
-      
+
       <Footer />
     </div>
   );
