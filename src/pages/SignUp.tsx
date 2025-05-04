@@ -1,14 +1,58 @@
 
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, User } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { toast } from 'sonner';
+
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+
+const signupSchema = z.object({
+  username: z.string().min(3, 'Username must be at least 3 characters'),
+  email: z.string().min(1, 'Email is required').email('Invalid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+});
+
+type SignupFormValues = z.infer<typeof signupSchema>;
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+  
+  const form = useForm<SignupFormValues>({
+    resolver: zodResolver(signupSchema),
+    defaultValues: {
+      username: '',
+      email: '',
+      password: '',
+    },
+  });
+
+  const onSubmit = (values: SignupFormValues) => {
+    // In a real app, this would call an API to create the account
+    console.log('Signup attempt:', values);
+    
+    // Simulate successful account creation
+    toast.success('Account created successfully!');
+    
+    // Navigate to login page after short delay
+    setTimeout(() => {
+      navigate('/login');
+    }, 1500);
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -23,53 +67,88 @@ const SignUp = () => {
               Create An Account And Enjoy Fast Easy Checkout, Order Tracking, And Loyalty Points.
             </p>
             
-            <form className="space-y-6">
-              <div>
-                <label htmlFor="username" className="block font-medium mb-1">Username</label>
-                <Input 
-                  id="username" 
-                  type="text" 
-                  placeholder="Insert Username" 
-                  className="w-full bg-gray-200 border-0"
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <FormField
+                  control={form.control}
+                  name="username"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-medium">Username</FormLabel>
+                      <FormControl>
+                        <Input 
+                          {...field}
+                          placeholder="Insert Username"
+                          className="w-full bg-gray-200 border-0" 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              
-              <div>
-                <label htmlFor="email" className="block font-medium mb-1">Email Address</label>
-                <Input 
-                  id="email" 
-                  type="email" 
-                  placeholder="Insert Email Address Here" 
-                  className="w-full bg-gray-200 border-0"
+                
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-medium">Email Address</FormLabel>
+                      <FormControl>
+                        <Input 
+                          {...field}
+                          type="email"
+                          placeholder="Insert Email Address Here"
+                          className="w-full bg-gray-200 border-0" 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              
-              <div>
-                <label htmlFor="password" className="block font-medium mb-1">Password</label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    className="w-full bg-gray-200 border-0 pr-10"
-                    placeholder="****************"
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? <EyeOff className="h-5 w-5 text-gray-500" /> : <Eye className="h-5 w-5 text-gray-500" />}
-                  </button>
+                
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-medium">Password</FormLabel>
+                      <div className="relative">
+                        <FormControl>
+                          <Input
+                            {...field}
+                            type={showPassword ? "text" : "password"}
+                            placeholder="****************"
+                            className="w-full bg-gray-200 border-0 pr-10"
+                          />
+                        </FormControl>
+                        <button
+                          type="button"
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                          onClick={() => setShowPassword(!showPassword)}
+                        >
+                          {showPassword ? <EyeOff className="h-5 w-5 text-gray-500" /> : <Eye className="h-5 w-5 text-gray-500" />}
+                        </button>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <Button 
+                  type="submit" 
+                  className="w-full py-6 bg-[#39536f] hover:bg-[#2a405a]"
+                >
+                  <User className="mr-2 h-5 w-5" /> Create Account
+                </Button>
+                
+                <div className="text-center">
+                  <span className="text-gray-600">Already have an account? </span>
+                  <Link to="/login" className="text-[#39536f] hover:underline font-medium">
+                    Log In
+                  </Link>
                 </div>
-              </div>
-              
-              <Button 
-                type="submit" 
-                className="w-full py-6 bg-[#39536f] hover:bg-[#2a405a]"
-              >
-                <User className="mr-2 h-5 w-5" /> Create Account
-              </Button>
-            </form>
+              </form>
+            </Form>
           </div>
           
           {/* Right Side - Image */}
