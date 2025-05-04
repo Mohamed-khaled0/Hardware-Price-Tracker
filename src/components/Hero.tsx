@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+
+>>>>>>> cd84287b6d074a0b11d1cb25754fca0ac76e1faa
 import { Button } from "@/components/ui/button";
 
 const heroData = {
