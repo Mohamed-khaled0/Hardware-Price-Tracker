@@ -125,8 +125,6 @@ const Shop: React.FC = () => {
 
       <main className="flex-1 py-6 md:py-10">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
-          <h1 className="text-3xl md:text-4xl font-bold mb-6 text-[#39536f]">Shop</h1>
-
           {/* Search & Filter */}
           <div className="flex flex-col md:flex-row gap-4 mb-6">
             <div className="relative flex-1">

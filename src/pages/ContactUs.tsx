@@ -41,8 +41,6 @@ const ContactUs = () => {
 
       <main className="flex-1 py-8 md:py-12">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
-          <h1 className="text-3xl md:text-4xl font-bold mb-8 text-[#39536f]">Contact Us</h1>
-
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
             <div className="lg:col-span-2">
               <div className="bg-white rounded-lg shadow-md p-6 mb-8">
@@ -123,52 +121,6 @@ const ContactUs = () => {
               </div>
             </div>
 
-            <div>
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <h2 className="text-xl font-semibold mb-6 text-[#39536f]">Contact Information</h2>
-                <div className="space-y-4">
-                  <div className="flex items-start">
-                    <MapPin className="w-6 h-6 text-[#39536f] mr-4 mt-1" />
-                    <div>
-                      <h3 className="font-semibold">Address</h3>
-                      <p className="text-gray-700">Egypt, Mansoura</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start">
-                    <Mail className="w-6 h-6 text-[#39536f] mr-4 mt-1" />
-                    <div>
-                      <h3 className="font-semibold">Email</h3>
-                      <p className="text-gray-700">Ahmeelmadawy32@gmail.com</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start">
-                    <Phone className="w-6 h-6 text-[#39536f] mr-4 mt-1" />
-                    <div>
-                      <h3 className="font-semibold">Phone</h3>
-                      <p className="text-gray-700">+201024710326</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-8">
-                  <h3 className="font-semibold mb-4">Business Hours</h3>
-                  <div className="space-y-2 text-gray-700">
-                    <p className="flex justify-between">
-                      <span>Monday - Friday:</span>
-                      <span>9:00 AM - 6:00 PM</span>
-                    </p>
-                    <p className="flex justify-between">
-                      <span>Saturday:</span>
-                      <span>10:00 AM - 4:00 PM</span>
-                    </p>
-                    <p className="flex justify-between">
-                      <span>Sunday:</span>
-                      <span>Closed</span>
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </main>
