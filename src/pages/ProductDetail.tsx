@@ -1,5 +1,6 @@
+
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -7,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ShoppingCart, Star, ExternalLink } from "lucide-react";
 import { Product } from "./Shop";
-import { toast } from "sonner";
+import { useCart } from "@/contexts/CartContext";
 
 const fetchProductById = async (id: string): Promise<Product> => {
   const res = await fetch(`https://dummyjson.com/products/${id}`);
@@ -17,6 +18,7 @@ const fetchProductById = async (id: string): Promise<Product> => {
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const { addToCart } = useCart();
   
   const { data: product, isLoading, error } = useQuery({
     queryKey: ["product", id],
@@ -25,7 +27,9 @@ const ProductDetail: React.FC = () => {
   });
 
   const handleAddToCart = () => {
-    toast.success(`${product?.title} added to cart!`);
+    if (product) {
+      addToCart(product);
+    }
   };
 
   if (isLoading) {
@@ -44,9 +48,9 @@ const ProductDetail: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           {/* Breadcrumbs */}
           <div className="text-sm text-gray-500 mb-6">
-            <a href="/" className="hover:text-[#39536f]">Home</a> &gt; 
-            <a href="/shop" className="hover:text-[#39536f]"> Shop</a> &gt; 
-            <a href={`/shop/category/${product.category}`} className="hover:text-[#39536f]"> {product.category}</a> &gt; 
+            <Link to="/" className="hover:text-[#39536f]">Home</Link> &gt; 
+            <Link to="/shop" className="hover:text-[#39536f]"> Shop</Link> &gt; 
+            <Link to={`/shop?category=${product.category}`} className="hover:text-[#39536f]"> {product.category}</Link> &gt; 
             <span className="text-[#39536f]"> {product.title}</span>
           </div>
 

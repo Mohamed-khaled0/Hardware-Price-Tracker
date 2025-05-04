@@ -1,28 +1,19 @@
 
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Search, Filter, Tag } from "lucide-react";
+import { Filter, Search, Tag } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { toast } from "sonner";
+import ProductCard from "@/components/ProductCard";
 
 // --- Types ---
 interface PriceComparison {
@@ -88,11 +79,6 @@ const filterProducts = (
     return inCat && (term === "" || inText);
   });
 
-const getLowestPrice = (p: Product): number => {
-  if (!p.priceComparisons || p.priceComparisons.length === 0) return p.price;
-  return Math.min(p.price, ...p.priceComparisons.map((c) => c.price));
-};
-
 // --- Component ---
 const Shop: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
@@ -107,10 +93,6 @@ const Shop: React.FC = () => {
     queryKey: ["products"],
     queryFn: fetchProducts,
   });
-
-  const handleAddToCart = (product: Product) => {
-    toast.success(`${product.title} added to cart!`);
-  };
 
   useEffect(() => {
     if (products) {
@@ -173,34 +155,18 @@ const Shop: React.FC = () => {
               <TabsContent key={cat} value={cat}>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {filterProducts(products!, cat, searchTerm).map((p) => (
-                    <Card key={p.id} className="shadow-md">
-                      <Link to={`/product/${p.id}`}>
-                        <CardHeader>
-                          <img src={p.thumbnail} alt={p.title} className="w-full h-40 object-cover rounded-t-xl" />
-                          <CardTitle className="text-lg mt-2">{p.title}</CardTitle>
-                        </CardHeader>
-                      </Link>
-                      <CardContent>
-                        <CardDescription className="text-sm line-clamp-2">
-                          {p.description}
-                        </CardDescription>
-                        <div className="mt-2 font-semibold text-lg">
-                          ${getLowestPrice(p).toFixed(2)}
-                          {p.discountPercentage && (
-                            <span className="text-gray-500 line-through text-sm ml-2">
-                              ${p.price.toFixed(2)}
-                            </span>
-                          )}
-                        </div>
-                      </CardContent>
-                      <CardFooter className="flex justify-between items-center">
-                        <Button size="sm" className="gap-1" onClick={() => handleAddToCart(p)}>
-                          <ShoppingCart size={16} />
-                          Add to Cart
-                        </Button>
-                        <span className="text-sm">⭐ {p.rating}</span>
-                      </CardFooter>
-                    </Card>
+                    <ProductCard 
+                      key={p.id}
+                      id={p.id}
+                      title={p.title}
+                      description={p.description}
+                      price={p.price}
+                      discountPercentage={p.discountPercentage}
+                      rating={p.rating}
+                      brand={p.brand}
+                      thumbnail={p.thumbnail}
+                      priceComparisons={p.priceComparisons}
+                    />
                   ))}
                 </div>
               </TabsContent>

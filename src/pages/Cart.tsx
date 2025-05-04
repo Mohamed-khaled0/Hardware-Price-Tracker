@@ -1,32 +1,16 @@
 
 import React from "react";
+import { Link } from "react-router-dom";
+import { Trash } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Separator } from "@/components/ui/separator";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Link } from "react-router-dom";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Trash } from "lucide-react";
-
-// Mock cart data - in a real app, this would come from context or state management
-const cartItems = [
-  {
-    id: 1,
-    name: "Samsung Q60b 65 Inch 4k Uhd Smart Qled Tv With Built In Receiver",
-    price: 31666,
-    quantity: 1,
-    image: "https://images.unsplash.com/photo-1601944177325-f8867652837f?q=80&w=200&auto=format&fit=crop"
-  },
-  {
-    id: 2,
-    name: "Honor X5 Plus Dual Sim - 64GB, 4GB RAM, 4G - Black",
-    price: 5750,
-    quantity: 1,
-    image: "https://images.unsplash.com/photo-1598327105666-5b89351aff97?q=80&w=200&auto=format&fit=crop"
-  }
-];
+import { useCart } from "@/contexts/CartContext";
 
 const Cart = () => {
-  // Calculate subtotal
-  const subtotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+  const { items, removeFromCart, updateQuantity, clearCart, getTotal } = useCart();
   
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -34,12 +18,12 @@ const Cart = () => {
       
       <main className="flex-1 container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-2 text-[#39536f]">My Cart</h1>
-        <p className="text-gray-600 mb-8">You Have {cartItems.length} Items In Your Cart</p>
+        <p className="text-gray-600 mb-8">You Have {items.length} Items In Your Cart</p>
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Cart Items - Takes up more space */}
           <div className="lg:col-span-8">
-            {cartItems.length > 0 ? (
+            {items.length > 0 ? (
               <div className="bg-white rounded-lg shadow-sm overflow-hidden">
                 <Table>
                   <TableHeader className="bg-gray-50">
@@ -52,27 +36,34 @@ const Cart = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {cartItems.map((item) => (
+                    {items.map((item) => (
                       <TableRow key={item.id}>
                         <TableCell>
-                          <div className="w-24 h-24 rounded border overflow-hidden">
-                            <img 
-                              src={item.image} 
-                              loading="lazy"
-                              alt={item.name} 
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
+                          <Link to={`/product/${item.id}`}>
+                            <div className="w-24 h-24 rounded border overflow-hidden">
+                              <img 
+                                src={item.thumbnail} 
+                                loading="lazy"
+                                alt={item.title} 
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          </Link>
                         </TableCell>
-                        <TableCell className="font-medium">{item.name}</TableCell>
-                        <TableCell className="text-right">{item.price.toLocaleString()} EGP</TableCell>
+                        <TableCell className="font-medium">
+                          <Link to={`/product/${item.id}`} className="hover:text-[#39536f] hover:underline">
+                            {item.title}
+                          </Link>
+                        </TableCell>
+                        <TableCell className="text-right">${item.price.toFixed(2)}</TableCell>
                         <TableCell className="text-center">
                           <div className="relative inline-block">
                             <select 
-                              defaultValue={item.quantity} 
+                              value={item.quantity} 
+                              onChange={(e) => updateQuantity(item.id, parseInt(e.target.value))}
                               className="appearance-none border rounded py-2 px-4 pr-8 bg-white"
                             >
-                              {[1, 2, 3, 4, 5].map(num => (
+                              {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(num => (
                                 <option key={num} value={num}>{num}</option>
                               ))}
                             </select>
@@ -84,7 +75,10 @@ const Cart = () => {
                           </div>
                         </TableCell>
                         <TableCell className="text-right">
-                          <button className="text-red-500 hover:text-red-700 flex items-center justify-end gap-1 w-full">
+                          <button 
+                            className="text-red-500 hover:text-red-700 flex items-center justify-end gap-1 w-full"
+                            onClick={() => removeFromCart(item.id)}
+                          >
                             Remove <Trash className="h-4 w-4" />
                           </button>
                         </TableCell>
@@ -107,6 +101,45 @@ const Cart = () => {
             )}
           </div>
         
+          {/* Order Summary - Takes up less space */}
+          {items.length > 0 && (
+            <div className="lg:col-span-4">
+              <div className="bg-white rounded-lg shadow-sm p-6">
+                <h2 className="text-xl font-bold mb-4 text-[#39536f]">Order Summary</h2>
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Subtotal</span>
+                    <span className="font-medium">${getTotal().toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Shipping</span>
+                    <span className="font-medium">$0.00</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Tax</span>
+                    <span className="font-medium">$0.00</span>
+                  </div>
+                  <Separator />
+                  <div className="flex justify-between">
+                    <span className="font-bold text-[#39536f]">Total</span>
+                    <span className="font-bold text-[#39536f]">${getTotal().toFixed(2)}</span>
+                  </div>
+                </div>
+                
+                <Button className="w-full mt-6 py-6 bg-[#39536f] hover:bg-[#2a405a] text-white text-lg">
+                  Checkout
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  className="w-full mt-3 border-[#39536f] text-[#39536f] hover:bg-[#e6eef1]"
+                  onClick={clearCart}
+                >
+                  Clear Cart
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       </main>
       
