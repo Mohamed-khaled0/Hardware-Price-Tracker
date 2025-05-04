@@ -11,16 +11,16 @@ const PrivacyPolicy: React.FC = () => {
       <main className="flex-1 py-8 md:py-12">
         <div className="max-w-4xl mx-auto px-4 md:px-8">
           <h1 className="text-3xl md:text-4xl font-bold mb-8 text-[#39536f]">Privacy Policy</h1>
-          
+
           <div className="bg-white rounded-xl shadow-sm p-6 md:p-8">
             <div className="text-gray-500 mb-6">Last updated: May 3, 2025</div>
-            
+
             <p className="mb-6">
               Welcome to Hardware Price Tracker. Your privacy is important to us. 
               This Privacy Policy explains how we collect, use, share, and protect your 
               personal information when you use our website and services.
             </p>
-            
+
             <section className="mb-8">
               <h2 className="text-xl font-semibold mb-3 text-[#39536f]">1. Information We Collect</h2>
               <p className="mb-2"><strong>Account Information:</strong> When you register, we collect your name and email address.</p>

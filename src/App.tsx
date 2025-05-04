@@ -12,10 +12,10 @@ import Cart from "./pages/Cart";
 import AboutUs from "./pages/AboutUs";
 import ContactUs from "./pages/ContactUs";
 import Shop from "./pages/Shop";
-import NotFound from "./pages/NotFound";
+import ProductDetail from "./pages/ProductDetail";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Terms from "./pages/Terms";
-import ProductDetail from "./pages/ProductDetail";
+import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 

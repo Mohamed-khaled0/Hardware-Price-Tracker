@@ -7,25 +7,22 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto px-4 md:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           
-          {/* Logo and Contact Info */}
+          {/* Logo and Description */}
           <div className="col-span-1">
-             {/* Text Logo */}
-          <Link to="/" className="flex-shrink-0">
-            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-              {/* dark teal for ‘p’, accent for ‘RICE’, dark for ‘ t’, accent for ‘RACKER’ */}
-              <span className="text-[#39536f]">P</span>
-              <span className="text-[#6f7d95]">rice</span>
-              <span className="text-[#39536f]"> T</span>
-              <span className="text-[#6f7d95]">racker</span>
-            </h1>
-          </Link>
+            <Link to="/" className="flex-shrink-0">
+              <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+                <span className="text-[#39536f]">P</span>
+                <span className="text-[#6f7d95]">rice</span>
+                <span className="text-[#39536f]"> T</span>
+                <span className="text-[#6f7d95]">racker</span>
+              </h1>
+            </Link>
             <p className="text-sm text-gray-700 mb-2">
-            Price Tracker helps you track electronics prices across Egypt’s top stores.
+              Price Tracker helps you track electronics prices across Egypt's top stores.
             </p>
-           
           </div>
 
-          {/* Products */}
+          {/* Categories */}
           <div className="col-span-1">
             <h3 className="text-sm font-semibold mb-4">Categories</h3>
             <ul className="space-y-2">
@@ -36,7 +33,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Company Info */}
+          {/* Company */}
           <div className="col-span-1">
             <h3 className="text-lg font-semibold mb-4">Company</h3>
             <ul className="space-y-2">
@@ -44,6 +41,27 @@ const Footer = () => {
               <li><Link to="/contact" className="hover:text-navy hover:underline">Contact Us</Link></li>
               <li><Link to="/privacy" className="hover:text-navy hover:underline">Privacy Policy</Link></li>
               <li><Link to="/terms" className="hover:text-navy hover:underline">Terms & Conditions</Link></li>
+            </ul>
+          </div>
+
+          {/* Contact Info */}
+          <div className="col-span-1">
+            <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
+            <ul className="space-y-3">
+              <li className="flex items-center">
+                <MapPin className="w-5 h-5 mr-2 text-[#39536f]" />
+                <span>Cairo, Egypt</span>
+              </li>
+              <li className="flex items-center">
+                <Phone className="w-5 h-5 mr-2 text-[#39536f]" />
+                <span>+20 123 456 7890</span>
+              </li>
+              <li className="flex items-center">
+                <Mail className="w-5 h-5 mr-2 text-[#39536f]" />
+                <a href="mailto:info@pricetracker.com" className="hover:underline">
+                  info@pricetracker.com
+                </a>
+              </li>
             </ul>
           </div>
         </div>
