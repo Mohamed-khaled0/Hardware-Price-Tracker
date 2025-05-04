@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -27,14 +27,24 @@ const heroSlides = [
 
 const Hero = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-
-  const nextSlide = () => {
+  
+  // Auto-scroll functionality
+  const nextSlide = useCallback(() => {
     setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
-  };
-
+  }, []);
+  
   const prevSlide = () => {
     setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
   };
+  
+  // Set up interval for auto-scrolling
+  useEffect(() => {
+    const interval = setInterval(() => {
+      nextSlide();
+    }, 5000); // Change slide every 5 seconds
+    
+    return () => clearInterval(interval);
+  }, [nextSlide]);
 
   return (
     <div className="relative w-full overflow-hidden">
@@ -48,7 +58,7 @@ const Hero = () => {
             className={cn("min-w-full h-[450px] relative", slide.bgColor)}
           >
             <div className="container mx-auto px-4 h-full flex items-center">
-              <div className="max-w-lg">
+              <div className="max-w-lg pr-4">
                 <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-800">{slide.title}</h1>
                 <p className="text-xl text-gray-600 mb-8">{slide.description}</p>
                 <Button 
@@ -58,7 +68,7 @@ const Hero = () => {
                   <a href={slide.buttonLink}>{slide.buttonText}</a>
                 </Button>
               </div>
-              <div className="hidden md:block absolute right-0 bottom-0">
+              <div className="hidden md:block absolute right-8 bottom-0">
                 <img 
                   src={slide.image} 
                   alt="Hero product" 
@@ -74,12 +84,14 @@ const Hero = () => {
       <button 
         className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full shadow-md hover:bg-white"
         onClick={prevSlide}
+        aria-label="Previous slide"
       >
         <ChevronLeft className="h-6 w-6 text-gray-800" />
       </button>
       <button 
         className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full shadow-md hover:bg-white"
         onClick={nextSlide}
+        aria-label="Next slide"
       >
         <ChevronRight className="h-6 w-6 text-gray-800" />
       </button>
@@ -94,6 +106,7 @@ const Hero = () => {
               currentSlide === index ? "bg-[#39536f]" : "bg-gray-300"
             )}
             onClick={() => setCurrentSlide(index)}
+            aria-label={`Go to slide ${index + 1}`}
           />
         ))}
       </div>
