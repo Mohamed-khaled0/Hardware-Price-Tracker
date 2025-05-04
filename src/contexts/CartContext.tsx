@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { Product } from '@/pages/Shop';
 import { toast } from 'sonner';
@@ -48,13 +47,10 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const existingItem = prevItems.find(item => item.id === product.id);
       
       if (existingItem) {
-        // Item exists, increment quantity
-        toast.success(`Added another ${product.title} to cart`);
-        return prevItems.map(item => 
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
+        // Item exists, don't add again
+        toast.warning(`${product.title} is already in your cart.`);
+        // Return the unchanged cart
+        return prevItems;
       } else {
         // New item, add to cart
         toast.success(`${product.title} added to cart!`);
