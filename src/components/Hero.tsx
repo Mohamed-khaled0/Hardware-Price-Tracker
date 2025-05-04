@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
 
 const heroData = {
-  title: "Mega Sales Extravaganza!",
-  description: "Unbelievable Deals And Massive Discounts Await You At Our Mega Sales Extravaganza",
+  title: "Never Overpay Again!",
+  description: "Real‑time price tracking across all your favorite electronics stores",
   buttonText: "Shop Now",
   buttonLink: "/shop",
   image: "/lovable-uploads/display.webp",

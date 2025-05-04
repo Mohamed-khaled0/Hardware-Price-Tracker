@@ -126,9 +126,6 @@ const Cart = () => {
                   </div>
                 </div>
                 
-                <Button className="w-full mt-6 py-6 bg-[#39536f] hover:bg-[#2a405a] text-white text-lg">
-                  Checkout
-                </Button>
                 
                 <Button 
                   variant="outline" 
