@@ -43,27 +43,6 @@ const Footer = () => {
               <li><Link to="/terms" className="hover:text-navy hover:underline">Terms & Conditions</Link></li>
             </ul>
           </div>
-
-          {/* Contact Info */}
-          <div className="col-span-1">
-            <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
-            <ul className="space-y-3">
-              <li className="flex items-center">
-                <MapPin className="w-5 h-5 mr-2 text-[#39536f]" />
-                <span>Cairo, Egypt</span>
-              </li>
-              <li className="flex items-center">
-                <Phone className="w-5 h-5 mr-2 text-[#39536f]" />
-                <span>+20 123 456 7890</span>
-              </li>
-              <li className="flex items-center">
-                <Mail className="w-5 h-5 mr-2 text-[#39536f]" />
-                <a href="mailto:info@pricetracker.com" className="hover:underline">
-                  info@pricetracker.com
-                </a>
-              </li>
-            </ul>
-          </div>
         </div>
 
         {/* Footer Bottom */}
