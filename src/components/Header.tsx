@@ -1,10 +1,15 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, User, ShoppingCart } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useCart } from '@/contexts/CartContext';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { getItemCount } = useCart();
+
+  const cartItemCount = getItemCount();
 
   return (
     <div className="w-full">
@@ -54,7 +59,7 @@ const Header: React.FC = () => {
             <Link to="/cart">
               <button className="flex items-center bg-[#39536f] text-white rounded-full px-4 py-2 hover:bg-[#2a405a] transition-colors">
                 <ShoppingCart className="w-5 h-5 mr-2" />
-                <span className="font-semibold">CART (2)</span>
+                <span className="font-semibold">CART ({cartItemCount})</span>
               </button>
             </Link>
           </div>
