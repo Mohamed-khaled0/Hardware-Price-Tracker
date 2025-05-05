@@ -1,10 +1,9 @@
 
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { AlertCircle } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { toast } from 'sonner';
 
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -18,6 +17,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { useAuth } from '@/contexts/AuthContext';
 
 const forgotPasswordSchema = z.object({
   email: z.string().min(1, 'Email is required').email('Invalid email address'),
@@ -26,7 +26,7 @@ const forgotPasswordSchema = z.object({
 type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
 
 const ForgotPassword = () => {
-  const navigate = useNavigate();
+  const { resetPassword, loading } = useAuth();
   
   const form = useForm<ForgotPasswordFormValues>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -35,17 +35,14 @@ const ForgotPassword = () => {
     },
   });
 
-  const onSubmit = (values: ForgotPasswordFormValues) => {
-    // In a real app, this would call an API to request a password reset
-    console.log('Password reset request for:', values);
-    
-    // Simulate successful password reset request
-    toast.success('Password reset email sent! Please check your inbox.');
-    
-    // Navigate to login page after short delay
-    setTimeout(() => {
-      navigate('/login');
-    }, 2000);
+  const onSubmit = async (values: ForgotPasswordFormValues) => {
+    try {
+      await resetPassword(values.email);
+      // Success message is handled in the AuthContext
+    } catch (error) {
+      console.error('Password reset error:', error);
+      // Error is handled in the AuthContext
+    }
   };
 
   return (
@@ -89,8 +86,9 @@ const ForgotPassword = () => {
                 <Button 
                   type="submit" 
                   className="w-full py-6 bg-[#39536f] hover:bg-[#2a405a]"
+                  disabled={loading}
                 >
-                  Reset Password
+                  {loading ? 'Sending Reset Link...' : 'Reset Password'}
                 </Button>
                 
                 <div className="text-center">

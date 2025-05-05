@@ -5,7 +5,6 @@ import { Eye, EyeOff, User } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { toast } from 'sonner';
 
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -19,6 +18,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { useAuth } from '@/contexts/AuthContext';
 
 const signupSchema = z.object({
   username: z.string().min(3, 'Username must be at least 3 characters'),
@@ -30,7 +30,14 @@ type SignupFormValues = z.infer<typeof signupSchema>;
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const { signUp, user, loading } = useAuth();
   const navigate = useNavigate();
+  
+  // If already logged in, redirect to homepage
+  if (user) {
+    navigate('/');
+    return null;
+  }
   
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
@@ -41,17 +48,13 @@ const SignUp = () => {
     },
   });
 
-  const onSubmit = (values: SignupFormValues) => {
-    // In a real app, this would call an API to create the account
-    console.log('Signup attempt:', values);
-    
-    // Simulate successful account creation
-    toast.success('Account created successfully!');
-    
-    // Navigate to login page after short delay
-    setTimeout(() => {
-      navigate('/login');
-    }, 1500);
+  const onSubmit = async (values: SignupFormValues) => {
+    try {
+      await signUp(values.email, values.password, values.username);
+    } catch (error) {
+      console.error('Signup error:', error);
+      // Error is handled in the AuthContext
+    }
   };
 
   return (
@@ -137,8 +140,9 @@ const SignUp = () => {
                 <Button 
                   type="submit" 
                   className="w-full py-6 bg-[#39536f] hover:bg-[#2a405a]"
+                  disabled={loading}
                 >
-                  <User className="mr-2 h-5 w-5" /> Create Account
+                  <User className="mr-2 h-5 w-5" /> {loading ? 'Creating Account...' : 'Create Account'}
                 </Button>
                 
                 <div className="text-center">

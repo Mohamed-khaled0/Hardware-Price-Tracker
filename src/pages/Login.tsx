@@ -5,7 +5,6 @@ import { Eye, EyeOff, LogIn } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { toast } from 'sonner';
 
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -19,6 +18,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { useAuth } from '@/contexts/AuthContext';
 
 const loginSchema = z.object({
   email: z.string().min(1, 'Email is required').email('Invalid email address'),
@@ -30,6 +30,13 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const { signIn, user, loading } = useAuth();
+  
+  // If already logged in, redirect to homepage
+  if (user) {
+    navigate('/');
+    return null;
+  }
   
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -39,17 +46,13 @@ const Login = () => {
     },
   });
 
-  const onSubmit = (values: LoginFormValues) => {
-    // In a real app, this would call an authentication API
-    console.log('Login attempt:', values);
-    
-    // Simulate successful login
-    toast.success('Login successful!');
-    
-    // Navigate to home page after short delay
-    setTimeout(() => {
-      navigate('/');
-    }, 1500);
+  const onSubmit = async (values: LoginFormValues) => {
+    try {
+      await signIn(values.email, values.password);
+    } catch (error) {
+      console.error('Login error:', error);
+      // Error is handled in the AuthContext
+    }
   };
 
   return (
@@ -122,8 +125,9 @@ const Login = () => {
                 <Button 
                   type="submit" 
                   className="w-full py-6 bg-[#39536f] hover:bg-[#2a405a]"
+                  disabled={loading}
                 >
-                  <LogIn className="mr-2 h-5 w-5" /> Log In
+                  <LogIn className="mr-2 h-5 w-5" /> {loading ? 'Logging in...' : 'Log In'}
                 </Button>
                 
                 <div className="text-center">
