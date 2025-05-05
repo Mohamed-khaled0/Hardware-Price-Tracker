@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, LogIn } from 'lucide-react';
+import { Eye, EyeOff, LogIn, Facebook, Google } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -10,6 +10,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Separator } from "@/components/ui/separator";
 import {
   Form,
   FormControl,
@@ -30,7 +31,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const { signIn, user, loading } = useAuth();
+  const { signIn, signInWithGoogle, signInWithFacebook, user, loading } = useAuth();
   
   // If already logged in, redirect to homepage
   if (user) {
@@ -52,6 +53,22 @@ const Login = () => {
     } catch (error) {
       console.error('Login error:', error);
       // Error is handled in the AuthContext
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithGoogle();
+    } catch (error) {
+      console.error('Google sign in error:', error);
+    }
+  };
+
+  const handleFacebookSignIn = async () => {
+    try {
+      await signInWithFacebook();
+    } catch (error) {
+      console.error('Facebook sign in error:', error);
     }
   };
 
@@ -129,6 +146,37 @@ const Login = () => {
                 >
                   <LogIn className="mr-2 h-5 w-5" /> {loading ? 'Logging in...' : 'Log In'}
                 </Button>
+                
+                <div className="relative my-6">
+                  <div className="absolute inset-0 flex items-center">
+                    <Separator className="w-full" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-white px-2 text-gray-500">Or continue with</span>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    className="w-full py-6"
+                    onClick={handleGoogleSignIn}
+                    disabled={loading}
+                  >
+                    <Google className="mr-2 h-5 w-5" /> Google
+                  </Button>
+                  
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    className="w-full py-6"
+                    onClick={handleFacebookSignIn}
+                    disabled={loading}
+                  >
+                    <Facebook className="mr-2 h-5 w-5" /> Facebook
+                  </Button>
+                </div>
                 
                 <div className="text-center">
                   <span className="text-gray-600">Don't Have An Account? </span>

@@ -17,8 +17,11 @@ interface AuthContextType {
   profile: Profile | null;
   signUp: (email: string, password: string, username: string) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
+  signInWithFacebook: () => Promise<void>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
+  resetPasswordWithPhone: (phone: string) => Promise<void>;
   loading: boolean;
 }
 
@@ -156,6 +159,46 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
+  const signInWithGoogle = async () => {
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+      });
+
+      if (error) {
+        toast.error(error.message);
+        throw error;
+      }
+    } catch (error: any) {
+      console.error('Error signing in with Google:', error);
+      toast.error(error.message || 'An error occurred during Google sign in');
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const signInWithFacebook = async () => {
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'facebook',
+      });
+
+      if (error) {
+        toast.error(error.message);
+        throw error;
+      }
+    } catch (error: any) {
+      console.error('Error signing in with Facebook:', error);
+      toast.error(error.message || 'An error occurred during Facebook sign in');
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const signOut = async () => {
     try {
       setLoading(true);
@@ -198,14 +241,43 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
+  const resetPasswordWithPhone = async (phone: string) => {
+    try {
+      setLoading(true);
+      // For now, we'll just show an info message since phone auth requires additional setup
+      toast.info(`SMS verification will be sent to ${phone} once configured in Supabase`);
+      
+      // When Supabase phone auth is configured, this would be:
+      // const { error } = await supabase.auth.signInWithOtp({
+      //   phone: phone
+      // });
+      
+      // if (error) {
+      //   toast.error(error.message);
+      //   throw error;
+      // }
+      
+      // toast.success('Password reset code sent to your phone. Please enter the code to reset your password.');
+    } catch (error: any) {
+      console.error('Error resetting password with phone:', error);
+      toast.error(error.message || 'An error occurred during phone verification');
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const value = {
     session,
     user,
     profile,
     signUp,
     signIn,
+    signInWithGoogle,
+    signInWithFacebook,
     signOut,
     resetPassword,
+    resetPasswordWithPhone,
     loading
   };
 

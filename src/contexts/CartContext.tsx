@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './AuthContext';
 import { v4 as uuidv4 } from 'uuid';
+import { useNavigate } from 'react-router-dom';
 
 export interface CartItem {
   id: string;
@@ -23,6 +24,7 @@ interface CartContextType {
   clearCart: () => void;
   getItemCount: () => number;
   getTotal: () => number;
+  requireAuth: () => boolean; // New method to check auth requirement
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -38,6 +40,7 @@ export const useCart = () => {
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>([]);
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   // Load cart items from Supabase or localStorage when user state changes or on component mount
   useEffect(() => {
@@ -78,189 +81,155 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           console.error('Error loading cart from Supabase:', error);
         }
       } else {
-        // Load cart from localStorage if user is not logged in
-        const savedCart = localStorage.getItem('cart');
-        setItems(savedCart ? JSON.parse(savedCart) : []);
+        // No local storage cart support anymore
+        setItems([]);
       }
     };
 
     loadCart();
   }, [user]);
 
-  // Save cart to localStorage when it changes (for non-authenticated users)
-  useEffect(() => {
+  // Check if user is authenticated
+  const requireAuth = () => {
     if (!user) {
-      localStorage.setItem('cart', JSON.stringify(items));
-    }
-  }, [items, user]);
-
-  const addToCart = async (product: Product) => {
-    if (user) {
-      // Add item to Supabase if user is logged in
-      try {
-        const existingItem = items.find(item => item.product_id === product.id);
-        
-        if (existingItem) {
-          toast.warning(`${product.title} is already in your cart.`);
-          return;
-        }
-        
-        const { data, error } = await supabase
-          .from('cart_items')
-          .insert([
-            {
-              user_id: user.id,
-              product_id: product.id,
-              quantity: 1
-            }
-          ])
-          .select();
-
-        if (error) {
-          toast.error('Failed to add item to cart');
-          console.error('Error adding item to cart:', error);
-          return;
-        }
-
-        if (data && data[0]) {
-          const newItem: CartItem = {
-            id: data[0].id,
-            product_id: product.id,
-            title: product.title,
-            price: product.price,
-            quantity: 1,
-            thumbnail: product.thumbnail
-          };
-          
-          setItems(prevItems => [...prevItems, newItem]);
-          toast.success(`${product.title} added to cart!`);
-        }
-      } catch (error) {
-        console.error('Error adding to cart:', error);
-        toast.error('Failed to add item to cart');
-      }
-    } else {
-      // Handle local cart for non-authenticated users
-      setItems(prevItems => {
-        const existingItem = prevItems.find(item => item.product_id === product.id);
-        
-        if (existingItem) {
-          toast.warning(`${product.title} is already in your cart.`);
-          return prevItems;
-        } else {
-          toast.success(`${product.title} added to cart!`);
-          return [...prevItems, {
-            id: uuidv4(),
-            product_id: product.id,
-            title: product.title,
-            price: product.price,
-            quantity: 1,
-            thumbnail: product.thumbnail
-          }];
+      toast.error('Please sign in to use the cart', {
+        action: {
+          label: 'Sign In',
+          onClick: () => navigate('/login')
         }
       });
+      return false;
+    }
+    return true;
+  };
+
+  const addToCart = async (product: Product) => {
+    // Check if user is authenticated
+    if (!requireAuth()) return;
+    
+    try {
+      const existingItem = items.find(item => item.product_id === product.id);
+      
+      if (existingItem) {
+        toast.warning(`${product.title} is already in your cart.`);
+        return;
+      }
+      
+      const { data, error } = await supabase
+        .from('cart_items')
+        .insert([
+          {
+            user_id: user!.id,
+            product_id: product.id,
+            quantity: 1
+          }
+        ])
+        .select();
+
+      if (error) {
+        toast.error('Failed to add item to cart');
+        console.error('Error adding item to cart:', error);
+        return;
+      }
+
+      if (data && data[0]) {
+        const newItem: CartItem = {
+          id: data[0].id,
+          product_id: product.id,
+          title: product.title,
+          price: product.price,
+          quantity: 1,
+          thumbnail: product.thumbnail
+        };
+        
+        setItems(prevItems => [...prevItems, newItem]);
+        toast.success(`${product.title} added to cart!`);
+      }
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      toast.error('Failed to add item to cart');
     }
   };
 
   const removeFromCart = async (id: string) => {
-    if (user) {
-      // Remove item from Supabase if user is logged in
-      try {
-        const itemToRemove = items.find(item => item.id === id);
-        
-        const { error } = await supabase
-          .from('cart_items')
-          .delete()
-          .eq('id', id);
+    // Check if user is authenticated
+    if (!requireAuth()) return;
+    
+    try {
+      const itemToRemove = items.find(item => item.id === id);
+      
+      const { error } = await supabase
+        .from('cart_items')
+        .delete()
+        .eq('id', id);
 
-        if (error) {
-          toast.error('Failed to remove item from cart');
-          console.error('Error removing item from cart:', error);
-          return;
-        }
-
-        setItems(prevItems => prevItems.filter(item => item.id !== id));
-        
-        if (itemToRemove) {
-          toast.success(`${itemToRemove.title} removed from cart`);
-        }
-      } catch (error) {
-        console.error('Error removing from cart:', error);
+      if (error) {
         toast.error('Failed to remove item from cart');
+        console.error('Error removing item from cart:', error);
+        return;
       }
-    } else {
-      // Handle local cart for non-authenticated users
-      setItems(prevItems => {
-        const itemToRemove = prevItems.find(item => item.id === id);
-        if (itemToRemove) {
-          toast.success(`${itemToRemove.title} removed from cart`);
-        }
-        return prevItems.filter(item => item.id !== id);
-      });
+
+      setItems(prevItems => prevItems.filter(item => item.id !== id));
+      
+      if (itemToRemove) {
+        toast.success(`${itemToRemove.title} removed from cart`);
+      }
+    } catch (error) {
+      console.error('Error removing from cart:', error);
+      toast.error('Failed to remove item from cart');
     }
   };
 
   const updateQuantity = async (id: string, quantity: number) => {
+    // Check if user is authenticated
+    if (!requireAuth()) return;
+    
     if (quantity < 1) return;
     
-    if (user) {
-      // Update item quantity in Supabase if user is logged in
-      try {
-        const { error } = await supabase
-          .from('cart_items')
-          .update({ quantity })
-          .eq('id', id);
+    try {
+      const { error } = await supabase
+        .from('cart_items')
+        .update({ quantity })
+        .eq('id', id);
 
-        if (error) {
-          toast.error('Failed to update item quantity');
-          console.error('Error updating item quantity:', error);
-          return;
-        }
-
-        setItems(prevItems =>
-          prevItems.map(item =>
-            item.id === id ? { ...item, quantity } : item
-          )
-        );
-      } catch (error) {
-        console.error('Error updating quantity:', error);
+      if (error) {
         toast.error('Failed to update item quantity');
+        console.error('Error updating item quantity:', error);
+        return;
       }
-    } else {
-      // Handle local cart for non-authenticated users
+
       setItems(prevItems =>
         prevItems.map(item =>
           item.id === id ? { ...item, quantity } : item
         )
       );
+    } catch (error) {
+      console.error('Error updating quantity:', error);
+      toast.error('Failed to update item quantity');
     }
   };
 
   const clearCart = async () => {
-    if (user) {
-      // Clear all items from Supabase if user is logged in
-      try {
-        const { error } = await supabase
-          .from('cart_items')
-          .delete()
-          .eq('user_id', user.id);
+    // Check if user is authenticated
+    if (!requireAuth()) return;
+    
+    try {
+      const { error } = await supabase
+        .from('cart_items')
+        .delete()
+        .eq('user_id', user!.id);
 
-        if (error) {
-          toast.error('Failed to clear cart');
-          console.error('Error clearing cart:', error);
-          return;
-        }
-
-        setItems([]);
-        toast.success('Cart cleared');
-      } catch (error) {
-        console.error('Error clearing cart:', error);
+      if (error) {
         toast.error('Failed to clear cart');
+        console.error('Error clearing cart:', error);
+        return;
       }
-    } else {
-      // Handle local cart for non-authenticated users
+
       setItems([]);
       toast.success('Cart cleared');
+    } catch (error) {
+      console.error('Error clearing cart:', error);
+      toast.error('Failed to clear cart');
     }
   };
 
@@ -280,7 +249,8 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       updateQuantity,
       clearCart,
       getItemCount,
-      getTotal
+      getTotal,
+      requireAuth
     }}>
       {children}
     </CartContext.Provider>
