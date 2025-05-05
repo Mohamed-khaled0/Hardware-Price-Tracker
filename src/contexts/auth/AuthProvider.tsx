@@ -1,39 +1,12 @@
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { ReactNode, useState, useEffect } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-
-interface Profile {
-  id: string;
-  username: string;
-  avatar_url: string;
-}
-
-interface AuthContextType {
-  session: Session | null;
-  user: User | null;
-  profile: Profile | null;
-  signUp: (email: string, password: string, username: string) => Promise<void>;
-  signIn: (email: string, password: string) => Promise<void>;
-  signInWithGoogle: () => Promise<void>;
-  signInWithFacebook: () => Promise<void>;
-  signOut: () => Promise<void>;
-  resetPassword: (email: string) => Promise<void>;
-  resetPasswordWithPhone: (phone: string) => Promise<void>;
-  loading: boolean;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
+import { AuthContext } from './AuthContext';
+import { Profile } from './types';
+import { fetchUserProfile } from './authUtils';
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -56,7 +29,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         if (newSession?.user) {
           // Fetch user profile using setTimeout to prevent Supabase auth deadlock
           setTimeout(() => {
-            fetchUserProfile(newSession.user.id);
+            fetchUserProfile(newSession.user.id).then(profileData => {
+              if (profileData) {
+                setProfile(profileData);
+              }
+            });
           }, 0);
         } else {
           setProfile(null);
@@ -77,7 +54,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setUser(existingSession?.user ?? null);
       
       if (existingSession?.user) {
-        fetchUserProfile(existingSession.user.id);
+        fetchUserProfile(existingSession.user.id).then(profileData => {
+          if (profileData) {
+            setProfile(profileData);
+          }
+        });
       }
       
       setLoading(false);
@@ -87,25 +68,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       subscription.unsubscribe();
     };
   }, []);
-
-  const fetchUserProfile = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, username, avatar_url')
-        .eq('id', userId)
-        .single();
-
-      if (error) {
-        console.error('Error fetching user profile:', error);
-        return;
-      }
-
-      setProfile(data);
-    } catch (error) {
-      console.error('Error fetching user profile:', error);
-    }
-  };
 
   const signUp = async (email: string, password: string, username: string) => {
     try {

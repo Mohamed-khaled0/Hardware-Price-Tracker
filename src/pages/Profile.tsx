@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -21,7 +20,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/auth';
 
 const profileSchema = z.object({
   username: z.string().min(3, 'Username must be at least 3 characters'),

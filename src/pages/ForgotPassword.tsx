@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AlertCircle, Mail, Phone } from 'lucide-react';
@@ -19,7 +18,7 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/auth';
 
 const emailSchema = z.object({
   email: z.string().min(1, 'Email is required').email('Invalid email address'),
