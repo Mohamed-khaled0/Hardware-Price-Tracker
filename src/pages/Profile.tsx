@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/auth";
 import { Button } from "@/components/ui/button";
@@ -48,7 +49,7 @@ const Profile: React.FC = () => {
         id: user.id,
         username: username,
         avatar_url: avatarUrl,
-        updated_at: new Date(),
+        updated_at: new Date().toISOString(), // Convert Date to ISO string
       };
 
       const { error } = await supabase.from("profiles").upsert(updates);
@@ -166,8 +167,8 @@ const Profile: React.FC = () => {
             <Button variant="destructive" onClick={handleSignOut}>
               Sign Out
             </Button>
-            <Button onClick={updateProfile} loading={loading}>
-              Update Profile
+            <Button onClick={updateProfile} disabled={loading}>
+              {loading ? 'Updating...' : 'Update Profile'}
             </Button>
           </div>
         </CardFooter>
