@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -34,19 +34,35 @@ const Profile = () => {
   const navigate = useNavigate();
   const [isUpdating, setIsUpdating] = useState(false);
   
-  // Redirect to login if not authenticated
-  if (!user) {
-    navigate('/login');
-    return null;
-  }
-
+  // Initialize form with default values - we'll update them when profile data is available
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      username: profile?.username || '',
-      avatar_url: profile?.avatar_url || '',
+      username: '',
+      avatar_url: '',
     },
   });
+  
+  // Use useEffect to handle redirection and form value updates
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+    
+    // Update form values when profile data is available
+    if (profile) {
+      form.reset({
+        username: profile.username || '',
+        avatar_url: profile.avatar_url || '',
+      });
+    }
+  }, [user, profile, navigate, form]);
+
+  // If we're redirecting, don't render the rest of the component
+  if (!user) {
+    return null;
+  }
 
   const onSubmit = async (values: ProfileFormValues) => {
     if (!user) return;
