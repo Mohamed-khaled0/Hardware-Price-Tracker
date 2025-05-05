@@ -1,43 +1,18 @@
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { Product } from '@/pages/Shop';
+import React, { ReactNode, useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from './auth';
-import { v4 as uuidv4 } from 'uuid';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/auth';
+import { Product } from '@/pages/Shop';
+import { CartContext } from './CartContext';
+import { CartItem } from './types';
 
-export interface CartItem {
-  id: string;
-  product_id: number;
-  title: string;
-  price: number;
-  quantity: number;
-  thumbnail: string;
+interface CartProviderProps {
+  children: ReactNode;
 }
 
-interface CartContextType {
-  items: CartItem[];
-  addToCart: (product: Product) => void;
-  removeFromCart: (id: string) => void;
-  updateQuantity: (id: string, quantity: number) => void;
-  clearCart: () => void;
-  getItemCount: () => number;
-  getTotal: () => number;
-  requireAuth: () => boolean; // New method to check auth requirement
-}
-
-const CartContext = createContext<CartContextType | undefined>(undefined);
-
-export const useCart = () => {
-  const context = useContext(CartContext);
-  if (!context) {
-    throw new Error('useCart must be used within a CartProvider');
-  }
-  return context;
-};
-
-export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>([]);
   const { user } = useAuth();
   const navigate = useNavigate();

@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, User, ShoppingCart, LogOut, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useCart } from '@/contexts/CartContext';
+import { useCart } from '@/contexts/cart';
 import { useAuth } from '@/contexts/auth';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import {

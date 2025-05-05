@@ -19,6 +19,8 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { useAuth } from '@/contexts/auth';
+import { FcGoogle } from "react-icons/fc";
+import { FaFacebook } from "react-icons/fa";
 
 const loginSchema = z.object({
   email: z.string().min(1, 'Email is required').email('Invalid email address'),
@@ -27,7 +29,7 @@ const loginSchema = z.object({
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
-const Login = () => {
+const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const { signIn, signInWithGoogle, signInWithFacebook, user, loading } = useAuth();
@@ -155,25 +157,24 @@ const Login = () => {
                   </div>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-4">
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    className="w-full py-6"
+                <div className="flex flex-col space-y-4 mt-6">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="flex items-center justify-center gap-2 w-full"
                     onClick={handleGoogleSignIn}
-                    disabled={loading}
                   >
-                    <Google className="mr-2 h-5 w-5" /> Google
+                    <FcGoogle size={20} />
+                    Sign in with Google
                   </Button>
-                  
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    className="w-full py-6"
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="flex items-center justify-center gap-2 w-full bg-blue-500 text-white hover:bg-blue-600"
                     onClick={handleFacebookSignIn}
-                    disabled={loading}
                   >
-                    <Facebook className="mr-2 h-5 w-5" /> Facebook
+                    <FaFacebook size={20} />
+                    Sign in with Facebook
                   </Button>
                 </div>
                 

@@ -1,285 +1,177 @@
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { toast } from 'sonner';
-import { Image, Upload, Facebook, Google } from 'lucide-react';
-
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import React, { useState, useEffect } from "react";
+import { useAuth } from "@/contexts/auth";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/auth';
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Camera, Upload } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
-const profileSchema = z.object({
-  username: z.string().min(3, 'Username must be at least 3 characters'),
-  // We'll handle file upload separately, so the avatar_url can be optional
-  avatar_url: z.string().optional(),
-});
-
-type ProfileFormValues = z.infer<typeof profileSchema>;
-
-const Profile = () => {
+const Profile: React.FC = () => {
   const { user, profile, signOut } = useAuth();
-  const navigate = useNavigate();
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [avatarFile, setAvatarFile] = useState<File | null>(null);
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  
-  // Initialize form with default values - we'll update them when profile data is available
-  const form = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileSchema),
-    defaultValues: {
-      username: '',
-      avatar_url: '',
-    },
-  });
-  
-  // Use useEffect to handle redirection and form value updates
+  const [username, setUsername] = useState(profile?.username || "");
+  const [avatarUrl, setAvatarUrl] = useState(profile?.avatar_url || "");
+  const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
   useEffect(() => {
-    if (!user) {
-      navigate('/login');
-      return;
-    }
-    
-    // Update form values when profile data is available
     if (profile) {
-      form.reset({
-        username: profile.username || '',
-        avatar_url: profile.avatar_url || '',
-      });
-      
-      if (profile.avatar_url) {
-        setAvatarPreview(profile.avatar_url);
-      }
+      setUsername(profile.username || "");
+      setAvatarUrl(profile.avatar_url || "");
     }
-  }, [user, profile, navigate, form]);
+  }, [profile]);
 
-  // If we're redirecting, don't render the rest of the component
-  if (!user) {
-    return null;
-  }
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    
-    // Check file size (max 2MB)
-    if (file.size > 2 * 1024 * 1024) {
-      toast.error('Image size should be less than 2MB');
-      return;
-    }
-    
-    // Create a preview
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setAvatarPreview(reader.result as string);
-    };
-    reader.readAsDataURL(file);
-    
-    setAvatarFile(file);
-  };
-
-  const uploadAvatar = async (): Promise<string | null> => {
-    if (!avatarFile || !user) return null;
-    
+  const handleSignOut = async () => {
     try {
-      const fileExt = avatarFile.name.split('.').pop();
-      const fileName = `${user.id}-${Date.now()}.${fileExt}`;
-      const filePath = `avatars/${fileName}`;
-      
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(filePath, avatarFile);
-        
-      if (uploadError) {
-        throw uploadError;
-      }
-      
-      // Get the public URL
-      const { data } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(filePath);
-        
-      return data.publicUrl;
-    } catch (error: any) {
-      console.error('Error uploading avatar:', error);
-      toast.error('Failed to upload avatar');
-      return null;
+      await signOut();
+    } catch (error) {
+      console.error("Error signing out:", error);
     }
   };
 
-  const onSubmit = async (values: ProfileFormValues) => {
-    if (!user) return;
-    
+  const updateProfile = async () => {
     try {
-      setIsUpdating(true);
-      
-      // If there's a new avatar file, upload it first
-      let avatarUrl = values.avatar_url;
-      if (avatarFile) {
-        const uploadedUrl = await uploadAvatar();
-        if (uploadedUrl) {
-          avatarUrl = uploadedUrl;
-        }
-      }
-      
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          username: values.username,
-          avatar_url: avatarUrl || null,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', user.id);
+      setLoading(true);
+      if (!user) throw new Error("Not authenticated");
+
+      const updates = {
+        id: user.id,
+        username: username,
+        avatar_url: avatarUrl,
+        updated_at: new Date(),
+      };
+
+      const { error } = await supabase.from("profiles").upsert(updates);
 
       if (error) {
         throw error;
       }
-
-      toast.success('Profile updated successfully');
+      toast.success("Profile updated successfully!");
     } catch (error: any) {
-      console.error('Error updating profile:', error);
-      toast.error(error.message || 'Error updating profile');
+      console.error("Error updating profile:", error.message);
+      toast.error(`Failed to update profile: ${error.message}`);
     } finally {
-      setIsUpdating(false);
+      setLoading(false);
     }
   };
 
-  const handleLogout = async () => {
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      uploadAvatar(file);
+    }
+  };
+
+  const uploadAvatar = async (file: File) => {
     try {
-      await signOut();
-    } catch (error) {
-      console.error('Error during logout:', error);
-    }
-  };
+      setUploading(true);
 
-  const triggerFileInput = () => {
-    fileInputRef.current?.click();
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${user!.id}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("avatars")
+        .upload(filePath, file, {
+          cacheControl: "3600",
+          upsert: false,
+        });
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
+      setAvatarUrl(data.publicUrl);
+      toast.success("Avatar uploaded successfully!");
+    } catch (error: any) {
+      console.error("Error uploading avatar:", error.message);
+      toast.error(`Failed to upload avatar: ${error.message}`);
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      
-      <main className="flex-1 container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6 text-[#39536f]">My Profile</h1>
-        
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-          <div className="flex flex-col items-center mb-8">
-            <div className="relative group cursor-pointer" onClick={triggerFileInput}>
-              <Avatar className="h-24 w-24 mb-2">
-                {avatarPreview ? (
-                  <AvatarImage src={avatarPreview} alt={profile?.username || 'User'} />
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <Card className="w-full max-w-md space-y-4">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold text-center">
+            Profile Settings
+          </CardTitle>
+          <CardDescription className="text-center text-gray-500">
+            Manage your profile information here.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-col items-center space-y-4">
+            <Avatar className="w-32 h-32">
+              <AvatarImage src={avatarUrl} alt="Avatar" />
+              <AvatarFallback>
+                {profile?.username?.charAt(0).toUpperCase() ||
+                  user?.email?.charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex items-center space-x-2">
+              <Label
+                htmlFor="avatar-upload"
+                className="cursor-pointer hover:text-blue-500 transition-colors duration-200"
+              >
+                {uploading ? (
+                  <>
+                    <Upload className="mr-2 h-4 w-4 animate-spin" />
+                    Uploading...
+                  </>
                 ) : (
-                  <AvatarImage src={profile?.avatar_url || ''} alt={profile?.username || 'User'} />
+                  <>
+                    <Camera className="mr-2 h-4 w-4" />
+                    Change Avatar
+                  </>
                 )}
-                <AvatarFallback className="text-xl">
-                  {profile?.username?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                <Upload className="h-6 w-6 text-white" />
-              </div>
-            </div>
-            <input 
-              type="file" 
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              accept="image/*"
-              className="hidden"
-            />
-            <button 
-              type="button"
-              onClick={triggerFileInput}
-              className="text-sm text-blue-600 hover:text-blue-800"
-            >
-              Change Avatar
-            </button>
-            <div className="mt-2 text-center">
-              <h2 className="text-xl font-semibold">{profile?.username || user.email}</h2>
-              <p className="text-gray-600">{user.email}</p>
-            </div>
-          </div>
-          
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="font-medium">Username</FormLabel>
-                    <FormControl>
-                      <Input 
-                        {...field}
-                        placeholder="Username" 
-                        className="w-full"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+              </Label>
+              <Input
+                type="file"
+                id="avatar-upload"
+                accept="image/*"
+                className="hidden"
+                onChange={handleAvatarChange}
+                disabled={uploading}
               />
-              
-              <div className="flex justify-end space-x-3">
-                <Button 
-                  type="button" 
-                  variant="outline"
-                  className="border-red-500 text-red-500 hover:bg-red-50"
-                  onClick={handleLogout}
-                >
-                  Sign Out
-                </Button>
-                <Button 
-                  type="submit" 
-                  className="bg-[#39536f] hover:bg-[#2a405a]"
-                  disabled={isUpdating}
-                >
-                  {isUpdating ? 'Updating...' : 'Update Profile'}
-                </Button>
-              </div>
-            </form>
-          </Form>
-
-          <div className="mt-8 pt-6 border-t border-gray-200">
-            <h3 className="text-lg font-semibold mb-4">Connect Social Accounts</h3>
-            <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
-              <Button 
-                onClick={() => toast.info("Google authentication will be connected soon")} 
-                variant="outline" 
-                className="flex items-center justify-center space-x-2"
-              >
-                <Google className="h-5 w-5" />
-                <span>Connect Google</span>
-              </Button>
-              
-              <Button 
-                onClick={() => toast.info("Facebook authentication will be connected soon")} 
-                variant="outline" 
-                className="flex items-center justify-center space-x-2"
-              >
-                <Facebook className="h-5 w-5" />
-                <span>Connect Facebook</span>
-              </Button>
             </div>
           </div>
-        </div>
-      </main>
-      
-      <Footer />
+          <Separator />
+          <div className="space-y-2">
+            <Label htmlFor="username">Username</Label>
+            <Input
+              id="username"
+              type="text"
+              placeholder="Enter your username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </div>
+        </CardContent>
+        <CardFooter>
+          <div className="flex justify-between w-full">
+            <Button variant="destructive" onClick={handleSignOut}>
+              Sign Out
+            </Button>
+            <Button onClick={updateProfile} loading={loading}>
+              Update Profile
+            </Button>
+          </div>
+        </CardFooter>
+      </Card>
     </div>
   );
 };
