@@ -25,7 +25,6 @@ const PrivacyPolicy: React.FC = () => {
               <h2 className="text-xl font-semibold mb-3 text-[#39536f]">1. Information We Collect</h2>
               <p className="mb-2"><strong>Account Information:</strong> When you register, we collect your name and email address.</p>
               <p className="mb-2"><strong>Usage Data:</strong> We automatically collect information about your interaction with the site, including pages visited, search queries, filters used, and click events.</p>
-              <p className="mb-2"><strong>Location & Device Data:</strong> With your permission, we detect your IP address and approximate geographic location to help show nearby brick‑and‑mortar stores. We also collect device and browser details (e.g., OS, browser version).</p>
               <p className="mb-2"><strong>Third‑Party Analytics:</strong> We use Google Analytics and similar services to gather anonymized usage statistics (bounce rate, session length, etc.). These services may collect cookies and device identifiers under their own privacy policies.</p>
             </section>
 
