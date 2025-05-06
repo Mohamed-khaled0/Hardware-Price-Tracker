@@ -1,18 +1,7 @@
 
-import { Session, User } from '@supabase/supabase-js';
-
-export type AppRole = 'admin' | 'user';
-
-export interface Profile {
-  id: string;
-  username: string;
-  avatar_url: string;
-  blocked?: boolean;
-}
-
-export interface UserWithRole extends Profile {
-  roles: AppRole[];
-}
+import { User, Session } from '@supabase/supabase-js';
+import { AppRole, Profile } from './user-types';
+import { UserWithRole } from './admin-types';
 
 export interface AuthContextType {
   session: Session | null;
