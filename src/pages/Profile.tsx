@@ -69,9 +69,9 @@ const Profile: React.FC = () => {
       }));
       
       toast.success("Profile updated successfully!");
-    } catch (error: any) {
-      console.error("Error updating profile:", error.message);
-      toast.error(`Failed to update profile: ${error.message}`);
+    } catch (error: unknown) {
+      console.error("Error updating profile:", error);
+      toast.error(`Failed to update profile: ${error}`);
     } finally {
       setLoading(false);
     }
@@ -106,9 +106,9 @@ const Profile: React.FC = () => {
       const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
       setAvatarUrl(data.publicUrl);
       toast.success("Avatar uploaded successfully!");
-    } catch (error: any) {
-      console.error("Error uploading avatar:", error.message);
-      toast.error(`Failed to upload avatar: ${error.message}`);
+    } catch (error: unknown) {
+      console.error("Error uploading avatar:", error);
+      toast.error(`Failed to upload avatar: ${error}`);
     } finally {
       setUploading(false);
     }
