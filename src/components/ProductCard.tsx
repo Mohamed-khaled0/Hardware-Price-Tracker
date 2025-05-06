@@ -1,11 +1,10 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
 import { Link } from 'react-router-dom';
-import { useCart } from '@/contexts/CartContext';
+import { useCart } from '@/contexts/cart';
 
 interface PriceComparison {
   store: string;

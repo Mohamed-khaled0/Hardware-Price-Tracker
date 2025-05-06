@@ -1,15 +1,45 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, User, ShoppingCart } from 'lucide-react';
+import { Menu, User, ShoppingCart, LogOut, Settings, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useCart } from '@/contexts/CartContext';
+import { useCart } from '@/contexts/cart';
+import { useAuth } from '@/contexts/auth';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { getItemCount } = useCart();
+  const { user, profile, signOut, userRoles, isAdmin } = useAuth();
 
   const cartItemCount = getItemCount();
+
+  // Listen for profile updates
+  useEffect(() => {
+    const handleProfileUpdate = (e: Event) => {
+      // This is just to trigger a re-render when profile is updated
+    };
+    window.addEventListener('profile-updated', handleProfileUpdate);
+    
+    return () => {
+      window.removeEventListener('profile-updated', handleProfileUpdate);
+    };
+  }, []);
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
 
   return (
     <div className="w-full">
@@ -50,14 +80,51 @@ const Header: React.FC = () => {
             </div>
           </div>
 
-          {/* Login and Cart Buttons */}
+          {/* Login/User and Cart Buttons */}
           <div className="flex items-center gap-2">
-            <Link to="/login">
-              <button className="flex items-center bg-[#39536f] text-white rounded-full px-4 py-2 hover:bg-[#2a405a] transition-colors">
-                <User className="w-5 h-5 mr-2" />
-                <span className="font-medium">Login</span>
-              </button>
-            </Link>
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex items-center bg-[#39536f] text-white rounded-full px-4 py-2 hover:bg-[#2a405a] transition-colors">
+                    <Avatar className="w-6 h-6 mr-2">
+                      <AvatarImage src={profile?.avatar_url || ''} alt={profile?.username || 'User'} />
+                      <AvatarFallback>{profile?.username?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase()}</AvatarFallback>
+                    </Avatar>
+                    <span className="font-medium">{profile?.username || user.email?.split('@')[0]}</span>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuItem asChild>
+                    <Link to="/profile" className="flex items-center">
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Profile Settings</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  
+                  {isAdmin && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/admin" className="flex items-center">
+                        <Shield className="mr-2 h-4 w-4" />
+                        <span>Admin Dashboard</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Log out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link to="/login">
+                <button className="flex items-center bg-[#39536f] text-white rounded-full px-4 py-2 hover:bg-[#2a405a] transition-colors">
+                  <User className="w-5 h-5 mr-2" />
+                  <span className="font-medium">Login</span>
+                </button>
+              </Link>
+            )}
             <Link to="/cart">
               <button className="flex items-center bg-[#39536f] text-white rounded-full px-4 py-2 hover:bg-[#2a405a] transition-colors">
                 <ShoppingCart className="w-5 h-5 mr-2" />
@@ -109,6 +176,11 @@ const Header: React.FC = () => {
             <Link to="/shop" className="text-white font-semibold px-5 py-3 hover:bg-[#2a405a] transition-colors">Shop</Link>
             <Link to="/about" className="text-white font-semibold px-5 py-3 hover:bg-[#2a405a] transition-colors">About Us</Link>
             <Link to="/contact" className="text-white font-semibold px-5 py-3 hover:bg-[#2a405a] transition-colors">Contact Us</Link>
+            {isAdmin && (
+              <Link to="/admin" className="text-white font-semibold px-5 py-3 hover:bg-[#2a405a] transition-colors bg-purple-700">
+                Admin
+              </Link>
+            )}
           </nav>
         </div>
       </div>
@@ -125,6 +197,12 @@ const Header: React.FC = () => {
           <Link to="/shop" className="text-white block px-3 py-2 font-semibold hover:bg-[#39536f] rounded-md">Shop</Link>
           <Link to="/about" className="text-white block px-3 py-2 font-semibold hover:bg-[#39536f] rounded-md">About Us</Link>
           <Link to="/contact" className="text-white block px-3 py-2 font-semibold hover:bg-[#39536f] rounded-md">Contact Us</Link>
+          {user && (
+            <Link to="/profile" className="text-white block px-3 py-2 font-semibold hover:bg-[#39536f] rounded-md">Profile</Link>
+          )}
+          {isAdmin && (
+            <Link to="/admin" className="text-white block px-3 py-2 font-semibold hover:bg-[#39536f] rounded-md bg-purple-700">Admin</Link>
+          )}
         </div>
       </div>
     </div>

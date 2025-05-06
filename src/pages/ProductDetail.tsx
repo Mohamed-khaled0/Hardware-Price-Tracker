@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -8,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ShoppingCart, Star, ExternalLink } from "lucide-react";
 import { Product } from "./Shop";
-import { useCart } from "@/contexts/CartContext";
+import { useCart } from "@/contexts/cart";
 
 const fetchProductById = async (id: string): Promise<Product> => {
   const res = await fetch(`https://dummyjson.com/products/${id}`);
