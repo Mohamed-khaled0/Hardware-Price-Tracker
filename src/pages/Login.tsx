@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import LoginContainer from './auth/LoginContainer';
+import LoginContainer from '@/pages/auth/LoginContainer';
 import { useAuth } from '@/contexts/auth';
 
 const Login = () => {
