@@ -1,265 +1,457 @@
 
-import React, { useState, useEffect } from "react";
-import { useAuth } from "@/contexts/auth";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from 'react';
+import { Shield, Trash, Lock, Check, UserCog, MoreHorizontal, UserX, User, AlertCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import { useAuth } from '@/contexts/auth';
+import { UserWithRole } from '@/contexts/auth/types';
+import { Button } from '@/components/ui/button';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { UserWithRole } from "@/contexts/auth/types";
-import { toast } from "sonner";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import {
-  MoreHorizontal,
-  Shield,
-  UserX,
-  LockIcon,
-  UnlockIcon,
-  AlertCircle
-} from "lucide-react";
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
 
-const Admin: React.FC = () => {
+const Admin = () => {
+  const navigate = useNavigate();
   const { user, isAdmin, getUserList, deleteUser, blockUser, assignRole, removeRole } = useAuth();
   const [users, setUsers] = useState<UserWithRole[]>([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const [selectedUser, setSelectedUser] = useState<UserWithRole | null>(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showBlockDialog, setShowBlockDialog] = useState(false);
+  const [showRoleDialog, setShowRoleDialog] = useState(false);
+  const [actionType, setActionType] = useState<'assign' | 'remove'>('assign');
+  const [selectedRole, setSelectedRole] = useState<'admin' | 'user'>('admin');
 
   useEffect(() => {
-    if (!user) {
-      navigate("/login");
-      return;
+    // Redirect if not admin
+    if (user && !isAdmin) {
+      navigate('/');
     }
-    
-    if (!isAdmin) {
-      toast.error("You don't have permission to access this page");
-      navigate("/");
-      return;
-    }
-    
-    fetchUsers();
-  }, [user, isAdmin, navigate]);
 
-  const fetchUsers = async () => {
-    try {
-      setLoading(true);
-      const usersList = await getUserList();
-      setUsers(usersList);
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDeleteUser = async (userId: string) => {
-    if (userId === user?.id) {
-      toast.error("You cannot delete your own account");
-      return;
-    }
-    
-    if (window.confirm("Are you sure you want to delete this user?")) {
+    // Load users
+    const loadUsers = async () => {
       try {
-        await deleteUser(userId);
-        setUsers(users.filter(u => u.id !== userId));
+        setLoading(true);
+        const userList = await getUserList();
+        setUsers(userList);
       } catch (error) {
-        console.error("Error deleting user:", error);
+        console.error('Error loading users:', error);
+      } finally {
+        setLoading(false);
       }
-    }
-  };
+    };
 
-  const handleToggleBlock = async (userId: string, isCurrentlyBlocked: boolean) => {
-    if (userId === user?.id) {
-      toast.error("You cannot block your own account");
-      return;
+    if (user && isAdmin) {
+      loadUsers();
     }
+  }, [user, isAdmin, navigate, getUserList]);
+
+  const handleDeleteUser = async () => {
+    if (!selectedUser) return;
     
     try {
-      await blockUser(userId, !isCurrentlyBlocked);
-      fetchUsers(); // Refresh the user list
+      await deleteUser(selectedUser.id);
+      // Remove user from the list
+      setUsers(users.filter(u => u.id !== selectedUser.id));
+      setShowDeleteDialog(false);
+      setSelectedUser(null);
     } catch (error) {
-      console.error("Error toggling user block status:", error);
+      console.error('Error deleting user:', error);
     }
   };
 
-  const handleToggleAdmin = async (userId: string, isCurrentlyAdmin: boolean) => {
-    if (userId === user?.id) {
-      toast.error("You cannot change your own role");
-      return;
-    }
+  const handleBlockUser = async () => {
+    if (!selectedUser) return;
+    
+    const isBlocked = !isUserBlocked(selectedUser);
     
     try {
-      if (isCurrentlyAdmin) {
-        await removeRole(userId, 'admin');
+      await blockUser(selectedUser.id, isBlocked);
+      // Update user status in the list
+      setUsers(users.map(u => {
+        if (u.id === selectedUser.id) {
+          return {
+            ...u,
+            blocked: isBlocked
+          };
+        }
+        return u;
+      }));
+      setShowBlockDialog(false);
+      setSelectedUser(null);
+    } catch (error) {
+      console.error('Error blocking/unblocking user:', error);
+    }
+  };
+
+  const handleRoleAction = async () => {
+    if (!selectedUser) return;
+    
+    try {
+      if (actionType === 'assign') {
+        await assignRole(selectedUser.id, selectedRole);
+        // Update user roles in the list
+        setUsers(users.map(u => {
+          if (u.id === selectedUser.id && !u.roles.includes(selectedRole)) {
+            return {
+              ...u,
+              roles: [...u.roles, selectedRole]
+            };
+          }
+          return u;
+        }));
       } else {
-        await assignRole(userId, 'admin');
+        await removeRole(selectedUser.id, selectedRole);
+        // Update user roles in the list
+        setUsers(users.map(u => {
+          if (u.id === selectedUser.id) {
+            return {
+              ...u,
+              roles: u.roles.filter(r => r !== selectedRole)
+            };
+          }
+          return u;
+        }));
       }
-      fetchUsers(); // Refresh the user list
+      setShowRoleDialog(false);
+      setSelectedUser(null);
     } catch (error) {
-      console.error("Error toggling admin role:", error);
+      console.error('Error managing user role:', error);
     }
   };
+
+  const isUserBlocked = (user: UserWithRole) => {
+    return user.blocked === true;
+  };
+
+  if (!user || loading) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold mb-4">Loading...</h1>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <AlertCircle className="mx-auto h-12 w-12 text-red-500 mb-4" />
+            <h1 className="text-2xl font-bold mb-2">Access Denied</h1>
+            <p className="text-gray-600 mb-6">You don't have permission to access this page.</p>
+            <Button 
+              variant="default" 
+              onClick={() => navigate('/')}
+              className="bg-[#39536f]"
+            >
+              Go to Home
+            </Button>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      
-      <div className="flex-1 container mx-auto p-4">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl">User Management</CardTitle>
-            <CardDescription>
-              Manage users, roles and permissions
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <div className="flex justify-center p-4">Loading users...</div>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>User</TableHead>
-                    <TableHead>Username</TableHead>
-                    <TableHead>Roles</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {users.map((user) => (
-                    <TableRow key={user.id}>
-                      <TableCell className="flex items-center space-x-2">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage src={user.avatar_url || ""} />
-                          <AvatarFallback>
-                            {user.username?.charAt(0).toUpperCase() || "?"}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span className="font-medium">{user.username}</span>
-                      </TableCell>
-                      <TableCell>{user.username || "No username"}</TableCell>
-                      <TableCell>
-                        <div className="flex flex-wrap gap-1">
-                          {user.roles?.map((role) => (
-                            <span
-                              key={role}
-                              className={`px-2 py-1 rounded text-xs font-medium ${
-                                role === "admin"
-                                  ? "bg-purple-100 text-purple-700"
-                                  : "bg-blue-100 text-blue-700"
-                              }`}
-                            >
-                              {role}
+      <main className="flex-1 container mx-auto px-4 py-10">
+        <h1 className="text-3xl font-bold mb-8 flex items-center">
+          <Shield className="mr-2 h-7 w-7 text-purple-600" />
+          Admin Dashboard
+        </h1>
+
+        <div className="bg-white shadow-md rounded-lg overflow-hidden">
+          <div className="p-6 border-b border-gray-200">
+            <h2 className="text-xl font-semibold">User Management</h2>
+            <p className="text-gray-600">Manage user accounts, permissions, and access</p>
+          </div>
+          
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    User
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Email
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Roles
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {users.map((user) => (
+                  <tr key={user.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                          {user.avatar_url ? (
+                            <img src={user.avatar_url} alt={user.username || 'User'} className="h-10 w-10 rounded-full" />
+                          ) : (
+                            <span className="text-lg font-medium text-gray-500">
+                              {(user.username || 'U').charAt(0).toUpperCase()}
                             </span>
-                          ))}
+                          )}
                         </div>
-                      </TableCell>
-                      <TableCell>
-                        {user.roles?.includes("blocked") ? (
-                          <span className="text-red-500 flex items-center gap-1">
-                            <LockIcon className="h-4 w-4" />
-                            Blocked
-                          </span>
-                        ) : (
-                          <span className="text-green-500 flex items-center gap-1">
-                            <UnlockIcon className="h-4 w-4" />
-                            Active
-                          </span>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              onClick={() => handleToggleAdmin(
-                                user.id, 
-                                user.roles?.includes("admin") || false
-                              )}
-                            >
-                              <Shield className="mr-2 h-4 w-4" />
-                              {user.roles?.includes("admin")
-                                ? "Remove Admin"
-                                : "Make Admin"}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => handleToggleBlock(
-                                user.id, 
-                                user.roles?.includes("blocked") || false
-                              )}
-                            >
-                              {user.roles?.includes("blocked") ? (
-                                <>
-                                  <UnlockIcon className="mr-2 h-4 w-4" />
-                                  Unblock User
-                                </>
-                              ) : (
-                                <>
-                                  <LockIcon className="mr-2 h-4 w-4" />
-                                  Block User
-                                </>
-                              )}
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              className="text-red-600 focus:bg-red-50"
-                              onClick={() => handleDeleteUser(user.id)}
-                            >
-                              <UserX className="mr-2 h-4 w-4" />
-                              Delete User
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                  
-                  {users.length === 0 && (
-                    <TableRow>
-                      <TableCell colSpan={5} className="text-center py-8">
-                        <div className="flex flex-col items-center">
-                          <AlertCircle className="h-8 w-8 text-gray-400 mb-2" />
-                          <span>No users found</span>
+                        <div className="ml-4">
+                          <div className="text-sm font-medium text-gray-900">
+                            {user.username || 'Unknown User'}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            ID: {user.id.substring(0, 8)}...
+                          </div>
                         </div>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-      
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {/* This would come from auth.users which we don't display here */}
+                      {/* We'd need to add an email field to profiles if needed */}
+                      -
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex flex-wrap gap-1">
+                        {user.roles.map((role) => (
+                          <span 
+                            key={role} 
+                            className={`px-2 py-1 text-xs font-medium rounded-full ${
+                              role === 'admin' 
+                                ? 'bg-purple-100 text-purple-800' 
+                                : 'bg-blue-100 text-blue-800'
+                            }`}
+                          >
+                            {role}
+                          </span>
+                        ))}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                        isUserBlocked(user) 
+                          ? 'bg-red-100 text-red-800' 
+                          : 'bg-green-100 text-green-800'
+                      }`}>
+                        {isUserBlocked(user) ? 'Blocked' : 'Active'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-56">
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setActionType('assign');
+                              setSelectedRole('admin');
+                              setShowRoleDialog(true);
+                            }}
+                          >
+                            <UserCog className="mr-2 h-4 w-4" />
+                            <span>Assign Role</span>
+                          </DropdownMenuItem>
+                          
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setActionType('remove');
+                              setSelectedRole('admin');
+                              setShowRoleDialog(true);
+                            }}
+                          >
+                            <User className="mr-2 h-4 w-4" />
+                            <span>Remove Role</span>
+                          </DropdownMenuItem>
+                          
+                          <DropdownMenuSeparator />
+                          
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setShowBlockDialog(true);
+                            }}
+                          >
+                            {isUserBlocked(user) ? (
+                              <>
+                                <Check className="mr-2 h-4 w-4 text-green-500" />
+                                <span>Unblock User</span>
+                              </>
+                            ) : (
+                              <>
+                                <Lock className="mr-2 h-4 w-4 text-amber-500" />
+                                <span>Block User</span>
+                              </>
+                            )}
+                          </DropdownMenuItem>
+                          
+                          <DropdownMenuItem
+                            className="text-red-600"
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setShowDeleteDialog(true);
+                            }}
+                          >
+                            <Trash className="mr-2 h-4 w-4" />
+                            <span>Delete User</span>
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </td>
+                  </tr>
+                ))}
+                {users.length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="px-6 py-8 text-center text-gray-500">
+                      No users found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
       <Footer />
+      
+      {/* Delete Dialog */}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete User</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this user? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end space-x-2 mt-4">
+            <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteUser}>
+              <Trash className="mr-2 h-4 w-4" />
+              Delete User
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Block/Unblock Dialog */}
+      <Dialog open={showBlockDialog} onOpenChange={setShowBlockDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {selectedUser && isUserBlocked(selectedUser) ? 'Unblock User' : 'Block User'}
+            </DialogTitle>
+            <DialogDescription>
+              {selectedUser && isUserBlocked(selectedUser) 
+                ? 'Are you sure you want to unblock this user? They will regain access to the system.'
+                : 'Are you sure you want to block this user? They will no longer be able to access the system.'
+              }
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end space-x-2 mt-4">
+            <Button variant="outline" onClick={() => setShowBlockDialog(false)}>
+              Cancel
+            </Button>
+            {selectedUser && isUserBlocked(selectedUser) ? (
+              <Button variant="default" className="bg-green-600" onClick={handleBlockUser}>
+                <Check className="mr-2 h-4 w-4" />
+                Unblock User
+              </Button>
+            ) : (
+              <Button variant="default" className="bg-amber-600" onClick={handleBlockUser}>
+                <Lock className="mr-2 h-4 w-4" />
+                Block User
+              </Button>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Role Dialog */}
+      <Dialog open={showRoleDialog} onOpenChange={setShowRoleDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {actionType === 'assign' ? 'Assign Role' : 'Remove Role'}
+            </DialogTitle>
+            <DialogDescription>
+              {actionType === 'assign'
+                ? 'Select a role to assign to this user.'
+                : 'Select a role to remove from this user.'
+              }
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-2 gap-2 my-4">
+            <Button
+              variant={selectedRole === 'admin' ? 'default' : 'outline'}
+              className={selectedRole === 'admin' ? 'bg-purple-600' : ''}
+              onClick={() => setSelectedRole('admin')}
+            >
+              <Shield className="mr-2 h-4 w-4" />
+              Admin Role
+            </Button>
+            <Button
+              variant={selectedRole === 'user' ? 'default' : 'outline'}
+              className={selectedRole === 'user' ? 'bg-blue-600' : ''}
+              onClick={() => setSelectedRole('user')}
+            >
+              <User className="mr-2 h-4 w-4" />
+              User Role
+            </Button>
+          </div>
+          <div className="flex justify-end space-x-2 mt-4">
+            <Button variant="outline" onClick={() => setShowRoleDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleRoleAction}>
+              {actionType === 'assign' ? (
+                <>
+                  <UserCog className="mr-2 h-4 w-4" />
+                  Assign Role
+                </>
+              ) : (
+                <>
+                  <UserX className="mr-2 h-4 w-4" />
+                  Remove Role
+                </>
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

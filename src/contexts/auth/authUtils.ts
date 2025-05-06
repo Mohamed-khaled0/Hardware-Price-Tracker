@@ -25,17 +25,16 @@ export const fetchUserProfile = async (userId: string) => {
 
 export const fetchUserRoles = async (userId: string): Promise<AppRole[]> => {
   try {
+    // Use RPC to get roles instead of direct query to avoid type errors
     const { data, error } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', userId);
+      .rpc('get_user_roles', { user_id_param: userId });
 
     if (error) {
       console.error('Error fetching user roles:', error);
       return ['user']; // Default role
     }
 
-    return data.map(row => row.role as AppRole);
+    return data?.map(item => item.role as AppRole) || ['user'];
   } catch (error) {
     console.error('Error fetching user roles:', error);
     return ['user']; // Default role
