@@ -13,14 +13,14 @@ const Footer = () => {
               <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
               <span className="text-[#39536f]">H</span>
               <span className="text-[#6f7d95]">ardware</span>
-                <span className="text-[#39536f]">P</span>
+                <span className="text-[#39536f]"> P</span>
                 <span className="text-[#6f7d95]">rice</span>
                 <span className="text-[#39536f]"> T</span>
                 <span className="text-[#6f7d95]">racker</span>
               </h1>
             </Link>
             <p className="text-sm text-gray-700 mb-2">
-              Price Tracker helps you track electronics prices across Egypt's top stores.
+            Hardware Price Tracker helps you track electronics prices across Egypt's top stores.
             </p>
           </div>
 
@@ -49,7 +49,7 @@ const Footer = () => {
 
         {/* Footer Bottom */}
         <div className="mt-10 text-center text-sm text-gray-500">
-          &copy; {new Date().getFullYear()} Price Tracker. All rights reserved.
+          &copy; {new Date().getFullYear()} Hardware Price Tracker. All rights reserved.
         </div>
       </div>
     </footer>
