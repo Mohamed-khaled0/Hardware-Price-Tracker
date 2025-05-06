@@ -21,6 +21,7 @@ import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
 import ResetPassword from "./pages/ResetPassword";
+import Admin from "./pages/Admin";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,7 @@ const App = () => (
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/admin" element={<Admin />} />
               <Route path="/cart" element={<Cart />} />
               <Route path="/about" element={<AboutUs />} />
               <Route path="/contact" element={<ContactUs />} />

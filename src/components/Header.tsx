@@ -1,7 +1,7 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, User, ShoppingCart, LogOut, Settings } from 'lucide-react';
+import { Menu, User, ShoppingCart, LogOut, Settings, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useCart } from '@/contexts/cart';
 import { useAuth } from '@/contexts/auth';
@@ -17,9 +17,21 @@ import {
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { getItemCount } = useCart();
-  const { user, profile, signOut } = useAuth();
+  const { user, profile, signOut, userRoles, isAdmin } = useAuth();
 
   const cartItemCount = getItemCount();
+
+  // Listen for profile updates
+  useEffect(() => {
+    const handleProfileUpdate = (e: Event) => {
+      // This is just to trigger a re-render when profile is updated
+    };
+    window.addEventListener('profile-updated', handleProfileUpdate);
+    
+    return () => {
+      window.removeEventListener('profile-updated', handleProfileUpdate);
+    };
+  }, []);
 
   const handleSignOut = async () => {
     try {
@@ -86,6 +98,16 @@ const Header: React.FC = () => {
                       <span>Profile Settings</span>
                     </Link>
                   </DropdownMenuItem>
+                  
+                  {isAdmin && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/admin" className="flex items-center">
+                        <Shield className="mr-2 h-4 w-4" />
+                        <span>Admin Dashboard</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
                     <LogOut className="mr-2 h-4 w-4" />
@@ -152,6 +174,11 @@ const Header: React.FC = () => {
             <Link to="/shop" className="text-white font-semibold px-5 py-3 hover:bg-[#2a405a] transition-colors">Shop</Link>
             <Link to="/about" className="text-white font-semibold px-5 py-3 hover:bg-[#2a405a] transition-colors">About Us</Link>
             <Link to="/contact" className="text-white font-semibold px-5 py-3 hover:bg-[#2a405a] transition-colors">Contact Us</Link>
+            {isAdmin && (
+              <Link to="/admin" className="text-white font-semibold px-5 py-3 hover:bg-[#2a405a] transition-colors bg-purple-700">
+                Admin
+              </Link>
+            )}
           </nav>
         </div>
       </div>
@@ -170,6 +197,9 @@ const Header: React.FC = () => {
           <Link to="/contact" className="text-white block px-3 py-2 font-semibold hover:bg-[#39536f] rounded-md">Contact Us</Link>
           {user && (
             <Link to="/profile" className="text-white block px-3 py-2 font-semibold hover:bg-[#39536f] rounded-md">Profile</Link>
+          )}
+          {isAdmin && (
+            <Link to="/admin" className="text-white block px-3 py-2 font-semibold hover:bg-[#39536f] rounded-md bg-purple-700">Admin</Link>
           )}
         </div>
       </div>

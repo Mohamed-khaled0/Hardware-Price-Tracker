@@ -5,8 +5,16 @@ import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { AuthContext } from './AuthContext';
-import { Profile } from './types';
-import { fetchUserProfile } from './authUtils';
+import { AppRole, Profile, UserWithRole } from './types';
+import { 
+  fetchUserProfile, 
+  fetchUserRoles, 
+  getUserList, 
+  deleteUser, 
+  blockUser,
+  assignRole as assignUserRole,
+  removeRole as removeUserRole
+} from './authUtils';
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -16,6 +24,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [userRoles, setUserRoles] = useState<AppRole[]>(['user']);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -34,9 +44,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 setProfile(profileData);
               }
             });
+            
+            // Fetch user roles
+            fetchUserRoles(newSession.user.id).then(roles => {
+              setUserRoles(roles);
+              setIsAdmin(roles.includes('admin'));
+            });
           }, 0);
         } else {
           setProfile(null);
+          setUserRoles(['user']);
+          setIsAdmin(false);
         }
 
         // Handle specific auth events
@@ -58,6 +76,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           if (profileData) {
             setProfile(profileData);
           }
+        });
+        
+        // Fetch user roles
+        fetchUserRoles(existingSession.user.id).then(roles => {
+          setUserRoles(roles);
+          setIsAdmin(roles.includes('admin'));
         });
       }
       
@@ -126,6 +150,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setLoading(true);
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/login`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
+        }
       });
 
       if (error) {
@@ -141,20 +172,47 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  const signInWithFacebook = async () => {
+  const signInWithPhone = async (phone: string) => {
     try {
       setLoading(true);
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'facebook',
+      const { error } = await supabase.auth.signInWithOtp({
+        phone,
       });
 
       if (error) {
         toast.error(error.message);
         throw error;
       }
+      
+      toast.success('Verification code sent to your phone. Please check your messages.');
     } catch (error: any) {
-      console.error('Error signing in with Facebook:', error);
-      toast.error(error.message || 'An error occurred during Facebook sign in');
+      console.error('Error signing in with phone:', error);
+      toast.error(error.message || 'An error occurred during phone verification');
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const verifyOTP = async (phone: string, token: string) => {
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.verifyOtp({
+        phone,
+        token,
+        type: 'sms'
+      });
+
+      if (error) {
+        toast.error(error.message);
+        throw error;
+      }
+
+      toast.success('Phone verified successfully');
+      navigate('/');
+    } catch (error: any) {
+      console.error('Error verifying OTP:', error);
+      toast.error(error.message || 'An error occurred during verification');
       throw error;
     } finally {
       setLoading(false);
@@ -206,20 +264,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const resetPasswordWithPhone = async (phone: string) => {
     try {
       setLoading(true);
-      // For now, we'll just show an info message since phone auth requires additional setup
-      toast.info(`SMS verification will be sent to ${phone} once configured in Supabase`);
+      const { error } = await supabase.auth.signInWithOtp({
+        phone: phone
+      });
       
-      // When Supabase phone auth is configured, this would be:
-      // const { error } = await supabase.auth.signInWithOtp({
-      //   phone: phone
-      // });
+      if (error) {
+        toast.error(error.message);
+        throw error;
+      }
       
-      // if (error) {
-      //   toast.error(error.message);
-      //   throw error;
-      // }
-      
-      // toast.success('Password reset code sent to your phone. Please enter the code to reset your password.');
+      toast.success('Password reset code sent to your phone. Please enter the code to reset your password.');
     } catch (error: any) {
       console.error('Error resetting password with phone:', error);
       toast.error(error.message || 'An error occurred during phone verification');
@@ -233,14 +287,23 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     session,
     user,
     profile,
+    userRoles,
+    isAdmin,
     signUp,
     signIn,
     signInWithGoogle,
-    signInWithFacebook,
+    signInWithPhone,
+    verifyOTP,
     signOut,
     resetPassword,
     resetPasswordWithPhone,
-    loading
+    loading,
+    // Admin functions
+    getUserList,
+    deleteUser,
+    blockUser,
+    assignRole: assignUserRole,
+    removeRole: removeUserRole
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
