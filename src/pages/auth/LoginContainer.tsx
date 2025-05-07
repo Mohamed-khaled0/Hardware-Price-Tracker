@@ -1,6 +1,6 @@
 
 import { Link } from 'react-router-dom';
-import LoginTabs from './components/LoginTabs';
+import EmailLoginForm from './components/EmailLoginForm';
 
 const LoginContainer = () => {
   return (
@@ -12,7 +12,7 @@ const LoginContainer = () => {
           Log Into Your Account And Enjoy A Faster Checkout.
         </p>
         
-        <LoginTabs />
+        <EmailLoginForm />
         
         <div className="text-center mt-6">
           <span className="text-gray-600">Don't Have An Account? </span>

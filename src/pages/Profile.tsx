@@ -71,7 +71,7 @@ const Profile: React.FC = () => {
       toast.success("Profile updated successfully!");
     } catch (error: unknown) {
       console.error("Error updating profile:", error);
-      toast.error(`Failed to update profile: ${error}`);
+      toast.error(`Failed to update profile: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setLoading(false);
     }
@@ -92,7 +92,7 @@ const Profile: React.FC = () => {
       const fileExt = file.name.split(".").pop();
       const filePath = `${user!.id}/${Date.now()}.${fileExt}`;
 
-      const { error: uploadError } = await supabase.storage
+      const { error: uploadError, data } = await supabase.storage
         .from("avatars")
         .upload(filePath, file, {
           cacheControl: "3600",
@@ -100,15 +100,25 @@ const Profile: React.FC = () => {
         });
 
       if (uploadError) {
-        throw uploadError;
+        console.error("Upload error details:", uploadError);
+        throw new Error(uploadError.message || "Error uploading avatar");
       }
 
-      const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
-      setAvatarUrl(data.publicUrl);
+      if (!data) {
+        throw new Error("Upload failed - no data returned");
+      }
+
+      const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(filePath);
+      
+      if (!urlData || !urlData.publicUrl) {
+        throw new Error("Failed to get public URL");
+      }
+      
+      setAvatarUrl(urlData.publicUrl);
       toast.success("Avatar uploaded successfully!");
     } catch (error: unknown) {
       console.error("Error uploading avatar:", error);
-      toast.error(`Failed to upload avatar: ${error}`);
+      toast.error(`Failed to upload avatar: ${error instanceof Error ? error.message : 'Unknown error'}`);
     } finally {
       setUploading(false);
     }

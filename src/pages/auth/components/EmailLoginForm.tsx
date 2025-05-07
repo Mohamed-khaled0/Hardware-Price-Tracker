@@ -127,17 +127,16 @@ const EmailLoginForm = () => {
           </div>
         </div>
         
-        <div className="flex flex-col space-y-4 mt-6">
-          <Button
-            type="button"
-            variant="outline"
-            className="flex items-center justify-center gap-2 w-full"
-            onClick={handleGoogleSignIn}
-          >
-            <FcGoogle size={20} />
-            Sign in with Google
-          </Button>
-        </div>
+        <Button
+          type="button"
+          variant="outline"
+          className="flex items-center justify-center gap-2 w-full py-5"
+          onClick={handleGoogleSignIn}
+          disabled={loading}
+        >
+          <FcGoogle size={20} />
+          {loading ? 'Processing...' : 'Sign in with Google'}
+        </Button>
       </form>
     </Form>
   );

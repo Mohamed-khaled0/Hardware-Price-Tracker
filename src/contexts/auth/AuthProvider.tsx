@@ -24,11 +24,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     signUp,
     signIn,
     signInWithGoogle,
-    signInWithPhone,
-    verifyOTP,
     signOut,
-    resetPassword,
-    resetPasswordWithPhone
+    resetPassword
   } = useAuthMethods();
 
   // Get admin functions
@@ -52,11 +49,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     signUp,
     signIn,
     signInWithGoogle,
-    signInWithPhone,
-    verifyOTP,
     signOut,
     resetPassword,
-    resetPasswordWithPhone,
     loading,
     // Admin functions
     getUserList,
