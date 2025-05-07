@@ -37,7 +37,12 @@ const AvatarImage = React.forwardRef<
     <AvatarPrimitive.Image
       ref={ref}
       className={cn("aspect-square h-full w-full", className)}
-      onLoadingStatusChange={(status) => setStatus(status)}
+      onLoadingStatusChange={(status) => {
+        // Convert the status from Radix to our internal format, excluding 'idle'
+        if (status === "loading" || status === "loaded" || status === "error") {
+          setStatus(status);
+        }
+      }}
       {...props}
     />
   )
