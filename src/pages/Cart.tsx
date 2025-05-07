@@ -13,7 +13,7 @@ const Cart = () => {
   const { items, removeFromCart, updateQuantity, clearCart, getTotal } = useCart();
   
   // Find best source for each product
-  const getBestSource = (productId: number) => {
+  const getBestSource = (productId: string) => {
     const item = items.find(item => item.id === productId);
     
     if (!item?.priceComparisons || item.priceComparisons.length === 0) {
@@ -56,7 +56,7 @@ const Cart = () => {
                       return (
                         <TableRow key={item.id}>
                           <TableCell>
-                            <Link to={`/product/${item.id}`}>
+                            <Link to={`/product/${item.product_id}`}>
                               <div className="w-24 h-24 rounded border overflow-hidden">
                                 <img 
                                   src={item.thumbnail} 
@@ -68,7 +68,7 @@ const Cart = () => {
                             </Link>
                           </TableCell>
                           <TableCell className="font-medium">
-                            <Link to={`/product/${item.id}`} className="hover:text-[#39536f] hover:underline">
+                            <Link to={`/product/${item.product_id}`} className="hover:text-[#39536f] hover:underline">
                               {item.title}
                             </Link>
                             {bestSource && (

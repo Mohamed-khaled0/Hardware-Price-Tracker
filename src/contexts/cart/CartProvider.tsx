@@ -114,7 +114,8 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
           title: product.title,
           price: product.price,
           quantity: 1,
-          thumbnail: product.thumbnail
+          thumbnail: product.thumbnail,
+          priceComparisons: product.priceComparisons // Add the price comparisons from the product
         };
         
         setItems(prevItems => [...prevItems, newItem]);
