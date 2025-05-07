@@ -19,6 +19,13 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 const Profile: React.FC = () => {
   const { user, profile, signOut } = useAuth();
@@ -26,6 +33,8 @@ const Profile: React.FC = () => {
   const [avatarUrl, setAvatarUrl] = useState(profile?.avatar_url || "");
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [avatarLoading, setAvatarLoading] = useState("loading");
+  const [showAvatarPreview, setShowAvatarPreview] = useState(false);
 
   useEffect(() => {
     if (profile) {
@@ -80,6 +89,18 @@ const Profile: React.FC = () => {
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        toast.error('Please select an image file');
+        return;
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('Image size should be less than 5MB');
+        return;
+      }
+      
       uploadAvatar(file);
     }
   };
@@ -124,6 +145,14 @@ const Profile: React.FC = () => {
     }
   };
 
+  const handleAvatarLoadingChange = (status: "loading" | "loaded" | "error") => {
+    setAvatarLoading(status);
+    if (status === "error" && avatarUrl) {
+      // If avatar loading failed but we have a URL, show a warning
+      toast.warning("Failed to load avatar image. The URL might be invalid.");
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -140,17 +169,46 @@ const Profile: React.FC = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex flex-col items-center space-y-4">
-              <Avatar className="w-32 h-32">
-                <AvatarImage src={avatarUrl} alt="Avatar" />
-                <AvatarFallback>
-                  {profile?.username?.charAt(0).toUpperCase() ||
-                    user?.email?.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
+              <Dialog open={showAvatarPreview} onOpenChange={setShowAvatarPreview}>
+                <DialogTrigger asChild>
+                  <Avatar className="w-32 h-32 cursor-pointer border-2 border-gray-200 hover:border-blue-500 transition-all">
+                    <AvatarImage 
+                      src={avatarUrl} 
+                      alt="Avatar" 
+                      onLoadingStatusChange={handleAvatarLoadingChange} 
+                    />
+                    <AvatarFallback>
+                      {avatarLoading === "loading" ? (
+                        <div className="animate-pulse h-full w-full bg-gray-200 flex items-center justify-center">
+                          <span className="text-gray-500">Loading...</span>
+                        </div>
+                      ) : (
+                        profile?.username?.charAt(0).toUpperCase() ||
+                        user?.email?.charAt(0).toUpperCase()
+                      )}
+                    </AvatarFallback>
+                  </Avatar>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Your Profile Picture</DialogTitle>
+                  </DialogHeader>
+                  <div className="flex justify-center p-4">
+                    <img 
+                      src={avatarUrl} 
+                      alt="Avatar preview" 
+                      className="max-w-full max-h-[500px] rounded-md" 
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = "https://via.placeholder.com/300?text=No+Image";
+                      }}
+                    />
+                  </div>
+                </DialogContent>
+              </Dialog>
               <div className="flex items-center space-x-2">
                 <Label
                   htmlFor="avatar-upload"
-                  className="cursor-pointer hover:text-blue-500 transition-colors duration-200"
+                  className="cursor-pointer hover:text-blue-500 transition-colors duration-200 flex items-center py-2 px-3 bg-white border border-gray-300 rounded-md shadow-sm"
                 >
                   {uploading ? (
                     <>
