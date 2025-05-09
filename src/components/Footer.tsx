@@ -10,7 +10,7 @@ const Footer = () => {
           {/* Logo and Description */}
           <div className="col-span-1">
             <Link to="/" className="flex-shrink-0">
-              <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+              <h1 className="text-2xl md:text-xl font-bold tracking-tight">
               <span className="text-[#39536f]">H</span>
               <span className="text-[#6f7d95]">ardware</span>
                 <span className="text-[#39536f]"> P</span>

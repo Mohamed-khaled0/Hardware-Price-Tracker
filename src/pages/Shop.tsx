@@ -134,16 +134,7 @@ const Shop: React.FC = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <div className="flex gap-2">
-              <Button variant="outline" className="gap-2 border-2 border-[#6f7d95] rounded-xl">
-                <Filter size={18} />
-                Filters
-              </Button>
-              <Button variant="outline" className="gap-2 border-2 border-[#6f7d95] rounded-xl">
-                <Tag size={18} />
-                Deals
-              </Button>
-            </div>
+            
           </div>
 
           <Separator className="my-4" />
