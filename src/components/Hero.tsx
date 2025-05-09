@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 const heroData = {
   title: "Never Overpay Again!",
@@ -21,7 +22,7 @@ const Hero = () => {
               className="bg-[#39536f] hover:bg-[#2a405a] text-white px-8 py-6 rounded-lg text-lg"
               asChild
             >
-              <a href={heroData.buttonLink}>{heroData.buttonText}</a>
+              <Link to={heroData.buttonLink}>{heroData.buttonText}</Link>
             </Button>
           </div>
           <div className="hidden md:block absolute right-20 bottom-0">
