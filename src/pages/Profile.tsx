@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/auth";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Card,
   CardContent,
@@ -11,13 +8,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Camera, Upload } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import AvatarUpload from "@/components/profile/AvatarUpload";
+import ProfileForm from "@/components/profile/ProfileForm";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const Profile: React.FC = () => {
   const { user, profile, signOut } = useAuth();
@@ -63,22 +60,24 @@ const Profile: React.FC = () => {
 
       const { error } = await supabase
         .from("profiles")
-        .upsert(updates, { 
-          onConflict: 'id',
-          ignoreDuplicates: false 
+        .upsert(updates, {
+          onConflict: "id",
+          ignoreDuplicates: false,
         });
 
       if (error) {
         console.error("Supabase error:", error);
         throw new Error(error.message || "Failed to update profile");
       }
-      
+
       // Update the profile in the context
       const updatedProfile = { ...profile, username: username.trim(), avatar_url: avatarUrl };
-      window.dispatchEvent(new CustomEvent('profile-updated', { 
-        detail: updatedProfile 
-      }));
-      
+      window.dispatchEvent(
+        new CustomEvent("profile-updated", {
+          detail: updatedProfile,
+        })
+      );
+
       toast.success("Profile updated successfully!");
     } catch (error: any) {
       console.error("Error updating profile:", error);
@@ -93,7 +92,7 @@ const Profile: React.FC = () => {
     if (!file) return;
 
     // Validate file type
-    if (!file.type.startsWith('image/')) {
+    if (!file.type.startsWith("image/")) {
       toast.error("Please upload an image file");
       return;
     }
@@ -121,16 +120,14 @@ const Profile: React.FC = () => {
 
       // First, try to delete the old avatar if it exists
       if (avatarUrl) {
-        const oldPath = avatarUrl.split('/').pop();
+        const oldPath = avatarUrl.split("/").pop();
         if (oldPath) {
-          await supabase.storage
-            .from("avatars")
-            .remove([`${user.id}/${oldPath}`]);
+          await supabase.storage.from("avatars").remove([`${user.id}/${oldPath}`]);
         }
       }
 
       // Upload the new avatar
-      const { error: uploadError, data } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from("avatars")
         .upload(filePath, file, {
           cacheControl: "3600",
@@ -148,7 +145,7 @@ const Profile: React.FC = () => {
         .getPublicUrl(filePath);
 
       setAvatarUrl(publicUrl);
-      
+
       // Update the profile with the new avatar URL
       const { error: updateError } = await supabase
         .from("profiles")
@@ -162,9 +159,11 @@ const Profile: React.FC = () => {
 
       // Update the profile in the context
       const updatedProfile = { ...profile, avatar_url: publicUrl };
-      window.dispatchEvent(new CustomEvent('profile-updated', { 
-        detail: updatedProfile 
-      }));
+      window.dispatchEvent(
+        new CustomEvent("profile-updated", {
+          detail: updatedProfile,
+        })
+      );
 
       toast.success("Avatar uploaded successfully!");
     } catch (error: any) {
@@ -182,7 +181,7 @@ const Profile: React.FC = () => {
         return;
       }
 
-      const { error } = await supabase.from('profiles').delete().eq('id', user.id);
+      const { error } = await supabase.from("profiles").delete().eq("id", user.id);
 
       if (error) {
         console.error("Supabase error:", error);
@@ -227,7 +226,6 @@ const Profile: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      
       <div className="flex-1 flex flex-col items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <Card className="w-full max-w-md space-y-4">
           <CardHeader>
@@ -240,75 +238,28 @@ const Profile: React.FC = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex flex-col items-center space-y-4">
-              <Avatar className="w-32 h-32">
-                <AvatarImage src={avatarUrl} alt="Avatar" />
-                <AvatarFallback>
-                  {profile?.username?.charAt(0).toUpperCase() ||
-                    user?.email?.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex items-center space-x-2">
-                <Label
-                  htmlFor="avatar-upload"
-                  className="cursor-pointer hover:text-blue-500 transition-colors duration-200"
-                >
-                  {uploading ? (
-                    <>
-                      <Upload className="mr-2 h-4 w-4 animate-spin" />
-                      Uploading...
-                    </>
-                  ) : (
-                    <>
-                      <Camera className="mr-2 h-4 w-4" />
-                      Change Avatar
-                    </>
-                  )}
-                </Label>
-                <Input
-                  type="file"
-                  id="avatar-upload"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleAvatarChange}
-                  disabled={uploading}
-                />
-              </div>
+              <AvatarUpload avatarUrl={avatarUrl} onAvatarChange={handleAvatarChange} uploading={uploading} />
             </div>
-            {/* Show user roles if available */}
-            {profile?.roles && Array.isArray(profile.roles) && (
-              <div className="text-center text-sm text-gray-600">
-                <strong>Roles:</strong> {profile.roles.join(', ')}
-              </div>
-            )}
             <Separator />
-            <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
-              <Input
-                id="username"
-                type="text"
-                placeholder="Enter your username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                disabled={loading}
-              />
-            </div>
+            <ProfileForm
+              username={username}
+              setUsername={setUsername}
+              updateProfile={updateProfile}
+              loading={loading}
+            />
           </CardContent>
           <CardFooter>
             <div className="flex justify-between w-full">
-              <Button variant="destructive" onClick={handleSignOut}>
+              <button className="btn btn-danger" onClick={handleSignOut}>
                 Sign Out
-              </Button>
-              <Button onClick={updateProfile} disabled={loading}>
-                {loading ? 'Updating...' : 'Update Profile'}
-              </Button>
-              <Button onClick={deleteUser}>
+              </button>
+              <button className="btn btn-danger" onClick={deleteUser}>
                 Delete User
-              </Button>
+              </button>
             </div>
           </CardFooter>
         </Card>
       </div>
-      
       <Footer />
     </div>
   );

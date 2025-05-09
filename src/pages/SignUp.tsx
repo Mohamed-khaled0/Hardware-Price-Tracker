@@ -1,6 +1,9 @@
+
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, User } from 'lucide-react';
+import { FcGoogle } from "react-icons/fc";
+import { Separator } from "@/components/ui/separator";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -29,7 +32,7 @@ type SignupFormValues = z.infer<typeof signupSchema>;
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const { signUp, user, loading } = useAuth();
+  const { signUp, signInWithGoogle, user, loading } = useAuth();
   const navigate = useNavigate();
   
   // If already logged in, redirect to homepage
@@ -53,6 +56,14 @@ const SignUp = () => {
     } catch (error) {
       console.error('Signup error:', error);
       // Error is handled in the AuthContext
+    }
+  };
+
+  const handleGoogleSignUp = async () => {
+    try {
+      await signInWithGoogle();
+    } catch (error) {
+      console.error('Google sign up error:', error);
     }
   };
 
@@ -142,6 +153,26 @@ const SignUp = () => {
                   disabled={loading}
                 >
                   <User className="mr-2 h-5 w-5" /> {loading ? 'Creating Account...' : 'Create Account'}
+                </Button>
+                
+                <div className="relative my-6">
+                  <div className="absolute inset-0 flex items-center">
+                    <Separator className="w-full" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-white px-2 text-gray-500">Or sign up with</span>
+                  </div>
+                </div>
+                
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex items-center justify-center gap-2 w-full py-5"
+                  onClick={handleGoogleSignUp}
+                  disabled={loading}
+                >
+                  <FcGoogle size={20} />
+                  {loading ? 'Processing...' : 'Sign up with Google'}
                 </Button>
                 
                 <div className="text-center">

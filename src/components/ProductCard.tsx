@@ -1,7 +1,8 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, ExternalLink } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
 import { Link } from 'react-router-dom';
 import { useCart } from '@/contexts/cart';
@@ -47,6 +48,18 @@ const ProductCard: React.FC<ProductCardProps> = ({
     return Math.min(price, lowestComparisonPrice);
   };
 
+  // Find the store with the lowest price
+  const getLowestPriceStore = (): PriceComparison | null => {
+    if (!priceComparisons || priceComparisons.length === 0) {
+      return null;
+    }
+    
+    return priceComparisons.reduce((lowest, current) => 
+      current.price < lowest.price ? current : lowest, 
+      priceComparisons[0]
+    );
+  };
+
   const handleAddToCart = () => {
     addToCart({ 
       id, 
@@ -63,6 +76,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
       images: [thumbnail] // Default value, not used in cart display
     });
   };
+
+  const lowestPriceStore = getLowestPriceStore();
   
   return (
     <Card className="overflow-hidden flex flex-col h-full border-2 rounded-xl">
@@ -105,7 +120,17 @@ const ProductCard: React.FC<ProductCardProps> = ({
             {priceComparisons.map((comparison, index) => (
               <div key={index} className="flex justify-between items-center mb-1">
                 <span className="text-sm">{comparison.store}</span>
-                <span className="text-sm font-medium">${comparison.price}</span>
+                <div className="flex items-center gap-1">
+                  <span className="text-sm font-medium">${comparison.price}</span>
+                  <a 
+                    href={comparison.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:text-blue-700"
+                  >
+                    <ExternalLink size={14} />
+                  </a>
+                </div>
               </div>
             ))}
             <Separator className="my-2" />
@@ -118,13 +143,26 @@ const ProductCard: React.FC<ProductCardProps> = ({
       </CardContent>
       
       <CardFooter className="p-4 pt-0">
-        <Button 
-          className="w-full gap-2 bg-[#39536f] hover:bg-[#2a405a]"
-          onClick={handleAddToCart}
-        >
-          <ShoppingCart size={16} />
-          <span>Add to Cart</span>
-        </Button>
+        <div className="flex w-full gap-2">
+          <Button 
+            className="flex-1 gap-2 bg-[#39536f] hover:bg-[#2a405a]"
+            onClick={handleAddToCart}
+          >
+            <ShoppingCart size={16} />
+            <span>Add to Cart</span>
+          </Button>
+          
+          {lowestPriceStore && (
+            <Button 
+              variant="outline" 
+              className="border-[#39536f] text-[#39536f] hover:bg-[#e6eef1]"
+              onClick={() => window.open(lowestPriceStore.url, '_blank')}
+            >
+              <ExternalLink size={16} className="mr-1" />
+              {lowestPriceStore.store}
+            </Button>
+          )}
+        </div>
       </CardFooter>
     </Card>
   );

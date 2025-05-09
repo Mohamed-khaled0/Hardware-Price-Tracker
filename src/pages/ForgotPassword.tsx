@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AlertCircle, Mail } from 'lucide-react';
 import { useForm } from 'react-hook-form';
@@ -56,11 +57,6 @@ const ForgotPassword = () => {
             <p className="text-lg text-gray-700 mb-8">
               Don't Worry! It Happens. Please Enter The Email Associated With Your Account.
             </p>
-            
-            <div className="flex items-center gap-2 mb-6">
-              <Mail className="w-5 h-5" />
-              <h2 className="text-xl font-semibold">Reset via Email</h2>
-            </div>
             
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">

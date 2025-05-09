@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -31,6 +32,18 @@ const ProductDetail: React.FC = () => {
     }
   };
 
+  // Find the source with the lowest price
+  const getLowestPriceSource = () => {
+    if (!product?.priceComparisons || product.priceComparisons.length === 0) {
+      return null;
+    }
+    
+    return product.priceComparisons.reduce(
+      (lowest, current) => current.price < lowest.price ? current : lowest,
+      product.priceComparisons[0]
+    );
+  };
+
   if (isLoading) {
     return <div className="flex justify-center items-center h-screen">Loading product details...</div>;
   }
@@ -38,6 +51,8 @@ const ProductDetail: React.FC = () => {
   if (error || !product) {
     return <div className="text-red-600 text-center mt-10">Error: Product not found</div>;
   }
+
+  const lowestPriceSource = getLowestPriceSource();
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -129,36 +144,51 @@ const ProductDetail: React.FC = () => {
                 </div>
               </div>
 
-              <Button 
-                className="mt-8 w-full py-6 bg-[#39536f] hover:bg-[#2a405a] text-white text-lg"
-                onClick={handleAddToCart}
-                disabled={product.stock <= 0}
-              >
-                <ShoppingCart className="mr-2" size={20} />
-                Add to Cart
-              </Button>
+              <div className="mt-8 flex gap-4">
+                <Button 
+                  className="flex-1 py-6 bg-[#39536f] hover:bg-[#2a405a] text-white text-lg"
+                  onClick={handleAddToCart}
+                  disabled={product.stock <= 0}
+                >
+                  <ShoppingCart className="mr-2" size={20} />
+                  Add to Cart
+                </Button>
+                
+                {lowestPriceSource && (
+                  <Button 
+                    variant="outline"
+                    className="flex-1 py-6 border-green-600 text-green-600 hover:bg-green-50 text-lg"
+                    onClick={() => window.open(lowestPriceSource.url, '_blank')}
+                  >
+                    <ExternalLink className="mr-2" size={20} />
+                    Buy from {lowestPriceSource.store}
+                  </Button>
+                )}
+              </div>
 
               {product.priceComparisons && product.priceComparisons.length > 0 && (
                 <div className="mt-8">
-                  <h2 className="text-lg font-semibold mb-3">Compare Prices</h2>
+                  <h2 className="text-lg font-semibold mb-3">Shop From These Retailers</h2>
                   <div className="border rounded-lg overflow-hidden">
                     <table className="w-full">
                       <thead className="bg-gray-50">
                         <tr>
                           <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Store</th>
-                          <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Price</th>
-                          <th className="px-4 py-3 text-center text-sm font-semibold text-gray-600">Visit</th>
+                          <th className="px-4 py-3 text-right text-sm font-semibold text-gray-600">Price</th>
+                          <th className="px-4 py-3 text-center text-sm font-semibold text-gray-600">Buy Now</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200">
                         {product.priceComparisons.map((comp, idx) => (
                           <tr key={idx} className="hover:bg-gray-50">
                             <td className="px-4 py-3 text-sm font-medium text-gray-700">{comp.store}</td>
-                            <td className="px-4 py-3 text-sm font-bold text-[#39536f]">${comp.price.toFixed(2)}</td>
+                            <td className="px-4 py-3 text-sm font-bold text-[#39536f] text-right">${comp.price.toFixed(2)}</td>
                             <td className="px-4 py-3 text-center">
-                              <a href={comp.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-blue-600 hover:text-blue-800">
-                                <ExternalLink size={16} className="mr-1" />
-                                Visit
+                              <a href={comp.url} target="_blank" rel="noopener noreferrer">
+                                <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
+                                  <ExternalLink size={16} className="mr-1" />
+                                  Shop Now
+                                </Button>
                               </a>
                             </td>
                           </tr>
@@ -166,6 +196,9 @@ const ProductDetail: React.FC = () => {
                       </tbody>
                     </table>
                   </div>
+                  <p className="text-sm text-gray-500 mt-2">
+                    *Prices may vary. Click on "Shop Now" to see the current price on the retailer's website.
+                  </p>
                 </div>
               )}
             </div>
