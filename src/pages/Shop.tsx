@@ -128,7 +128,7 @@ const Shop: React.FC = () => {
               <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
               <Input
                 type="text"
-                placeholder="Search products, brands, categories..."
+                placeholder="Search products, brands..."
                 className="pl-10 border-2 border-[#6f7d95] py-3 rounded-xl"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}

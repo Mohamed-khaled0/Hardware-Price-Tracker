@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -86,6 +85,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
           <img 
             src={thumbnail} 
             alt={title} 
+            width={300}
+            height={300}
+            loading="lazy"
             className="w-full h-full object-cover transition-transform hover:scale-105"
           />
           {discountPercentage && (

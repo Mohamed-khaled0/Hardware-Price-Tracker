@@ -29,6 +29,9 @@ const Hero = () => {
             <img 
               src={heroData.image} 
               alt="Hero product" 
+              width={400}
+              height={400}
+              loading="eager"
               className="max-h-[400px] object-contain"
             />
           </div>
