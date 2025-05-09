@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -63,10 +62,10 @@ export const useAuthMethods = () => {
   const signInWithGoogle = async () => {
     try {
       setLoading(true);
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/login`,
+          redirectTo: `${window.location.origin}/auth/callback`,
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
@@ -78,56 +77,13 @@ export const useAuthMethods = () => {
         toast.error(error.message);
         throw error;
       }
+
+      if (data?.url) {
+        window.location.href = data.url;
+      }
     } catch (error: any) {
       console.error('Error signing in with Google:', error);
       toast.error(error.message || 'An error occurred during Google sign in');
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const signInWithPhone = async (phone: string) => {
-    try {
-      setLoading(true);
-      const { error } = await supabase.auth.signInWithOtp({
-        phone,
-      });
-
-      if (error) {
-        toast.error(error.message);
-        throw error;
-      }
-      
-      toast.success('Verification code sent to your phone. Please check your messages.');
-    } catch (error: any) {
-      console.error('Error signing in with phone:', error);
-      toast.error(error.message || 'An error occurred during phone verification');
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const verifyOTP = async (phone: string, token: string) => {
-    try {
-      setLoading(true);
-      const { error } = await supabase.auth.verifyOtp({
-        phone,
-        token,
-        type: 'sms'
-      });
-
-      if (error) {
-        toast.error(error.message);
-        throw error;
-      }
-
-      toast.success('Phone verified successfully');
-      navigate('/');
-    } catch (error: any) {
-      console.error('Error verifying OTP:', error);
-      toast.error(error.message || 'An error occurred during verification');
       throw error;
     } finally {
       setLoading(false);
@@ -176,37 +132,12 @@ export const useAuthMethods = () => {
     }
   };
 
-  const resetPasswordWithPhone = async (phone: string) => {
-    try {
-      setLoading(true);
-      const { error } = await supabase.auth.signInWithOtp({
-        phone: phone
-      });
-      
-      if (error) {
-        toast.error(error.message);
-        throw error;
-      }
-      
-      toast.success('Password reset code sent to your phone. Please enter the code to reset your password.');
-    } catch (error: any) {
-      console.error('Error resetting password with phone:', error);
-      toast.error(error.message || 'An error occurred during phone verification');
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return {
     loading,
     signUp,
     signIn,
     signInWithGoogle,
-    signInWithPhone,
-    verifyOTP,
     signOut,
     resetPassword,
-    resetPasswordWithPhone,
   };
 };

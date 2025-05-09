@@ -1,4 +1,3 @@
-
 import { User, Session } from '@supabase/supabase-js';
 
 export type AppRole = 'admin' | 'user';
@@ -8,4 +7,5 @@ export interface Profile {
   username: string;
   avatar_url: string;
   blocked?: boolean;
+  roles?: AppRole[];
 }

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/auth";
 import { Button } from "@/components/ui/button";
@@ -45,33 +44,45 @@ const Profile: React.FC = () => {
   const updateProfile = async () => {
     try {
       setLoading(true);
-      if (!user) throw new Error("Not authenticated");
+      if (!user) {
+        toast.error("You must be logged in to update your profile");
+        return;
+      }
+
+      if (!username.trim()) {
+        toast.error("Username cannot be empty");
+        return;
+      }
 
       const updates = {
         id: user.id,
-        username: username,
+        username: username.trim(),
         avatar_url: avatarUrl,
-        updated_at: new Date().toISOString(), // Convert Date to ISO string
+        updated_at: new Date().toISOString(),
       };
 
-      const { error } = await supabase.from("profiles").upsert(updates);
+      const { error } = await supabase
+        .from("profiles")
+        .upsert(updates, { 
+          onConflict: 'id',
+          ignoreDuplicates: false 
+        });
 
       if (error) {
-        throw error;
+        console.error("Supabase error:", error);
+        throw new Error(error.message || "Failed to update profile");
       }
       
       // Update the profile in the context
-      const updatedProfile = { ...profile, username, avatar_url: avatarUrl };
-      // Since we can't directly update the context, we're using this hack
-      // to force a refresh of the profile data in the header
+      const updatedProfile = { ...profile, username: username.trim(), avatar_url: avatarUrl };
       window.dispatchEvent(new CustomEvent('profile-updated', { 
         detail: updatedProfile 
       }));
       
       toast.success("Profile updated successfully!");
-    } catch (error: unknown) {
+    } catch (error: any) {
       console.error("Error updating profile:", error);
-      toast.error(`Failed to update profile: ${error}`);
+      toast.error(error.message || "Failed to update profile");
     } finally {
       setLoading(false);
     }
@@ -79,20 +90,47 @@ const Profile: React.FC = () => {
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      uploadAvatar(file);
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error("Please upload an image file");
+      return;
     }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image size should be less than 5MB");
+      return;
+    }
+
+    uploadAvatar(file);
   };
 
   const uploadAvatar = async (file: File) => {
     try {
       setUploading(true);
+      if (!user) {
+        toast.error("You must be logged in to upload an avatar");
+        return;
+      }
 
       // Make sure the file path includes the user ID to match the storage policy
       const fileExt = file.name.split(".").pop();
-      const filePath = `${user!.id}/${Date.now()}.${fileExt}`;
+      const filePath = `${user.id}/${Date.now()}.${fileExt}`;
 
-      const { error: uploadError } = await supabase.storage
+      // First, try to delete the old avatar if it exists
+      if (avatarUrl) {
+        const oldPath = avatarUrl.split('/').pop();
+        if (oldPath) {
+          await supabase.storage
+            .from("avatars")
+            .remove([`${user.id}/${oldPath}`]);
+        }
+      }
+
+      // Upload the new avatar
+      const { error: uploadError, data } = await supabase.storage
         .from("avatars")
         .upload(filePath, file, {
           cacheControl: "3600",
@@ -100,17 +138,89 @@ const Profile: React.FC = () => {
         });
 
       if (uploadError) {
-        throw uploadError;
+        console.error("Upload error:", uploadError);
+        throw new Error(uploadError.message || "Failed to upload avatar");
       }
 
-      const { data } = supabase.storage.from("avatars").getPublicUrl(filePath);
-      setAvatarUrl(data.publicUrl);
+      // Get the public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from("avatars")
+        .getPublicUrl(filePath);
+
+      setAvatarUrl(publicUrl);
+      
+      // Update the profile with the new avatar URL
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({ avatar_url: publicUrl })
+        .eq("id", user.id);
+
+      if (updateError) {
+        console.error("Profile update error:", updateError);
+        throw new Error(updateError.message || "Failed to update profile with new avatar");
+      }
+
+      // Update the profile in the context
+      const updatedProfile = { ...profile, avatar_url: publicUrl };
+      window.dispatchEvent(new CustomEvent('profile-updated', { 
+        detail: updatedProfile 
+      }));
+
       toast.success("Avatar uploaded successfully!");
-    } catch (error: unknown) {
+    } catch (error: any) {
       console.error("Error uploading avatar:", error);
-      toast.error(`Failed to upload avatar: ${error}`);
+      toast.error(error.message || "Failed to upload avatar");
     } finally {
       setUploading(false);
+    }
+  };
+
+  const deleteUser = async () => {
+    try {
+      if (!user) {
+        toast.error("You must be logged in to delete your account");
+        return;
+      }
+
+      const { error } = await supabase.from('profiles').delete().eq('id', user.id);
+
+      if (error) {
+        console.error("Supabase error:", error);
+        throw new Error(error.message || "Failed to delete user");
+      }
+
+      await signOut();
+      toast.success("User deleted successfully!");
+    } catch (error: any) {
+      console.error("Error deleting user:", error);
+      toast.error(error.message || "Failed to delete user");
+    }
+  };
+
+  const assignRole = async (userId: string, role: AppRole): Promise<void> => {
+    try {
+      // Get current roles
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('roles')
+        .eq('id', userId)
+        .single();
+
+      let roles = data?.roles || [];
+      if (!roles.includes(role)) {
+        roles.push(role);
+      }
+
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ roles })
+        .eq('id', userId);
+
+      if (updateError) throw updateError;
+      toast.success(`${role} role assigned successfully`);
+    } catch (error: any) {
+      toast.error(`Failed to assign ${role} role: ${error.message}`);
+      throw error;
     }
   };
 
@@ -164,6 +274,12 @@ const Profile: React.FC = () => {
                 />
               </div>
             </div>
+            {/* Show user roles if available */}
+            {profile?.roles && Array.isArray(profile.roles) && (
+              <div className="text-center text-sm text-gray-600">
+                <strong>Roles:</strong> {profile.roles.join(', ')}
+              </div>
+            )}
             <Separator />
             <div className="space-y-2">
               <Label htmlFor="username">Username</Label>
@@ -173,6 +289,7 @@ const Profile: React.FC = () => {
                 placeholder="Enter your username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                disabled={loading}
               />
             </div>
           </CardContent>
@@ -183,6 +300,9 @@ const Profile: React.FC = () => {
               </Button>
               <Button onClick={updateProfile} disabled={loading}>
                 {loading ? 'Updating...' : 'Update Profile'}
+              </Button>
+              <Button onClick={deleteUser}>
+                Delete User
               </Button>
             </div>
           </CardFooter>

@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { AppRole, UserWithRole } from './types';
 import { toast } from 'sonner';
@@ -25,64 +24,48 @@ export const fetchUserProfile = async (userId: string) => {
 
 export const fetchUserRoles = async (userId: string): Promise<AppRole[]> => {
   try {
-    // Since we don't have the app_role type in the database yet, we'll just return a default role
-    // When the database setup is complete, uncomment the RPC call
-    /*
-    const { data, error } = await supabase
-      .rpc('get_user_roles', { user_id_param: userId });
-
-    if (error) {
-      console.error('Error fetching user roles:', error);
-      return ['user']; // Default role
-    }
-
-    return data?.map(item => item.role as AppRole) || ['user'];
-    */
+    // Get user's email from auth.users
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
     
-    // For now, just return 'user' as the default role
-    // and 'admin' if the user is the first user (typically the app creator)
-    const { data: profiles, error: profilesError } = await supabase
-      .from('profiles')
-      .select('id')
-      .order('created_at', { ascending: true })
-      .limit(1);
-      
-    if (profilesError || !profiles || profiles.length === 0) {
+    if (userError) {
+      console.error('Error fetching user:', userError);
       return ['user'];
     }
-    
-    // If this is the first user in the system, make them an admin
-    if (profiles[0].id === userId) {
+
+    // Only assign admin role to the specified email
+    if (user?.email === 'mohamedalshraby3@gmail.com') {
       return ['admin', 'user'];
     }
-    
-    return ['user']; // Default role
+
+    // For all other users, return only 'user' role
+    return ['user'];
   } catch (error) {
     console.error('Error fetching user roles:', error);
-    return ['user']; // Default role
+    return ['user'];
   }
 };
 
 export const getUserList = async (): Promise<UserWithRole[]> => {
   try {
-    // Get users from auth.users via profiles
-    const { data: profiles, error } = await supabase
-      .from('profiles')
-      .select('*');
-
+    // Call the RPC with undefined as the argument and cast data as any[]
+    const { data, error } = await supabase.rpc('list_users_with_profiles', undefined);
     if (error) {
       console.error('Error fetching users:', error);
       toast.error('Failed to fetch users');
       return [];
     }
+    if (!data) {
+      return [];
+    }
 
-    // Get roles for each user
+    // Add roles and blocked status (if you have a blocked field in profiles)
     const usersWithRoles = await Promise.all(
-      profiles.map(async (profile) => {
-        const roles = await fetchUserRoles(profile.id);
+      (data as any[]).map(async (user: any) => {
+        const roles = await fetchUserRoles(user.id);
         return {
-          ...profile,
-          roles
+          ...user,
+          roles,
+          blocked: user.blocked || false, // If you add a blocked field to your function, this will work
         };
       })
     );

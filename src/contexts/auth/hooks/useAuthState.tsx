@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -22,18 +21,11 @@ export const useAuthState = () => {
         setUser(newSession?.user ?? null);
         
         if (newSession?.user) {
-          // Fetch user profile using setTimeout to prevent Supabase auth deadlock
           setTimeout(() => {
             fetchUserProfile(newSession.user.id).then(profileData => {
               if (profileData) {
                 setProfile(profileData);
               }
-            });
-            
-            // Fetch user roles
-            fetchUserRoles(newSession.user.id).then(roles => {
-              setUserRoles(roles);
-              setIsAdmin(roles.includes('admin'));
             });
           }, 0);
         } else {
@@ -62,14 +54,7 @@ export const useAuthState = () => {
             setProfile(profileData);
           }
         });
-        
-        // Fetch user roles
-        fetchUserRoles(existingSession.user.id).then(roles => {
-          setUserRoles(roles);
-          setIsAdmin(roles.includes('admin'));
-        });
       }
-      
       setLoading(false);
     });
 
@@ -77,6 +62,24 @@ export const useAuthState = () => {
       subscription.unsubscribe();
     };
   }, []);
+
+  // React to profile changes for roles and blocked status
+  useEffect(() => {
+    if (profile && user) {
+      // Only this email is admin
+      const isMainAdmin = user.email === 'mohamedalshraby3@gmail.com';
+      setIsAdmin(isMainAdmin);
+      setUserRoles(isMainAdmin ? ['admin'] : ['user']);
+      // Blocked user: sign out and show toast
+      if (profile.blocked) {
+        toast.error('Your account has been blocked. Please contact support.');
+        supabase.auth.signOut();
+      }
+    } else {
+      setUserRoles(['user']);
+      setIsAdmin(false);
+    }
+  }, [profile, user]);
 
   return {
     session,

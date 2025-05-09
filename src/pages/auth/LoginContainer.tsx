@@ -16,7 +16,7 @@ const LoginContainer = () => {
         
         <div className="text-center mt-6">
           <span className="text-gray-600">Don't Have An Account? </span>
-          <Link to="/signup" className="text-[#39536f] hover:underline font-medium">
+          <Link to="/signup" className="text-[#0a0b0b] hover:underline font-medium">
             Sign Up
           </Link>
         </div>
