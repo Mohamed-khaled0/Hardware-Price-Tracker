@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Menu, User, ShoppingCart, LogOut, Settings, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useCart } from '@/contexts/cart';
@@ -16,6 +15,8 @@ import {
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
   const { getItemCount } = useCart();
   const { user, profile, signOut, userRoles, isAdmin } = useAuth();
 
@@ -41,6 +42,14 @@ const Header: React.FC = () => {
     }
   };
 
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchTerm.trim()) {
+      navigate(`/shop?search=${encodeURIComponent(searchTerm.trim())}`);
+      setSearchTerm("");
+    }
+  };
+
   return (
     <div className="w-full">
       {/* Top Navigation Bar */}
@@ -48,9 +57,9 @@ const Header: React.FC = () => {
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
           {/* Text Logo */}
           <Link to="/" className="flex-shrink-0">
-            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-            <span className="text-[#39536f]">H</span>
-            <span className="text-[#6f7d95]">ardware</span>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">
+              <span className="text-[#39536f]">H</span>
+              <span className="text-[#6f7d95]">ardware</span>
               <span className="text-[#39536f]"> P</span>
               <span className="text-[#6f7d95]">rice</span>
               <span className="text-[#39536f]"> T</span>
@@ -59,7 +68,7 @@ const Header: React.FC = () => {
           </Link>
 
           {/* Search Bar - Hidden on mobile */}
-          <div className="hidden md:flex flex-1 max-w-3xl mx-4">
+          <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-3xl mx-4">
             <div className="relative w-full">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -68,17 +77,15 @@ const Header: React.FC = () => {
                 </svg>
               </div>
               <input
-                className="w-full pl-10 pr-4 py-3 border-2 border-[#6f7d95] rounded-l-2xl focus:outline-none text-lg"
+                className="w-full pl-10 pr-4 py-3 border-2 border-[#6f7d95] rounded-2xl focus:outline-none text-lg"
                 type="text"
-                placeholder="Search Product"
+                placeholder="Search products, brands, categories..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
-              <button
-                className="absolute right-0 top-0 bottom-0 px-6 bg-[#39536f] text-white font-semibold rounded-r-2xl"
-              >
-                Search
-              </button>
+
             </div>
-          </div>
+          </form>
 
           {/* Login/User and Cart Buttons */}
           <div className="flex items-center gap-2">
@@ -126,9 +133,9 @@ const Header: React.FC = () => {
               </Link>
             )}
             <Link to="/cart">
-              <button className="flex items-center bg-[#39536f] text-white rounded-full px-4 py-2 hover:bg-[#2a405a] transition-colors">
-                <ShoppingCart className="w-5 h-5 mr-2" />
-                <span className="font-semibold">CART ({cartItemCount})</span>
+            <button className="flex items-center bg-[#39536f] text-white rounded-full px-4 py-2 hover:bg-[#2a405a] transition-colors">
+            <ShoppingCart className="w-5 h-5 mr-2" />
+                <span className="font-medium">CART ({cartItemCount})</span>
               </button>
             </Link>
           </div>
@@ -144,7 +151,7 @@ const Header: React.FC = () => {
           </div>
 
           {/* Mobile search */}
-          <div className="md:hidden w-full mt-2">
+          <form onSubmit={handleSearch} className="md:hidden w-full mt-2">
             <div className="relative w-full">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -153,17 +160,15 @@ const Header: React.FC = () => {
                 </svg>
               </div>
               <input
-                className="w-full pl-10 pr-4 py-2 border-2 border-[#6f7d95] rounded-l-2xl focus:outline-none"
+                className="w-full pl-10 pr-4 py-2 border-2 border-[#6f7d95] rounded-2xl focus:outline-none"
                 type="text"
-                placeholder="Search Product"
+                placeholder="Search products, brands, categories..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
-              <button
-                className="px-4 bg-[#39536f] text-white font-semibold rounded-r-2xl"
-              >
-                Search
-              </button>
+              
             </div>
-          </div>
+          </form>
         </div>
       </div>
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "react-router-dom";
 import {
   Tabs,
   TabsContent,
@@ -80,8 +81,9 @@ const filterProducts = (
 
 // --- Component ---
 const Shop: React.FC = () => {
+  const [searchParams] = useSearchParams();
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState<string>(searchParams.get("search") || "");
   const [categories, setCategories] = useState<string[]>([]);
 
   const {
@@ -99,6 +101,13 @@ const Shop: React.FC = () => {
     }
   }, [products]);
 
+  useEffect(() => {
+    const search = searchParams.get("search");
+    if (search) {
+      setSearchTerm(search);
+    }
+  }, [searchParams]);
+
   if (isLoading) {
     return <div className="flex justify-center items-center h-screen">Loading products...</div>;
   }
@@ -111,7 +120,7 @@ const Shop: React.FC = () => {
     <div className="flex flex-col min-h-screen">
       <Header />
 
-      <main className="flex-1 py-6 md:py-10">
+      <main className="flex-1 py-6">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           {/* Search & Filter */}
           <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -140,7 +149,7 @@ const Shop: React.FC = () => {
           <Separator className="my-4" />
 
           {/* Category Tabs */}
-          <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
+          <Tabs defaultValue={selectedCategory} onValueChange={setSelectedCategory}>
             <TabsList>
               <TabsTrigger value="all">All</TabsTrigger>
               {categories.map((cat) => (

@@ -58,8 +58,8 @@ const features = [
 
 const FeaturesBar = () => {
   return (
-    <div className="py-8 bg-white">
-      <div className="container mx-auto px-4">
+    <div className="py-6 bg-white">
+      <div className="container mx-auto px-12">
         <div className="flex flex-wrap justify-between items-center gap-4">
           {features.map((feature) => (
             <div key={feature.id} className="flex flex-col items-center text-center">
