@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -73,9 +72,9 @@ const filterProducts = (
     const inCat = category === "all" || p.category === category;
     const t = term.toLowerCase();
     const inText =
-      p.title.toLowerCase().includes(t) ||
-      p.brand.toLowerCase().includes(t) ||
-      p.description.toLowerCase().includes(t);
+      (p.title?.toLowerCase() || '').includes(t) ||
+      (p.brand?.toLowerCase() || '').includes(t) ||
+      (p.description?.toLowerCase() || '').includes(t);
     return inCat && (term === "" || inText);
   });
 

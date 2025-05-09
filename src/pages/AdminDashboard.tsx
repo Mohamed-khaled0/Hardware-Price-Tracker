@@ -32,13 +32,15 @@ import { Shield, Trash, Lock, Check, UserCog, MoreHorizontal, UserX, User, Searc
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
+type UserWithRoleWithEmail = UserWithRole & { email?: string };
+
 const AdminDashboard = () => {
   const { user, userRoles } = useAuth();
   const navigate = useNavigate();
-  const [users, setUsers] = useState<UserWithRole[]>([]);
+  const [users, setUsers] = useState<UserWithRoleWithEmail[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedUser, setSelectedUser] = useState<UserWithRole | null>(null);
+  const [selectedUser, setSelectedUser] = useState<UserWithRoleWithEmail | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showBlockDialog, setShowBlockDialog] = useState(false);
   const [showRoleDialog, setShowRoleDialog] = useState(false);
@@ -119,7 +121,7 @@ const AdminDashboard = () => {
     }
   };
 
-  const isUserBlocked = (user: UserWithRole) => {
+  const isUserBlocked = (user: UserWithRoleWithEmail) => {
     return user.blocked === true;
   };
 
