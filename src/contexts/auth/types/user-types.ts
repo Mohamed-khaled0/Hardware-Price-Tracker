@@ -1,6 +1,6 @@
 import { User, Session } from '@supabase/supabase-js';
 
-export type AppRole = 'admin' | 'user';
+export type AppRole = 'admin' | 'moderator' | 'user';
 
 export interface Profile {
   id: string;

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,61 +7,22 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
 interface ProfileFormProps {
-  userId: string;
-  initialUsername: string;
-  initialAvatarUrl: string;
-  profile: any; // Using any for now as we don't have the full profile type
-  onSignOut: () => Promise<void>;
+  username: string;
+  setUsername: (username: string) => void;
+  updateProfile: () => Promise<void>;
+  loading: boolean;
 }
 
 const ProfileForm: React.FC<ProfileFormProps> = ({
-  userId,
-  initialUsername,
-  initialAvatarUrl,
-  profile,
-  onSignOut
+  username,
+  setUsername,
+  updateProfile,
+  loading
 }) => {
-  const [username, setUsername] = useState(initialUsername);
-  const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
-  const [loading, setLoading] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState("");
 
   const handleAvatarChange = (url: string) => {
     setAvatarUrl(url);
-  };
-
-  const updateProfile = async () => {
-    try {
-      setLoading(true);
-      if (!userId) throw new Error("Not authenticated");
-
-      const updates = {
-        id: userId,
-        username: username,
-        avatar_url: avatarUrl,
-        updated_at: new Date().toISOString(),
-      };
-
-      const { error } = await supabase.from("profiles").upsert(updates);
-
-      if (error) {
-        throw error;
-      }
-      
-      // Update the profile in the context
-      const updatedProfile = { ...profile, username, avatar_url: avatarUrl };
-      // Since we can't directly update the context, we're using this hack
-      // to force a refresh of the profile data in the header
-      window.dispatchEvent(new CustomEvent('profile-updated', { 
-        detail: updatedProfile 
-      }));
-      
-      toast.success("Profile updated successfully!");
-    } catch (error: unknown) {
-      console.error("Error updating profile:", error);
-      toast.error(`Failed to update profile: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    } finally {
-      setLoading(false);
-    }
   };
 
   return (
@@ -78,7 +38,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
         />
       </div>
       <div className="flex justify-between w-full">
-        <Button variant="destructive" onClick={onSignOut}>
+        <Button variant="destructive" onClick={() => {}}>
           Sign Out
         </Button>
         <Button onClick={updateProfile} disabled={loading}>

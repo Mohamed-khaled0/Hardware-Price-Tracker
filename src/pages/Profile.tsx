@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/auth";
+import { AppRole } from "@/contexts/auth/types/user-types";
 import {
   Card,
   CardContent,
@@ -248,16 +249,6 @@ const Profile: React.FC = () => {
               loading={loading}
             />
           </CardContent>
-          <CardFooter>
-            <div className="flex justify-between w-full">
-              <button className="btn btn-danger" onClick={handleSignOut}>
-                Sign Out
-              </button>
-              <button className="btn btn-danger" onClick={deleteUser}>
-                Delete User
-              </button>
-            </div>
-          </CardFooter>
         </Card>
       </div>
       <Footer />

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Camera, Upload } from "lucide-react";
 import { toast } from "sonner";
@@ -9,22 +8,20 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 interface AvatarUploadProps {
-  userId: string;
-  initialAvatarUrl: string;
-  onAvatarChange: (url: string) => void;
+  avatarUrl: string;
+  onAvatarChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  uploading: boolean;
   username?: string;
   email?: string;
 }
 
 const AvatarUpload: React.FC<AvatarUploadProps> = ({ 
-  userId, 
-  initialAvatarUrl, 
+  avatarUrl, 
   onAvatarChange, 
+  uploading, 
   username, 
   email 
 }) => {
-  const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
-  const [uploading, setUploading] = useState(false);
   const [avatarLoading, setAvatarLoading] = useState<"loading" | "loaded" | "error">("loading");
   const [showAvatarPreview, setShowAvatarPreview] = useState(false);
 
@@ -78,7 +75,7 @@ const AvatarUpload: React.FC<AvatarUploadProps> = ({
       }
       
       setAvatarUrl(urlData.publicUrl);
-      onAvatarChange(urlData.publicUrl);
+      onAvatarChange(e);
       toast.success("Avatar uploaded successfully!");
     } catch (error: unknown) {
       console.error("Error uploading avatar:", error);
