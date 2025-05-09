@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { AppRole, Profile } from '../types';
@@ -12,6 +12,7 @@ export const useAuthState = () => {
   const [userRoles, setUserRoles] = useState<AppRole[]>(['user']);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
+  const prevSession = useRef<Session | null>(null);
 
   useEffect(() => {
     // Set up auth state listener
@@ -34,16 +35,18 @@ export const useAuthState = () => {
           setIsAdmin(false);
         }
 
-        // Handle specific auth events
-        if (event === 'SIGNED_OUT') {
-          toast.info('You have been signed out');
-        } else if (event === 'SIGNED_IN') {
+        // Only show toast if previous session was null (i.e., real sign-in)
+        if (event === 'SIGNED_IN' && !prevSession.current) {
           toast.success('Successfully signed in');
         }
+        if (event === 'SIGNED_OUT') {
+          toast.info('You have been signed out');
+        }
+        prevSession.current = newSession;
       }
     );
 
-    // Check for existing session
+    // Check for existing session (do not show toast here)
     supabase.auth.getSession().then(({ data: { session: existingSession } }) => {
       setSession(existingSession);
       setUser(existingSession?.user ?? null);
@@ -56,6 +59,7 @@ export const useAuthState = () => {
         });
       }
       setLoading(false);
+      prevSession.current = existingSession;
     });
 
     return () => {
