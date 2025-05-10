@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { KeyRound } from 'lucide-react';
@@ -88,16 +87,16 @@ const ResetPassword = () => {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-medium">New Password</FormLabel>
+                      <FormLabel className="font-medium text-[#39536f]">New Password</FormLabel>
                       <FormControl>
                         <Input 
                           {...field}
                           type="password"
                           placeholder="Enter new password" 
-                          className="w-full bg-gray-200 border-0"
+                          className="w-full bg-gray-200 border-0 focus:outline-none focus:border-2 focus:border-[#d0e0ec]"
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-red-500 text-sm" />
                     </FormItem>
                   )}
                 />
@@ -107,16 +106,16 @@ const ResetPassword = () => {
                   name="confirmPassword"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-medium">Confirm New Password</FormLabel>
+                      <FormLabel className="font-medium text-[#39536f]">Confirm New Password</FormLabel>
                       <FormControl>
                         <Input 
                           {...field}
                           type="password"
                           placeholder="Confirm new password" 
-                          className="w-full bg-gray-200 border-0"
+                          className="w-full bg-gray-200 border-0 focus:outline-none focus:border-2 focus:border-[#d0e0ec]"
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-red-500 text-sm" />
                     </FormItem>
                   )}
                 />

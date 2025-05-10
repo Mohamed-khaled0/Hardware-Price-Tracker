@@ -65,15 +65,15 @@ const ForgotPassword = () => {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-medium">Email Address</FormLabel>
+                      <FormLabel className="font-medium text-[#39536f]">Email Address</FormLabel>
                       <FormControl>
                         <Input 
                           {...field}
                           placeholder="Enter your email address" 
-                          className="w-full bg-gray-200 border-0"
+                          className="w-full bg-gray-200 border-0 focus:outline-none focus:border-2 focus:border-[#d0e0ec]"
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-red-500 text-sm" />
                     </FormItem>
                   )}
                 />

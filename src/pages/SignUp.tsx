@@ -88,12 +88,12 @@ const SignUp = () => {
                   name="username"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-medium">Username</FormLabel>
+                      <FormLabel className="font-medium text-[#39536f]">Username</FormLabel>
                       <FormControl>
                         <Input 
                           {...field}
                           placeholder="Enter username (max 2 words, 20 chars)"
-                          className="w-full bg-gray-200 border-0"
+                          className="w-full bg-gray-200 border-0 focus:outline-none focus:border-2 focus:border-[#d0e0ec]"
                           maxLength={20}
                           onChange={(e) => {
                             const value = e.target.value;
@@ -111,7 +111,7 @@ const SignUp = () => {
                       <FormDescription className="text-sm text-gray-500">
                         Maximum 2 words and 20 characters
                       </FormDescription>
-                      <FormMessage />
+                      <FormMessage className="text-red-500 text-sm" />
                     </FormItem>
                   )}
                 />
@@ -121,16 +121,16 @@ const SignUp = () => {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-medium">Email Address</FormLabel>
+                      <FormLabel className="font-medium text-[#39536f]">Email Address</FormLabel>
                       <FormControl>
                         <Input 
                           {...field}
                           type="email"
                           placeholder="Insert Email Address Here"
-                          className="w-full bg-gray-200 border-0" 
+                          className="w-full bg-gray-200 border-0 focus:outline-none focus:border-2 focus:border-[#d0e0ec]" 
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-red-500 text-sm" />
                     </FormItem>
                   )}
                 />
@@ -140,14 +140,14 @@ const SignUp = () => {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-medium">Password</FormLabel>
+                      <FormLabel className="font-medium text-[#39536f]">Password</FormLabel>
                       <div className="relative">
                         <FormControl>
                           <Input
                             {...field}
                             type={showPassword ? "text" : "password"}
                             placeholder="****************"
-                            className="w-full bg-gray-200 border-0 pr-10"
+                            className="w-full bg-gray-200 border-0 focus:outline-none focus:border-2 focus:border-[#d0e0ec] pr-10"
                           />
                         </FormControl>
                         <button
@@ -158,7 +158,7 @@ const SignUp = () => {
                           {showPassword ? <EyeOff className="h-5 w-5 text-gray-500" /> : <Eye className="h-5 w-5 text-gray-500" />}
                         </button>
                       </div>
-                      <FormMessage />
+                      <FormMessage className="text-red-500 text-sm" />
                     </FormItem>
                   )}
                 />

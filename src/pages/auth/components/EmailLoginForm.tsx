@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Eye, EyeOff, LogIn } from 'lucide-react';
@@ -63,15 +62,15 @@ const EmailLoginForm = () => {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="font-medium">Email Address</FormLabel>
+              <FormLabel className="font-medium text-[#39536f]">Email Address</FormLabel>
               <FormControl>
                 <Input 
                   {...field} 
                   placeholder="Insert Email Address Here" 
-                  className="w-full bg-gray-200 border-0"
+                  className="w-full bg-gray-200 border-0 focus:outline-none focus:border-2 focus:border-[#d0e0ec]"
                 />
               </FormControl>
-              <FormMessage />
+              <FormMessage className="text-red-500 text-sm" />
             </FormItem>
           )}
         />
@@ -81,14 +80,14 @@ const EmailLoginForm = () => {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="font-medium">Password</FormLabel>
+              <FormLabel className="font-medium text-[#39536f]">Password</FormLabel>
               <div className="relative">
                 <FormControl>
                   <Input
                     {...field}
                     type={showPassword ? "text" : "password"}
                     placeholder="****************"
-                    className="w-full bg-gray-200 border-0 pr-10"
+                    className="w-full bg-gray-200 border-0 focus:outline-none focus:border-2 focus:border-[#d0e0ec] pr-10"
                   />
                 </FormControl>
                 <button
@@ -99,7 +98,7 @@ const EmailLoginForm = () => {
                   {showPassword ? <EyeOff className="h-5 w-5 text-gray-500" /> : <Eye className="h-5 w-5 text-gray-500" />}
                 </button>
               </div>
-              <FormMessage />
+              <FormMessage className="text-red-500 text-sm" />
             </FormItem>
           )}
         />
