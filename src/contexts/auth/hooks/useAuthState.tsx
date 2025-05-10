@@ -13,6 +13,7 @@ export const useAuthState = () => {
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
   const prevSession = useRef<Session | null>(null);
+  const isInitialLoad = useRef(true);
 
   useEffect(() => {
     // Set up auth state listener
@@ -35,10 +36,7 @@ export const useAuthState = () => {
           setIsAdmin(false);
         }
 
-        // Only show toast if previous session was null (i.e., real sign-in)
-        if (event === 'SIGNED_IN' && !prevSession.current) {
-          toast.success('Successfully signed in');
-        }
+        // Only show toast for sign out
         if (event === 'SIGNED_OUT') {
           toast.info('You have been signed out');
         }
@@ -60,6 +58,7 @@ export const useAuthState = () => {
       }
       setLoading(false);
       prevSession.current = existingSession;
+      isInitialLoad.current = false;
     });
 
     return () => {
