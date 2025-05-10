@@ -21,6 +21,7 @@ const Profile: React.FC = () => {
   const { user, profile, setProfile, signOut } = useAuth();
   const [username, setUsername] = useState(profile?.username || "");
   const [avatarUrl, setAvatarUrl] = useState(profile?.avatar_url || "");
+  const [tempAvatarUrl, setTempAvatarUrl] = useState(profile?.avatar_url || "");
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
 
@@ -28,6 +29,7 @@ const Profile: React.FC = () => {
     if (profile) {
       setUsername(profile.username || "");
       setAvatarUrl(profile.avatar_url || "");
+      setTempAvatarUrl(profile.avatar_url || "");
     }
   }, [profile]);
 
@@ -55,7 +57,7 @@ const Profile: React.FC = () => {
       const updates = {
         id: user.id,
         username: username.trim(),
-        avatar_url: avatarUrl,
+        avatar_url: tempAvatarUrl,
         updated_at: new Date().toISOString(),
       };
 
@@ -72,10 +74,10 @@ const Profile: React.FC = () => {
       }
 
       // Update the profile in the context
-      const updatedProfile = { ...profile, username: username.trim(), avatar_url: avatarUrl };
+      const updatedProfile = { ...profile, username: username.trim(), avatar_url: tempAvatarUrl };
       setProfile(updatedProfile);
       setUsername(updatedProfile.username);
-      setAvatarUrl(updatedProfile.avatar_url);
+      setAvatarUrl(tempAvatarUrl);
       toast.success("Profile updated successfully!");
     } catch (error: any) {
       console.error("Error updating profile:", error);
@@ -103,8 +105,8 @@ const Profile: React.FC = () => {
       const filePath = `${user.id}/${Date.now()}.${fileExt}`;
 
       // First, try to delete the old avatar if it exists
-      if (avatarUrl) {
-        const oldPath = avatarUrl.split("/").pop();
+      if (tempAvatarUrl) {
+        const oldPath = tempAvatarUrl.split("/").pop();
         if (oldPath) {
           await supabase.storage.from("avatars").remove([`${user.id}/${oldPath}`]);
         }
@@ -128,24 +130,8 @@ const Profile: React.FC = () => {
         .from("avatars")
         .getPublicUrl(filePath);
 
-      setAvatarUrl(publicUrl);
-
-      // Update the profile with the new avatar URL
-      const { error: updateError } = await supabase
-        .from("profiles")
-        .update({ avatar_url: publicUrl })
-        .eq("id", user.id);
-
-      if (updateError) {
-        console.error("Profile update error:", updateError);
-        throw new Error(updateError.message || "Failed to update profile with new avatar");
-      }
-
-      // Update the profile in the context
-      const updatedProfile = { ...profile, avatar_url: publicUrl };
-      setProfile(updatedProfile);
-      setAvatarUrl(updatedProfile.avatar_url);
-      toast.success("Avatar uploaded successfully!");
+      setTempAvatarUrl(publicUrl);
+      toast.success("Avatar uploaded successfully! Click 'Update Profile' to save changes.");
     } catch (error: any) {
       console.error("Error uploading avatar:", error);
       toast.error(error.message || "Failed to upload avatar");
@@ -219,7 +205,7 @@ const Profile: React.FC = () => {
           <CardContent className="space-y-4">
             <div className="flex flex-col items-center space-y-4">
               <AvatarUpload 
-                avatarUrl={avatarUrl} 
+                avatarUrl={tempAvatarUrl} 
                 onAvatarChange={handleAvatarChange} 
                 uploading={uploading}
                 setUploading={setUploading}

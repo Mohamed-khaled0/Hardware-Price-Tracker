@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Camera, Upload } from "lucide-react";
 import { toast } from "sonner";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -25,6 +25,15 @@ const AvatarUpload: React.FC<AvatarUploadProps> = ({
 }) => {
   const [avatarLoading, setAvatarLoading] = useState<"loading" | "loaded" | "error">("loading");
   const [showAvatarPreview, setShowAvatarPreview] = useState(false);
+  const [hasAttemptedLoad, setHasAttemptedLoad] = useState(false);
+
+  useEffect(() => {
+    // Reset loading state when avatarUrl changes
+    if (!avatarUrl || avatarUrl.trim() === "") {
+      setAvatarLoading("error");
+      setHasAttemptedLoad(false);
+    }
+  }, [avatarUrl]);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
@@ -45,8 +54,10 @@ const AvatarUpload: React.FC<AvatarUploadProps> = ({
 
   const handleAvatarLoadingChange = (status: "loading" | "loaded" | "error") => {
     setAvatarLoading(status);
-    if (status === "error" && avatarUrl) {
-      // If avatar loading failed but we have a URL, show a warning
+    setHasAttemptedLoad(true);
+    
+    // Only show error if we have attempted to load an avatar and it failed
+    if (status === "error" && hasAttemptedLoad && avatarUrl && avatarUrl.trim() !== "") {
       toast.warning("Failed to load avatar image. The URL might be invalid.");
     }
   };
@@ -60,13 +71,15 @@ const AvatarUpload: React.FC<AvatarUploadProps> = ({
       <Dialog open={showAvatarPreview} onOpenChange={setShowAvatarPreview}>
         <DialogTrigger asChild>
           <Avatar className="w-32 h-32 cursor-pointer border-2 border-gray-200 hover:border-blue-500 transition-all">
-            <AvatarImage 
-              src={avatarUrl} 
-              alt="Avatar" 
-              onLoadingStatusChange={handleAvatarLoadingChange} 
-            />
+            {avatarUrl && avatarUrl.trim() !== "" ? (
+              <AvatarImage 
+                src={avatarUrl} 
+                alt="Avatar" 
+                onLoadingStatusChange={handleAvatarLoadingChange} 
+              />
+            ) : null}
             <AvatarFallback>
-              {avatarLoading === "loading" ? (
+              {avatarLoading === "loading" && avatarUrl && avatarUrl.trim() !== "" ? (
                 <div className="animate-pulse h-full w-full bg-gray-200 flex items-center justify-center">
                   <span className="text-gray-500">Loading...</span>
                 </div>
