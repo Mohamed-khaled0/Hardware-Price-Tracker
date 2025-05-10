@@ -88,22 +88,8 @@ const Profile: React.FC = () => {
     }
   };
 
-  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const handleAvatarChange = (file: File | null) => {
     if (!file) return;
-
-    // Validate file type
-    if (!file.type.startsWith("image/")) {
-      toast.error("Please upload an image file");
-      return;
-    }
-
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error("Image size should be less than 5MB");
-      return;
-    }
-
     uploadAvatar(file);
   };
 
@@ -239,7 +225,14 @@ const Profile: React.FC = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex flex-col items-center space-y-4">
-              <AvatarUpload avatarUrl={avatarUrl} onAvatarChange={handleAvatarChange} uploading={uploading} />
+              <AvatarUpload 
+                avatarUrl={avatarUrl} 
+                onAvatarChange={handleAvatarChange} 
+                uploading={uploading}
+                setUploading={setUploading}
+                username={username}
+                email={user?.email}
+              />
             </div>
             <Separator />
             <ProfileForm

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Camera, Upload } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,8 +8,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 
 interface AvatarUploadProps {
   avatarUrl: string;
-  onAvatarChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onAvatarChange: (file: File | null) => void;
   uploading: boolean;
+  setUploading: (uploading: boolean) => void;
   username?: string;
   email?: string;
 }
@@ -18,7 +18,8 @@ interface AvatarUploadProps {
 const AvatarUpload: React.FC<AvatarUploadProps> = ({ 
   avatarUrl, 
   onAvatarChange, 
-  uploading, 
+  uploading,
+  setUploading,
   username, 
   email 
 }) => {
@@ -26,63 +27,20 @@ const AvatarUpload: React.FC<AvatarUploadProps> = ({
   const [showAvatarPreview, setShowAvatarPreview] = useState(false);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const file = e.target.files?.[0] || null;
     if (file) {
       // Validate file type
       if (!file.type.startsWith('image/')) {
         toast.error('Please select an image file');
         return;
       }
-      
       // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         toast.error('Image size should be less than 5MB');
         return;
       }
-      
-      uploadAvatar(file);
     }
-  };
-
-  const uploadAvatar = async (file: File) => {
-    try {
-      setUploading(true);
-
-      // Make sure the file path includes the user ID to match the storage policy
-      const fileExt = file.name.split(".").pop();
-      const filePath = `${userId}/${Date.now()}.${fileExt}`;
-
-      const { error: uploadError, data } = await supabase.storage
-        .from("avatars")
-        .upload(filePath, file, {
-          cacheControl: "3600",
-          upsert: true,
-        });
-
-      if (uploadError) {
-        console.error("Upload error details:", uploadError);
-        throw new Error(uploadError.message || "Error uploading avatar");
-      }
-
-      if (!data) {
-        throw new Error("Upload failed - no data returned");
-      }
-
-      const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(filePath);
-      
-      if (!urlData || !urlData.publicUrl) {
-        throw new Error("Failed to get public URL");
-      }
-      
-      setAvatarUrl(urlData.publicUrl);
-      onAvatarChange(e);
-      toast.success("Avatar uploaded successfully!");
-    } catch (error: unknown) {
-      console.error("Error uploading avatar:", error);
-      toast.error(`Failed to upload avatar: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    } finally {
-      setUploading(false);
-    }
+    onAvatarChange(file);
   };
 
   const handleAvatarLoadingChange = (status: "loading" | "loaded" | "error") => {
