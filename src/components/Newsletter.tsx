@@ -14,7 +14,11 @@ import {
 } from "@/components/ui/form";
 
 const newsletterSchema = z.object({
-  email: z.string().min(1, "Email is required").email("Invalid email address"),
+  email: z.string()
+    .min(1, "Please enter your email address")
+    .email("Please enter a valid email address (e.g., name@example.com)")
+    .refine((email) => email.includes('@'), "Please include '@' in your email address")
+    .refine((email) => email.split('@')[1]?.includes('.'), "Please enter the domain after '@' (e.g., example.com)"),
 });
 
 type NewsletterFormValues = z.infer<typeof newsletterSchema>;
@@ -48,7 +52,7 @@ const Newsletter = () => {
           </div>
           
           <div className="md:w-7/12">
-            <h2 className="text-2xl font-bold mb-2">Newsletter</h2>
+            <h2 className="text-2xl font-bold mb-2 text-[#39536f]">Newsletter</h2>
             <p className="text-gray-700 mb-6">
               Subscribe To Our Newsletter Get Bonus For The Next Purchase
             </p>
@@ -64,12 +68,12 @@ const Newsletter = () => {
                         <Input 
                           {...field}
                           type="email" 
-                          placeholder="Your Email Address" 
+                          placeholder="name@example.com" 
                           className="w-full bg-gray-200 border-0 focus:outline-none focus:border-2 focus:border-[#d0e0ec]"
                           disabled={status === "loading"}
                         />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-red-500 text-sm" />
                     </FormItem>
                   )}
                 />
@@ -84,12 +88,12 @@ const Newsletter = () => {
             </Form>
 
             {status === "success" && (
-              <div className="mt-2 text-green-600 font-medium">
+              <div className="mt-2 text-[#39536f] font-medium">
                 You are now subscribed!
               </div>
             )}
             {status === "error" && (
-              <div className="mt-2 text-red-600 font-medium">
+              <div className="mt-2 text-[#39536f] font-medium">
                 Something went wrong. Please try again.
               </div>
             )}

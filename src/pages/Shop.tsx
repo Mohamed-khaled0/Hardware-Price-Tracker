@@ -9,11 +9,18 @@ import {
 } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Filter, Search, Tag } from "lucide-react";
+import { Filter, Search, Tag, History, X } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
+import { useSearch } from "@/contexts/search";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 // --- Types ---
 interface PriceComparison {
@@ -83,7 +90,7 @@ const filterProducts = (
 const Shop: React.FC = () => {
   const [searchParams] = useSearchParams();
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [searchTerm, setSearchTerm] = useState<string>(searchParams.get("search") || "");
+  const { currentSearch, setCurrentSearch, searchHistory, addToHistory, clearHistory } = useSearch();
   const [categories, setCategories] = useState<string[]>([]);
 
   const {
@@ -104,9 +111,21 @@ const Shop: React.FC = () => {
   useEffect(() => {
     const search = searchParams.get("search");
     if (search) {
-      setSearchTerm(search);
+      setCurrentSearch(search);
+      addToHistory(search);
     }
-  }, [searchParams]);
+  }, [searchParams, setCurrentSearch, addToHistory]);
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCurrentSearch(e.target.value);
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (currentSearch.trim()) {
+      addToHistory(currentSearch.trim());
+    }
+  };
 
   if (isLoading) {
     return <div className="flex justify-center items-center h-screen">Loading products...</div>;
@@ -124,23 +143,63 @@ const Shop: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           {/* Search & Filter */}
           <div className="flex flex-col md:flex-row gap-4 mb-6">
-            <div className="relative flex-1">
+            <form onSubmit={handleSearchSubmit} className="relative flex-1">
               <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
               <Input
                 type="text"
                 placeholder="Search products, brands..."
                 className="pl-10 border-2 border-[#6f7d95] py-3 rounded-xl"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                value={currentSearch}
+                onChange={handleSearch}
               />
-            </div>
-            
+              {searchHistory.length > 0 && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-2 top-1/2 -translate-y-1/2"
+                    >
+                      <History className="h-5 w-5 text-gray-400" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-[200px]">
+                    <div className="flex items-center justify-between px-2 py-1.5">
+                      <span className="text-sm font-medium">Recent Searches</span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          clearHistory();
+                        }}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <Separator />
+                    {searchHistory.map((search, index) => (
+                      <DropdownMenuItem
+                        key={index}
+                        onClick={() => {
+                          setCurrentSearch(search);
+                          addToHistory(search);
+                        }}
+                      >
+                        {search}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+            </form>
           </div>
 
           <Separator className="my-4" />
 
           {/* Category Tabs */}
-          <Tabs defaultValue={selectedCategory} onValueChange={setSelectedCategory}>
+          <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
             <TabsList>
               <TabsTrigger value="all">All</TabsTrigger>
               {categories.map((cat) => (
@@ -153,7 +212,7 @@ const Shop: React.FC = () => {
             {['all', ...categories].map((cat) => (
               <TabsContent key={cat} value={cat}>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {filterProducts(products!, cat, searchTerm).map((p) => (
+                  {filterProducts(products!, cat, currentSearch).map((p) => (
                     <ProductCard 
                       key={p.id}
                       id={p.id}
