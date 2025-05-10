@@ -1,4 +1,3 @@
-
 import React, { ReactNode } from 'react';
 import { AuthContext } from './AuthContext';
 import { useAuthState, useAuthMethods, useAdminFunctions } from './hooks';
@@ -15,7 +14,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     profile,
     userRoles,
     isAdmin,
-    loading: authStateLoading
+    loading: authStateLoading,
+    setProfile
   } = useAuthState();
 
   // Get auth methods (signIn, signUp, etc)
@@ -52,6 +52,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     signOut,
     resetPassword,
     loading,
+    setProfile,
     // Admin functions
     getUserList,
     deleteUser,

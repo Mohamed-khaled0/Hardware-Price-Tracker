@@ -91,5 +91,6 @@ export const useAuthState = () => {
     userRoles,
     isAdmin,
     loading,
+    setProfile,
   };
 };

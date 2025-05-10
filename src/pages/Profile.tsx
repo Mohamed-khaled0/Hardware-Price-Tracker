@@ -18,7 +18,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
 const Profile: React.FC = () => {
-  const { user, profile, signOut } = useAuth();
+  const { user, profile, setProfile, signOut } = useAuth();
   const [username, setUsername] = useState(profile?.username || "");
   const [avatarUrl, setAvatarUrl] = useState(profile?.avatar_url || "");
   const [loading, setLoading] = useState(false);
@@ -73,12 +73,7 @@ const Profile: React.FC = () => {
 
       // Update the profile in the context
       const updatedProfile = { ...profile, username: username.trim(), avatar_url: avatarUrl };
-      window.dispatchEvent(
-        new CustomEvent("profile-updated", {
-          detail: updatedProfile,
-        })
-      );
-
+      setProfile(updatedProfile);
       toast.success("Profile updated successfully!");
     } catch (error: any) {
       console.error("Error updating profile:", error);
@@ -146,12 +141,7 @@ const Profile: React.FC = () => {
 
       // Update the profile in the context
       const updatedProfile = { ...profile, avatar_url: publicUrl };
-      window.dispatchEvent(
-        new CustomEvent("profile-updated", {
-          detail: updatedProfile,
-        })
-      );
-
+      setProfile(updatedProfile);
       toast.success("Avatar uploaded successfully!");
     } catch (error: any) {
       console.error("Error uploading avatar:", error);

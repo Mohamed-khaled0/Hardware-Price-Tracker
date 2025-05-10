@@ -6,6 +6,7 @@ export interface AuthContextType {
   session: Session | null;
   user: User | null;
   profile: Profile | null;
+  setProfile: (profile: Profile | null) => void;
   userRoles: AppRole[];
   isAdmin: boolean;
   signUp: (email: string, password: string, username: string) => Promise<void>;
