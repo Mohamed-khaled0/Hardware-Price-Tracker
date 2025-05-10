@@ -2,20 +2,41 @@ import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
+
+const newsletterSchema = z.object({
+  email: z.string().min(1, "Email is required").email("Invalid email address"),
+});
+
+type NewsletterFormValues = z.infer<typeof newsletterSchema>;
 
 const Newsletter = () => {
-  const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
-  const handleSubscribe = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const form = useForm<NewsletterFormValues>({
+    resolver: zodResolver(newsletterSchema),
+    defaultValues: {
+      email: "",
+    },
+  });
+
+  const handleSubscribe = async (values: NewsletterFormValues) => {
     setStatus("loading");
-    const { error } = await supabase.from("newsletters").insert({ email });
+    const { error } = await supabase.from("newsletters").insert({ email: values.email });
     if (error) {
       setStatus("error");
     } else {
       setStatus("success");
-      setEmail("");
+      form.reset();
     }
   };
 
@@ -24,7 +45,6 @@ const Newsletter = () => {
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row items-center justify-between">
           <div className="md:w-1/4 mb-6 md:mb-0">
-
           </div>
           
           <div className="md:w-7/12">
@@ -33,24 +53,36 @@ const Newsletter = () => {
               Subscribe To Our Newsletter Get Bonus For The Next Purchase
             </p>
             
-            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-4">
-              <Input 
-                type="email" 
-                placeholder="Your Email Address" 
-                className="bg-white"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                required
-                disabled={status === "loading"}
-              />
-              <Button 
-                className="bg-[#39536f] hover:bg-[#2a405a]"
-                type="submit"
-                disabled={status === "loading"}
-              >
-                Subscribe
-              </Button>
-            </form>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(handleSubscribe)} className="flex flex-col sm:flex-row gap-4">
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <FormControl>
+                        <Input 
+                          {...field}
+                          type="email" 
+                          placeholder="Your Email Address" 
+                          className="w-full bg-gray-200 border-0 focus:outline-none focus:border-2 focus:border-[#d0e0ec]"
+                          disabled={status === "loading"}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button 
+                  className="bg-[#39536f] hover:bg-[#2a405a] px-8"
+                  type="submit"
+                  disabled={status === "loading"}
+                >
+                  {status === "loading" ? "Subscribing..." : "Subscribe"}
+                </Button>
+              </form>
+            </Form>
+
             {status === "success" && (
               <div className="mt-2 text-green-600 font-medium">
                 You are now subscribed!
@@ -67,7 +99,6 @@ const Newsletter = () => {
             <img 
               src="/lovable-uploads/mobile.webp" 
               loading="lazy"
-
               alt="Newsletter" 
               className="max-h-[200px] object-cover rounded-lg ml-auto"
             />
