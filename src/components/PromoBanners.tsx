@@ -43,7 +43,7 @@ const PromoBanners = () => {
               <img 
                 src="/lovable-uploads/camera.webp" 
                 alt="Laptop Surface Pro" 
-                className="absolute right-0 bottom-0 max-h-[220px] object-contain"
+                className="absolute right-0 bottom-0 max-h-[160px] object-contain"
               />
             </div>
           </div>
@@ -62,7 +62,7 @@ const PromoBanners = () => {
                 loading="lazy"
 
                 alt="HP Monitor" 
-                className="absolute right-0 bottom-0 max-h-[180px] object-contain"
+                className="absolute right-0 bottom-0 max-h-[160px] object-contain"
               />
             </div>
           </div>

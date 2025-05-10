@@ -13,26 +13,29 @@ const heroData = {
 const Hero = () => {
   return (
     <div className="relative w-full overflow-hidden">
-      <div className={`min-w-full h-[450px] relative ${heroData.bgColor}`}>
-        <div className="container mx-auto px-4 h-full flex items-center">
-          <div className="max-w-lg pr-4">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-800">{heroData.title}</h1>
-            <p className="text-xl text-gray-600 mb-8">{heroData.description}</p>
-            <Button 
-              className="bg-[#39536f] hover:bg-[#2a405a] text-white px-8 py-6 rounded-lg text-lg"
-              asChild
-            >
-              <Link to={heroData.buttonLink}>{heroData.buttonText}</Link>
-            </Button>
+      <div className={`min-w-full h-auto md:h-[450px] relative ${heroData.bgColor}`}>
+        <div className="container mx-auto px-4 h-full flex flex-col md:flex-row items-center md:items-center relative">
+          <div className="max-w-lg pr-0 md:pr-4 z-10 pt-8 md:pt-0">
+            <h1 className="text-3xl md:text-5xl font-bold mb-4 text-gray-800 text-center md:text-left">{heroData.title}</h1>
+            <p className="text-lg md:text-xl text-gray-600 mb-8 text-center md:text-left">{heroData.description}</p>
+            <div className="flex justify-center md:justify-start">
+              <Button 
+                className="bg-[#39536f] hover:bg-[#2a405a] text-white px-8 py-6 mb-8 rounded-lg text-lg"
+                asChild
+              >
+                <Link to={heroData.buttonLink}>{heroData.buttonText}</Link>
+              </Button>
+            </div>
           </div>
-          <div className="hidden md:block absolute right-20 bottom-0">
+          {/* Responsive image: below text on md, absolute on lg+ */}
+          <div className="hidden md:flex justify-end mt-6 md:mt-0 md:w-auto lg:absolute lg:right-10 lg:bottom-0">
             <img 
               src={heroData.image} 
               alt="Hero product" 
-              width={400}
-              height={400}
+              width={260}
+              height={260}
               loading="eager"
-              className="max-h-[400px] object-contain"
+              className="max-h-[180px] md:max-h-[260px] lg:max-h-[400px] w-auto object-contain"
             />
           </div>
         </div>
