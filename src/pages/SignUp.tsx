@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, User } from 'lucide-react';
@@ -7,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { toast } from 'sonner';
 
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -19,6 +19,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from '@/components/ui/form';
 import { useAuth } from '@/contexts/auth';
 
@@ -91,10 +92,25 @@ const SignUp = () => {
                       <FormControl>
                         <Input 
                           {...field}
-                          placeholder="Insert Username"
-                          className="w-full bg-gray-200 border-0" 
+                          placeholder="Enter username (max 2 words, 20 chars)"
+                          className="w-full bg-gray-200 border-0"
+                          maxLength={20}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            const words = value.trim().split(/\s+/);
+                            
+                            if (words.length > 2) {
+                              toast.error("Username can only contain up to 2 words");
+                              return;
+                            }
+                            
+                            field.onChange(value);
+                          }}
                         />
                       </FormControl>
+                      <FormDescription className="text-sm text-gray-500">
+                        Maximum 2 words and 20 characters
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}

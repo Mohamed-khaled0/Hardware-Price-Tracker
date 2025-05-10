@@ -74,6 +74,8 @@ const Profile: React.FC = () => {
       // Update the profile in the context
       const updatedProfile = { ...profile, username: username.trim(), avatar_url: avatarUrl };
       setProfile(updatedProfile);
+      setUsername(updatedProfile.username);
+      setAvatarUrl(updatedProfile.avatar_url);
       toast.success("Profile updated successfully!");
     } catch (error: any) {
       console.error("Error updating profile:", error);
@@ -142,6 +144,7 @@ const Profile: React.FC = () => {
       // Update the profile in the context
       const updatedProfile = { ...profile, avatar_url: publicUrl };
       setProfile(updatedProfile);
+      setAvatarUrl(updatedProfile.avatar_url);
       toast.success("Avatar uploaded successfully!");
     } catch (error: any) {
       console.error("Error uploading avatar:", error);

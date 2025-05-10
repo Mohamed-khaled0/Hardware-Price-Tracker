@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu, User, ShoppingCart, LogOut, Settings, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -21,18 +21,6 @@ const Header: React.FC = () => {
   const { user, profile, signOut, userRoles, isAdmin } = useAuth();
 
   const cartItemCount = getItemCount();
-
-  // Listen for profile updates
-  useEffect(() => {
-    const handleProfileUpdate = (e: Event) => {
-      // This is just to trigger a re-render when profile is updated
-    };
-    window.addEventListener('profile-updated', handleProfileUpdate);
-    
-    return () => {
-      window.removeEventListener('profile-updated', handleProfileUpdate);
-    };
-  }, []);
 
   const handleSignOut = async () => {
     try {
@@ -96,7 +84,13 @@ const Header: React.FC = () => {
                       <AvatarImage src={profile?.avatar_url || ''} alt={profile?.username || 'User'} />
                       <AvatarFallback>{profile?.username?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase()}</AvatarFallback>
                     </Avatar>
-                    <span className="font-medium">{profile?.username || user.email?.split('@')[0]}</span>
+                    <span className="font-medium">
+                      {profile?.username 
+                        ? profile.username.length > 20 
+                          ? profile.username.substring(0, 17) + '...'
+                          : profile.username
+                        : user.email?.split('@')[0]}
+                    </span>
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">

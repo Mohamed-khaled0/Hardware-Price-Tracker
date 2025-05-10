@@ -25,6 +25,25 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
     setAvatarUrl(url);
   };
 
+  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const words = value.trim().split(/\s+/);
+    
+    // Check if more than 2 words
+    if (words.length > 2) {
+      toast.error("Username can only contain up to 2 words");
+      return;
+    }
+    
+    // Check if total length exceeds 20 characters
+    if (value.length > 20) {
+      toast.error("Username cannot exceed 20 characters");
+      return;
+    }
+    
+    setUsername(value);
+  };
+
   return (
     <>
       <div className="space-y-2">
@@ -32,10 +51,14 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
         <Input
           id="username"
           type="text"
-          placeholder="Enter your username"
+          placeholder="Enter your username (max 2 words, 20 chars)"
           value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          onChange={handleUsernameChange}
+          maxLength={20}
         />
+        <p className="text-sm text-gray-500">
+          Maximum 2 words and 20 characters
+        </p>
       </div>
       <div className="flex justify-between w-full">
         <Button variant="destructive" onClick={() => {}}>
