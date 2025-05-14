@@ -16,6 +16,7 @@ import AvatarUpload from "@/components/profile/AvatarUpload";
 import ProfileForm from "@/components/profile/ProfileForm";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { assignRole, removeRole, fetchUserRoles } from '@/contexts/auth/authUtils';
 
 const Profile: React.FC = () => {
   const { user, profile, setProfile, signOut } = useAuth();
@@ -24,6 +25,7 @@ const Profile: React.FC = () => {
   const [tempAvatarUrl, setTempAvatarUrl] = useState(profile?.avatar_url || "");
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [roles, setRoles] = useState<AppRole[]>([]);
 
   useEffect(() => {
     if (profile) {
@@ -32,6 +34,11 @@ const Profile: React.FC = () => {
       setTempAvatarUrl(profile.avatar_url || "");
     }
   }, [profile]);
+
+  useEffect(() => {
+    if (!user?.id) return;
+    fetchUserRoles(user.id).then(setRoles);
+  }, [user?.id]);
 
   const handleSignOut = async () => {
     try {
@@ -162,31 +169,18 @@ const Profile: React.FC = () => {
     }
   };
 
-  const assignRole = async (userId: string, role: AppRole): Promise<void> => {
+  const handleAssign = async (userId: string, role: AppRole) => {
     try {
-      // Get current roles
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('roles')
-        .eq('id', userId)
-        .single();
+      const updatedRoles = await assignRole(userId, role);
+      // update UI with updatedRoles
+    } catch (e) {}
+  };
 
-      let roles = data?.roles || [];
-      if (!roles.includes(role)) {
-        roles.push(role);
-      }
-
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ roles })
-        .eq('id', userId);
-
-      if (updateError) throw updateError;
-      toast.success(`${role} role assigned successfully`);
-    } catch (error: any) {
-      toast.error(`Failed to assign ${role} role: ${error.message}`);
-      throw error;
-    }
+  const handleRemove = async (userId: string, role: AppRole) => {
+    try {
+      const updatedRoles = await removeRole(userId, role);
+      // update UI with updatedRoles
+    } catch (e) {}
   };
 
   return (
@@ -224,6 +218,12 @@ const Profile: React.FC = () => {
         </Card>
       </div>
       <Footer />
+      <h2>User Roles:</h2>
+      <ul>
+        {roles.map((role) => (
+          <li key={role}>{role}</li>
+        ))}
+      </ul>
     </div>
   );
 };
