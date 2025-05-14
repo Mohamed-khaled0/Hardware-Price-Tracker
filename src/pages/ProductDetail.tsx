@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { ShoppingCart, Star, ExternalLink } from "lucide-react";
 import { Product } from "./Shop";
 import { useCart } from "@/contexts/cart";
+import PriceForecastChart from "@/components/PriceForecastChart";
 
 const fetchProductById = async (id: string): Promise<Product> => {
   const res = await fetch(`https://dummyjson.com/products/${id}`);
@@ -199,6 +200,12 @@ const ProductDetail: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {/* Price Forecast Chart */}
+          <PriceForecastChart 
+            currentPrice={product.price}
+            productName={product.title}
+          />
         </div>
       </main>
 
