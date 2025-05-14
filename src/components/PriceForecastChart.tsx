@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   LineChart,
   Line,
@@ -13,13 +13,18 @@ import {
 interface PriceData {
   month: string;
   historicalPrice: number;
-  forecastPrice: number;
 }
 
 interface PriceForecastChartProps {
   currentPrice: number;
   productName: string;
 }
+
+// Seeded random number generator
+const seededRandom = (seed: number) => {
+  const x = Math.sin(seed) * 10000;
+  return x - Math.floor(x);
+};
 
 const PriceForecastChart: React.FC<PriceForecastChartProps> = ({ currentPrice, productName }) => {
   // Generate historical data for the last 12 months
@@ -32,38 +37,38 @@ const PriceForecastChart: React.FC<PriceForecastChartProps> = ({ currentPrice, p
     const currentDate = new Date();
     const data: PriceData[] = [];
     
-    // Generate random historical prices with some variation
+    // Create a seed based on product name and current price
+    const seed = productName.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) + currentPrice;
+    
+    // Generate historical prices with consistent variation
     for (let i = 11; i >= 0; i--) {
       const monthIndex = (currentDate.getMonth() - i + 12) % 12;
-      const variation = (Math.random() - 0.5) * 0.2; // ±10% variation
+      // Use seeded random for consistent variation
+      const variation = (seededRandom(seed + i) - 0.5) * 0.2; // ±10% variation
       const historicalPrice = currentPrice * (1 + variation);
       
       data.push({
         month: months[monthIndex],
-        historicalPrice: Number(historicalPrice.toFixed(2)),
-        forecastPrice: null
+        historicalPrice: Number(historicalPrice.toFixed(2))
       });
     }
     
-    // Add forecast for next month (10-15% lower)
-    const forecastReduction = 0.1 + Math.random() * 0.05; // 10-15% reduction
-    const forecastPrice = currentPrice * (1 - forecastReduction);
-    
+    // Add current price as the last point
     data.push({
-      month: 'Next',
-      historicalPrice: null,
-      forecastPrice: Number(forecastPrice.toFixed(2))
+      month: 'Current',
+      historicalPrice: currentPrice
     });
     
     return data;
   };
 
-  const data = generateHistoricalData();
+  // Use useMemo to ensure data only changes when currentPrice or productName changes
+  const data = useMemo(() => generateHistoricalData(), [currentPrice, productName]);
 
   return (
     <div className="w-full h-[300px] sm:h-[400px] mt-8 p-4 bg-white rounded-xl border border-gray-200">
       <h3 className="text-lg sm:text-xl font-semibold text-[#39536f] mb-4">
-        Price History & Forecast
+        Price History
       </h3>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
@@ -95,7 +100,6 @@ const PriceForecastChart: React.FC<PriceForecastChartProps> = ({ currentPrice, p
             }}
             formatter={(value: number) => [`$${value}`, '']}
           />
-          <Legend />
           <Line
             type="monotone"
             dataKey="historicalPrice"
@@ -103,17 +107,7 @@ const PriceForecastChart: React.FC<PriceForecastChartProps> = ({ currentPrice, p
             strokeWidth={2}
             dot={{ fill: '#39536f', strokeWidth: 2 }}
             activeDot={{ r: 6 }}
-            name="Historical Price"
-          />
-          <Line
-            type="monotone"
-            dataKey="forecastPrice"
-            stroke="#39536f"
-            strokeWidth={2}
-            strokeDasharray="5 5"
-            dot={{ fill: '#39536f', strokeWidth: 2 }}
-            activeDot={{ r: 6 }}
-            name="Price Forecast"
+            name="Price"
           />
         </LineChart>
       </ResponsiveContainer>
