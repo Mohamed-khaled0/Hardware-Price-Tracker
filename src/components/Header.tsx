@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, User, ShoppingCart, LogOut, Settings, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useCart } from '@/contexts/cart';
@@ -17,10 +17,12 @@ const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
   const { getItemCount } = useCart();
   const { user, profile, signOut, userRoles, isAdmin } = useAuth();
 
   const cartItemCount = getItemCount();
+  const isShopPage = location.pathname === '/shop';
 
   const handleSignOut = async () => {
     try {
@@ -55,24 +57,26 @@ const Header: React.FC = () => {
             </h1>
           </Link>
 
-          {/* Search Bar - Hidden on mobile */}
-          <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-3xl mx-4">
-            <div className="relative w-full">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+          {/* Search Bar - Hidden on mobile and shop page */}
+          {!isShopPage && (
+            <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-3xl mx-4">
+              <div className="relative w-full">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+                <input
+                  className="w-full pl-8 pr-4 py-2.5 border-2 border-[#6f7d95] rounded-2xl focus:outline-none text-sm"
+                  type="text"
+                  placeholder="Search products, brands..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
               </div>
-              <input
-                className="w-full pl-8 pr-4 py-2.5 border-2 border-[#6f7d95] rounded-2xl focus:outline-none text-sm"
-                type="text"
-                placeholder="Search products, brands..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-          </form>
+            </form>
+          )}
 
           {/* Login/User and Cart Buttons */}
           <div className="flex items-center gap-2">
@@ -143,24 +147,26 @@ const Header: React.FC = () => {
             </button>
           </div>
 
-          {/* Mobile search */}
-          <form onSubmit={handleSearch} className="md:hidden w-full mt-2">
-            <div className="relative w-full">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+          {/* Mobile search - Hidden on shop page */}
+          {!isShopPage && (
+            <form onSubmit={handleSearch} className="md:hidden w-full mt-2">
+              <div className="relative w-full">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+                <input
+                  className="w-full pl-8 pr-4 py-1.5 border-2 border-[#6f7d95] rounded-2xl focus:outline-none text-sm"
+                  type="text"
+                  placeholder="Search products, brands, categories..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
               </div>
-              <input
-                className="w-full pl-8 pr-4 py-1.5 border-2 border-[#6f7d95] rounded-2xl focus:outline-none text-sm"
-                type="text"
-                placeholder="Search products, brands, categories..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-          </form>
+            </form>
+          )}
         </div>
       </div>
 
