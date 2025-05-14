@@ -205,27 +205,12 @@ const AdminDashboard = () => {
                   </TableCell>
                   <TableCell>{user.email || '-'}</TableCell>
                   <TableCell>
-                    <div className="flex flex-wrap gap-1">
-                      {user.roles.map((role) => (
-                        <span
-                          key={role}
-                          className={`px-2 py-1 text-xs font-medium rounded-full ${
-                            role === 'admin' 
-                              ? 'bg-purple-100 text-purple-800' 
-                              : 'bg-blue-100 text-blue-800'
-                          }`}
-                        >
-                          {role}
-                        </span>
-                      ))}
-                    </div>
+                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${user.roles.includes('admin') ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'}`}>
+                      {user.roles.includes('admin') ? 'admin' : 'user'}
+                    </span>
                   </TableCell>
                   <TableCell>
-                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                      isUserBlocked(user) 
-                        ? 'bg-red-100 text-red-800' 
-                        : 'bg-green-100 text-green-800'
-                    }`}>
+                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${isUserBlocked(user) ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
                       {isUserBlocked(user) ? 'Blocked' : 'Active'}
                     </span>
                   </TableCell>
@@ -248,7 +233,6 @@ const AdminDashboard = () => {
                           <UserCog className="mr-2 h-4 w-4" />
                           <span>Assign Role</span>
                         </DropdownMenuItem>
-                        
                         <DropdownMenuItem
                           onClick={() => {
                             setSelectedUser(user);
@@ -260,9 +244,7 @@ const AdminDashboard = () => {
                           <User className="mr-2 h-4 w-4" />
                           <span>Remove Role</span>
                         </DropdownMenuItem>
-                        
                         <DropdownMenuSeparator />
-                        
                         <DropdownMenuItem
                           onClick={() => {
                             setSelectedUser(user);
@@ -281,17 +263,6 @@ const AdminDashboard = () => {
                             </>
                           )}
                         </DropdownMenuItem>
-                        
-                        <DropdownMenuItem
-                          className="text-red-600"
-                          onClick={() => {
-                            setSelectedUser(user);
-                            setShowDeleteDialog(true);
-                          }}
-                        >
-                          <Trash className="mr-2 h-4 w-4" />
-                          <span>Delete User</span>
-                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
@@ -309,27 +280,6 @@ const AdminDashboard = () => {
         </div>
       </main>
       <Footer />
-
-      {/* Delete Dialog */}
-      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete User</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete this user? This action cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex justify-end space-x-2 mt-4">
-            <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
-              Cancel
-            </Button>
-            <Button variant="destructive" onClick={handleDeleteUser}>
-              <Trash className="mr-2 h-4 w-4" />
-              Delete User
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       {/* Block/Unblock Dialog */}
       <Dialog open={showBlockDialog} onOpenChange={setShowBlockDialog}>
