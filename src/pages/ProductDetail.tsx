@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -13,7 +12,28 @@ import { useCart } from "@/contexts/cart";
 const fetchProductById = async (id: string): Promise<Product> => {
   const res = await fetch(`https://dummyjson.com/products/${id}`);
   if (!res.ok) throw new Error("Failed to fetch product details");
-  return res.json();
+  const product = await res.json();
+  
+  // Add mock price comparisons
+  product.priceComparisons = [
+    {
+      store: "Amazon",
+      price: product.price * 0.95,
+      url: "https://amazon.com"
+    },
+    {
+      store: "Best Buy",
+      price: product.price * 1.05,
+      url: "https://bestbuy.com"
+    },
+    {
+      store: "Newegg",
+      price: product.price * 0.98,
+      url: "https://newegg.com"
+    }
+  ];
+  
+  return product;
 };
 
 const ProductDetail: React.FC = () => {
@@ -58,10 +78,10 @@ const ProductDetail: React.FC = () => {
     <div className="flex flex-col min-h-screen">
       <Header />
 
-      <main className="flex-1 py-6 md:py-10">
-        <div className="max-w-7xl mx-auto px-4 md:px-8">
+      <main className="flex-1 py-4 sm:py-6 md:py-10">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-8">
           {/* Breadcrumbs */}
-          <div className="text-sm text-gray-500 mb-6">
+          <div className="text-xs sm:text-sm text-gray-500 mb-4 sm:mb-6">
             <Link to="/" className="hover:text-[#39536f]">Home</Link> &gt; 
             <Link to="/shop" className="hover:text-[#39536f]"> Shop</Link> &gt; 
             <Link to={`/shop?category=${product.category}`} className="hover:text-[#39536f]"> {product.category}</Link> &gt; 
@@ -69,23 +89,23 @@ const ProductDetail: React.FC = () => {
           </div>
 
           {/* Product details */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
             {/* Product images */}
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div className="border-2 border-gray-200 rounded-xl overflow-hidden">
                 <img 
                   src={product.thumbnail} 
                   alt={product.title} 
-                  className="w-full h-80 object-contain p-4"
+                  className="w-full h-36 sm:h-48 md:h-64 lg:h-80 object-contain p-4 sm:p-4 md:p-4"
                 />
               </div>
-              <div className="grid grid-cols-4 gap-3">
+              <div className="grid grid-cols-4 gap-2 sm:gap-3">
                 {product.images.slice(0, 4).map((img, idx) => (
                   <div key={idx} className="border border-gray-200 rounded-lg overflow-hidden cursor-pointer hover:border-[#39536f]">
                     <img 
                       src={img} 
                       alt={`${product.title} ${idx+1}`} 
-                      className="w-full h-20 object-cover"
+                      className="w-full h-12 sm:h-16 md:h-20 object-contain p-2 sm:p-1 md:p-0 sm:object-cover"
                     />
                   </div>
                 ))}
@@ -94,113 +114,81 @@ const ProductDetail: React.FC = () => {
 
             {/* Product info */}
             <div>
-              <h1 className="text-3xl font-bold text-[#39536f]">{product.title}</h1>
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#39536f]">{product.title}</h1>
               <div className="flex items-center mt-2">
                 <div className="flex items-center">
                   {Array(5).fill(0).map((_, i) => (
                     <Star 
                       key={i} 
-                      size={18} 
+                      size={16} 
                       className={`${i < Math.round(product.rating) ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`} 
                     />
                   ))}
                 </div>
-                <span className="ml-2 text-sm text-gray-600">({product.rating} rating)</span>
+                <span className="ml-2 text-xs sm:text-sm text-gray-600">({product.rating} rating)</span>
               </div>
               
-              <div className="mt-6">
-                <span className="text-2xl font-bold text-[#39536f]">${product.price.toFixed(2)}</span>
+              <div className="mt-4 sm:mt-6">
+                <span className="text-xl sm:text-2xl font-bold text-[#39536f]">${product.price.toFixed(2)}</span>
                 {product.discountPercentage && (
-                  <span className="ml-3 text-lg text-gray-500 line-through">${(product.price / (1 - product.discountPercentage / 100)).toFixed(2)}</span>
+                  <span className="ml-2 sm:ml-3 text-base sm:text-lg text-gray-500 line-through">${(product.price / (1 - product.discountPercentage / 100)).toFixed(2)}</span>
                 )}
                 {product.discountPercentage && (
-                  <span className="ml-3 bg-red-500 text-white px-2 py-1 rounded-md text-sm font-bold">
+                  <span className="ml-2 sm:ml-3 bg-red-500 text-white px-2 py-1 rounded-md text-xs sm:text-sm font-bold">
                     {Math.round(product.discountPercentage)}% OFF
                   </span>
                 )}
               </div>
 
-              <div className="mt-6">
-                <h2 className="text-lg font-semibold">Description</h2>
-                <p className="mt-2 text-gray-700">{product.description}</p>
+              <div className="mt-4 sm:mt-6">
+                <h2 className="text-base sm:text-lg font-semibold">Description</h2>
+                <p className="mt-2 text-sm sm:text-base text-gray-700">{product.description}</p>
               </div>
 
-              <div className="mt-6">
-                <div className="grid grid-cols-2 gap-3">
+              <div className="mt-4 sm:mt-6">
+                <div className="grid grid-cols-2 gap-2 sm:gap-3">
                   <div>
-                    <span className="text-gray-600">Brand:</span>
-                    <span className="ml-2 font-medium">{product.brand}</span>
+                    <span className="text-xs sm:text-sm text-gray-600">Brand:</span>
+                    <span className="ml-2 text-xs sm:text-sm font-medium">{product.brand}</span>
                   </div>
                   <div>
-                    <span className="text-gray-600">Category:</span>
-                    <span className="ml-2 font-medium capitalize">{product.category}</span>
+                    <span className="text-xs sm:text-sm text-gray-600">Category:</span>
+                    <span className="ml-2 text-xs sm:text-sm font-medium capitalize">{product.category}</span>
                   </div>
                   <div>
-                    <span className="text-gray-600">In Stock:</span>
-                    <span className={`ml-2 font-medium ${product.stock > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    <span className="text-xs sm:text-sm text-gray-600">In Stock:</span>
+                    <span className={`ml-2 text-xs sm:text-sm font-medium ${product.stock > 0 ? 'text-green-600' : 'text-red-600'}`}>
                       {product.stock > 0 ? `Yes (${product.stock})` : 'No'}
                     </span>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-8 flex gap-4">
+              {/* Best Price Provider */}
+              {lowestPriceSource && (
+                <div className="mt-4 sm:mt-6">
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="w-full text-xs sm:text-sm border-green-600 text-green-600 hover:bg-green-50"
+                    onClick={() => window.open(lowestPriceSource.url, '_blank')}
+                  >
+                    <ExternalLink size={12} className="mr-1 sm:w-3.5 sm:h-3.5" />
+                    {lowestPriceSource.store}
+                  </Button>
+                </div>
+              )}
+
+              <div className="mt-6 sm:mt-8 flex gap-2 sm:gap-4">
                 <Button 
-                  className="flex-1 py-6 bg-[#39536f] hover:bg-[#2a405a] text-white text-lg"
+                  className="flex-1 py-4 sm:py-6 bg-[#39536f] hover:bg-[#2a405a] text-white text-sm sm:text-lg"
                   onClick={handleAddToCart}
                   disabled={product.stock <= 0}
                 >
-                  <ShoppingCart className="mr-2" size={20} />
+                  <ShoppingCart className="mr-2 w-4 h-4 sm:w-5 sm:h-5" />
                   Add to Cart
                 </Button>
-                
-                {lowestPriceSource && (
-                  <Button 
-                    variant="outline"
-                    className="flex-1 py-6 border-green-600 text-green-600 hover:bg-green-50 text-lg"
-                    onClick={() => window.open(lowestPriceSource.url, '_blank')}
-                  >
-                    <ExternalLink className="mr-2" size={20} />
-                    Buy from {lowestPriceSource.store}
-                  </Button>
-                )}
               </div>
-
-              {product.priceComparisons && product.priceComparisons.length > 0 && (
-                <div className="mt-8">
-                  <h2 className="text-lg font-semibold mb-3">Shop From These Retailers</h2>
-                  <div className="border rounded-lg overflow-hidden">
-                    <table className="w-full">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600">Store</th>
-                          <th className="px-4 py-3 text-right text-sm font-semibold text-gray-600">Price</th>
-                          <th className="px-4 py-3 text-center text-sm font-semibold text-gray-600">Buy Now</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-200">
-                        {product.priceComparisons.map((comp, idx) => (
-                          <tr key={idx} className="hover:bg-gray-50">
-                            <td className="px-4 py-3 text-sm font-medium text-gray-700">{comp.store}</td>
-                            <td className="px-4 py-3 text-sm font-bold text-[#39536f] text-right">${comp.price.toFixed(2)}</td>
-                            <td className="px-4 py-3 text-center">
-                              <a href={comp.url} target="_blank" rel="noopener noreferrer">
-                                <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white">
-                                  <ExternalLink size={16} className="mr-1" />
-                                  Shop Now
-                                </Button>
-                              </a>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                  <p className="text-sm text-gray-500 mt-2">
-                    *Prices may vary. Click on "Shop Now" to see the current price on the retailer's website.
-                  </p>
-                </div>
-              )}
             </div>
           </div>
         </div>
