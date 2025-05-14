@@ -1,13 +1,11 @@
-import { useState } from "react";
-import { Mail, MapPin, Phone } from 'lucide-react';
+import React from 'react';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import { useToast } from "@/components/ui/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -16,6 +14,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { useToast } from "@/components/ui/use-toast";
 
 const contactSchema = z.object({
   name: z.string().min(1, "Please enter your name"),
@@ -30,10 +29,8 @@ const contactSchema = z.object({
 
 type ContactFormValues = z.infer<typeof contactSchema>;
 
-const ContactUs = () => {
+const ContactUs: React.FC = () => {
   const { toast } = useToast();
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
-
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
     defaultValues: {
@@ -44,8 +41,7 @@ const ContactUs = () => {
     },
   });
 
-  const handleSubmit = async (values: ContactFormValues) => {
-    setStatus("loading");
+  const onSubmit = async (values: ContactFormValues) => {
     try {
       // Here you would typically send the form data to your backend
       console.log("Form submitted:", values);
@@ -56,125 +52,186 @@ const ContactUs = () => {
       });
 
       form.reset();
-      setStatus("success");
     } catch (error) {
       console.error("Error submitting form:", error);
-      setStatus("error");
+      toast({
+        title: "Error",
+        description: "Something went wrong. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="min-h-screen bg-[#f8fafc]">
       <Header />
+      
+      {/* Hero Section */}
+      <div className="bg-[#39536f] text-white py-16 sm:py-24">
+        <div className="container mx-auto px-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-6">
+            Get in Touch
+          </h1>
+          <p className="text-lg sm:text-xl text-center max-w-3xl mx-auto text-gray-200">
+            Have questions or suggestions? We'd love to hear from you. Our team is here to help and improve your shopping experience.
+          </p>
+        </div>
+      </div>
 
-      <main className="flex-1 py-8 md:py-12">
-        <div className="max-w-7xl mx-auto px-4 md:px-8">
-          <div className="grid grid-cols-1 gap-8 mb-12">
-            <div>
-              <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-                <h2 className="text-2xl font-semibold mb-6 text-[#39536f]">Get in Touch</h2>
-                <p className="text-gray-700 mb-6">
-                  Have a question, feedback, or need assistance? Fill out the form below and our team will get back to you as soon as possible.
-                </p>
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-12 sm:py-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+          {/* Contact Form */}
+          <div className="bg-white rounded-xl p-6 sm:p-8 shadow-sm border border-gray-200">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-[#39536f] mb-6">
+              Send Us a Message
+            </h2>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-gray-700">Your Name</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="John Doe"
+                          className="w-full"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-gray-700">Email Address</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          type="email"
+                          placeholder="john@example.com"
+                          className="w-full"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="subject"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-gray-700">Subject</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder="How can we help?"
+                          className="w-full"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="message"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-gray-700">Message</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          {...field}
+                          placeholder="Tell us more about your inquiry..."
+                          className="w-full min-h-[150px]"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <Button 
+                  type="submit" 
+                  className="w-full bg-[#39536f] hover:bg-[#2d4055] text-white py-6 text-base"
+                  disabled={form.formState.isSubmitting}
+                >
+                  {form.formState.isSubmitting ? "Sending..." : "Send Message"}
+                </Button>
+              </form>
+            </Form>
+          </div>
 
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <FormField
-                        control={form.control}
-                        name="name"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="font-medium text-[#39536f]">Your Name</FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                placeholder="Enter your name"
-                                className="w-full bg-gray-200 border-0 focus:outline-none focus:border-2 focus:border-[#d0e0ec]"
-                                disabled={status === "loading"}
-                              />
-                            </FormControl>
-                            <FormMessage className="text-red-500 text-sm" />
-                          </FormItem>
-                        )}
-                      />
+          {/* Contact Information */}
+          <div className="space-y-8">
+            {/* Quick Contact */}
+            <div className="bg-white rounded-xl p-6 sm:p-8 shadow-sm border border-gray-200">
+              <h2 className="text-2xl sm:text-3xl font-semibold text-[#39536f] mb-6">
+                Quick Contact
+              </h2>
+              <div className="space-y-4">
+                <div className="flex items-start">
+                  <div className="flex-shrink-0 w-12 h-12 bg-[#e6eef1] rounded-lg flex items-center justify-center">
+                    <svg className="w-6 h-6 text-[#39536f]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <div className="ml-4">
+                    <h3 className="text-lg font-semibold text-[#39536f]">Email Us</h3>
+                    <p className="text-gray-600">support@hardwarepricetracker.com</p>
+                    <p className="text-gray-600">info@hardwarepricetracker.com</p>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-                      <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="font-medium text-[#39536f]">Email Address</FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="email"
-                                placeholder="name@example.com"
-                                className="w-full bg-gray-200 border-0 focus:outline-none focus:border-2 focus:border-[#d0e0ec]"
-                                disabled={status === "loading"}
-                              />
-                            </FormControl>
-                            <FormMessage className="text-red-500 text-sm" />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-
-                    <FormField
-                      control={form.control}
-                      name="subject"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="font-medium text-[#39536f]">Subject</FormLabel>
-                          <FormControl>
-                            <Input
-                              {...field}
-                              placeholder="Enter subject"
-                              className="w-full bg-gray-200 border-0 focus:outline-none focus:border-2 focus:border-[#d0e0ec]"
-                              disabled={status === "loading"}
-                            />
-                          </FormControl>
-                          <FormMessage className="text-red-500 text-sm" />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="message"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="font-medium text-[#39536f]">Message</FormLabel>
-                          <FormControl>
-                            <textarea
-                              {...field}
-                              placeholder="Enter your message"
-                              rows={6}
-                              className="w-full bg-gray-200 border-0 focus:outline-none focus:border-2 focus:border-[#d0e0ec] rounded-md px-4 py-2"
-                              disabled={status === "loading"}
-                            />
-                          </FormControl>
-                          <FormMessage className="text-red-500 text-sm" />
-                        </FormItem>
-                      )}
-                    />
-
-                    <Button
-                      type="submit"
-                      className="w-full py-6 bg-[#39536f] hover:bg-[#2a405a]"
-                      disabled={status === "loading"}
-                    >
-                      {status === "loading" ? "Sending..." : "Send Message"}
-                    </Button>
-                  </form>
-                </Form>
+            {/* FAQ Section */}
+            <div className="bg-white rounded-xl p-6 sm:p-8 shadow-sm border border-gray-200">
+              <h2 className="text-2xl sm:text-3xl font-semibold text-[#39536f] mb-6">
+                Frequently Asked Questions
+              </h2>
+              <div className="space-y-4">
+                <div className="border-b border-gray-200 pb-4">
+                  <h3 className="text-lg font-semibold text-[#39536f] mb-2">
+                    How accurate are the price predictions?
+                  </h3>
+                  <p className="text-gray-600">
+                    Our price predictions are based on historical data analysis and market trends. While we strive for accuracy, we recommend using them as a guide rather than a guarantee.
+                  </p>
+                </div>
+                <div className="border-b border-gray-200 pb-4">
+                  <h3 className="text-lg font-semibold text-[#39536f] mb-2">
+                    How often are prices updated?
+                  </h3>
+                  <p className="text-gray-600">
+                    We update our price database multiple times daily to ensure you have access to the most current pricing information.
+                  </p>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-[#39536f] mb-2">
+                    Can I suggest a new retailer to track?
+                  </h3>
+                  <p className="text-gray-600">
+                    Absolutely! We're always looking to expand our coverage. Use the contact form above to suggest new retailers.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </main>
 
-      <Footer />
+
+      </div>
     </div>
   );
 };
