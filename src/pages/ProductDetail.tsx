@@ -1,5 +1,5 @@
 import React from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -38,6 +38,8 @@ const fetchProductById = async (id: string): Promise<Product> => {
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
+  const selectedProvider = searchParams.get('provider');
   const { addToCart } = useCart();
   
   const { data: product, isLoading, error } = useQuery({
@@ -52,10 +54,18 @@ const ProductDetail: React.FC = () => {
     }
   };
 
-  // Find the source with the lowest price
+  // Find the source with the lowest price or the selected provider
   const getLowestPriceSource = () => {
     if (!product?.priceComparisons || product.priceComparisons.length === 0) {
       return null;
+    }
+    
+    if (selectedProvider) {
+      return product.priceComparisons.find(pc => pc.store === selectedProvider) || 
+             product.priceComparisons.reduce(
+               (lowest, current) => current.price < lowest.price ? current : lowest,
+               product.priceComparisons[0]
+             );
     }
     
     return product.priceComparisons.reduce(
