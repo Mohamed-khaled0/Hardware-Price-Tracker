@@ -6,7 +6,7 @@ export const fetchUserProfile = async (userId: string) => {
   try {
     const { data, error } = await supabase
       .from('profiles')
-      .select('id, username, avatar_url')
+      .select('id, username, avatar_url, roles, blocked')
       .eq('id', userId)
       .single();
 
@@ -24,21 +24,21 @@ export const fetchUserProfile = async (userId: string) => {
 
 export const fetchUserRoles = async (userId: string): Promise<AppRole[]> => {
   try {
-    // Get user's email from auth.users
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    
-    if (userError) {
-      console.error('Error fetching user:', userError);
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('roles')
+      .eq('id', userId)
+      .single();
+    if (error || !data) {
+      console.error('Error fetching roles:', error);
       return ['user'];
     }
-
-    // Only assign admin role to the specified email
-    if (user?.email === 'mohamedalshraby3@gmail.com') {
-      return ['admin', 'user'];
-    }
-
-    // For all other users, return only 'user' role
-    return ['user'];
+    // Ensure roles is an array and only valid AppRole values
+    const validRoles: AppRole[] = ['admin', 'moderator', 'user'];
+    const roles = Array.isArray(data.roles)
+      ? (data.roles.filter((r: any): r is AppRole => validRoles.includes(r)) as AppRole[])
+      : (['user'] as AppRole[]);
+    return roles.length > 0 ? roles : (['user'] as AppRole[]);
   } catch (error) {
     console.error('Error fetching user roles:', error);
     return ['user'];
@@ -126,8 +126,11 @@ export const blockUser = async (userId: string, isBlocked: boolean): Promise<voi
 
 export const assignRole = async (userId: string, role: AppRole): Promise<void> => {
   try {
-    // Since we don't have the custom RPC function yet, we'll handle this temporarily
-    // This is a placeholder that will be replaced when the database setup is complete
+    const { data, error } = await supabase.rpc('add_user_role', { uid: userId, new_role: role });
+    if (error) {
+      toast.error(`Failed to assign ${role} role: ${error.message}`);
+      throw error;
+    }
     toast.success(`${role} role assigned successfully`);
   } catch (error: any) {
     console.error('Error assigning role:', error);
@@ -138,8 +141,11 @@ export const assignRole = async (userId: string, role: AppRole): Promise<void> =
 
 export const removeRole = async (userId: string, role: AppRole): Promise<void> => {
   try {
-    // Since we don't have the custom RPC function yet, we'll handle this temporarily
-    // This is a placeholder that will be replaced when the database setup is complete
+    const { data, error } = await supabase.rpc('remove_user_role', { uid: userId, old_role: role });
+    if (error) {
+      toast.error(`Failed to remove ${role} role: ${error.message}`);
+      throw error;
+    }
     toast.success(`${role} role removed successfully`);
   } catch (error: any) {
     console.error('Error removing role:', error);

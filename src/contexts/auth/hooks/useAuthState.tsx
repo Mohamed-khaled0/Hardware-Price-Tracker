@@ -69,10 +69,10 @@ export const useAuthState = () => {
   // React to profile changes for roles and blocked status
   useEffect(() => {
     if (profile && user) {
-      // Only this email is admin
-      const isMainAdmin = user.email === 'mohamedalshraby3@gmail.com';
-      setIsAdmin(isMainAdmin);
-      setUserRoles(isMainAdmin ? ['admin'] : ['user']);
+      // Set roles from profile, default to ['user']
+      const roles = Array.isArray(profile.roles) && profile.roles.length > 0 ? profile.roles : ['user'];
+      setUserRoles(roles as AppRole[]);
+      setIsAdmin((roles as AppRole[]).includes('admin'));
       // Blocked user: sign out and show toast
       if (profile.blocked) {
         toast.error('Your account has been blocked. Please contact support.');
