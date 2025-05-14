@@ -91,7 +91,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
             className="w-full h-full object-contain p-0.5 sm:p-2 md:p-0 sm:object-cover transition-transform hover:scale-105"
           />
           {discountPercentage && (
-            <div className="absolute top-1 right-1 sm:top-2 sm:right-2 bg-red-500 text-white px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md text-[10px] sm:text-xs font-bold">
+            <div className="absolute top-1 right-1 sm:top-2 sm:right-2 bg-red-500 text-white px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md text-xs sm:text-sm font-bold">
               {Math.round(discountPercentage)}% OFF
             </div>
           )}
@@ -102,43 +102,43 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div className="flex justify-between items-start">
           <div className="flex-1 min-w-0">
             <Link to={`/product/${id}?provider=${lowestPriceStore?.store || ''}`}>
-              <CardTitle className="text-xs sm:text-base lg:text-lg hover:text-[#39536f] hover:underline line-clamp-2">{title}</CardTitle>
+              <CardTitle className="text-sm sm:text-lg lg:text-xl hover:text-[#39536f] hover:underline line-clamp-2">{title}</CardTitle>
             </Link>
-            <CardDescription className="text-[10px] sm:text-sm mt-0.5 sm:mt-1">{brand}</CardDescription>
+            <CardDescription className="text-xs sm:text-base mt-0.5 sm:mt-1">{brand}</CardDescription>
           </div>
           <div className="flex items-center ml-1 sm:ml-2">
-            <span className="text-yellow-500 mr-0.5 sm:mr-1 text-[10px] sm:text-sm">★</span>
-            <span className="text-[10px] sm:text-sm font-medium">{rating.toFixed(1)}</span>
+            <span className="text-yellow-500 mr-0.5 sm:mr-1 text-xs sm:text-base">★</span>
+            <span className="text-xs sm:text-base font-medium">{rating.toFixed(1)}</span>
           </div>
         </div>
       </CardHeader>
       
       <CardContent className="p-2 sm:p-4 flex-grow">
-        <p className="text-[10px] sm:text-sm text-gray-600 line-clamp-2">{description}</p>
+        <p className="text-xs sm:text-base text-gray-600 line-clamp-2">{description}</p>
         
         {priceComparisons && priceComparisons.length > 0 && (
           <div className="mt-1 sm:mt-3">
-            <p className="text-[10px] sm:text-sm font-medium text-gray-600 mb-0.5 sm:mb-1">Available at:</p>
+            <p className="text-xs sm:text-base font-medium text-gray-600 mb-0.5 sm:mb-1">Available at:</p>
             {priceComparisons.map((comparison, index) => (
               <div key={index} className="flex justify-between items-center mb-0.5 sm:mb-1">
-                <span className="text-[10px] sm:text-sm">{comparison.store}</span>
+                <span className="text-xs sm:text-base">{comparison.store}</span>
                 <div className="flex items-center gap-0.5 sm:gap-1">
-                  <span className="text-[10px] sm:text-sm font-medium">${comparison.price}</span>
+                  <span className="text-xs sm:text-base font-medium">${comparison.price}</span>
                   <a 
                     href={comparison.url} 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="text-blue-500 hover:text-blue-700"
                   >
-                    <ExternalLink size={10} className="sm:w-3.5 sm:h-3.5" />
+                    <ExternalLink size={12} className="sm:w-4 sm:h-4" />
                   </a>
                 </div>
               </div>
             ))}
             <Separator className="my-1 sm:my-2" />
             <div className="flex justify-between items-center">
-              <span className="text-[8px] sm:text-xs text-gray-500">Lowest price:</span>
-              <span className="text-[10px] sm:text-sm text-[#39536f] font-bold">${getLowestPrice()}</span>
+              <span className="text-xs sm:text-sm text-gray-500">Lowest price:</span>
+              <span className="text-xs sm:text-base text-[#39536f] font-bold">${getLowestPrice()}</span>
             </div>
           </div>
         )}
@@ -147,20 +147,20 @@ const ProductCard: React.FC<ProductCardProps> = ({
       <CardFooter className="p-2 sm:p-4 pt-0">
         <div className="flex flex-col w-full gap-1 sm:gap-2">
           <Button 
-            className="w-full gap-1 sm:gap-2 bg-[#39536f] hover:bg-[#2a405a] text-[10px] sm:text-sm py-1.5 sm:py-3"
+            className="w-full gap-1 sm:gap-2 bg-[#39536f] hover:bg-[#2a405a] text-xs sm:text-base py-1.5 sm:py-3"
             onClick={handleAddToCart}
           >
-            <ShoppingCart size={12} className="sm:w-4 sm:h-4" />
+            <ShoppingCart size={14} className="sm:w-5 sm:h-5" />
             <span>Add to Cart</span>
           </Button>
           
           {lowestPriceStore && (
             <Button 
               variant="outline" 
-              className="w-full border-[#39536f] text-[#39536f] hover:bg-[#e6eef1] text-[10px] sm:text-sm py-1.5 sm:py-3"
+              className="w-full border-[#39536f] text-[#39536f] hover:bg-[#e6eef1] text-xs sm:text-base py-1.5 sm:py-3"
               onClick={() => window.open(lowestPriceStore.url, '_blank')}
             >
-              <ExternalLink size={12} className="mr-1 sm:w-4 sm:h-4" />
+              <ExternalLink size={14} className="mr-1 sm:w-5 sm:h-5" />
               {lowestPriceStore.store}
             </Button>
           )}

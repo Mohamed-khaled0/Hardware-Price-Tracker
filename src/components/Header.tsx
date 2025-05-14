@@ -47,7 +47,7 @@ const Header: React.FC = () => {
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
           {/* Text Logo */}
           <Link to="/" className="flex-shrink-0">
-            <h1 className="text-xl sm:text-2xl md:text-xl font-bold tracking-tight">
+            <h1 className="text-2xl sm:text-3xl md:text-2xl font-bold tracking-tight">
               <span className="text-[#39536f]">H</span>
               <span className="text-[#6f7d95]">ardware</span>
               <span className="text-[#39536f]"> P</span>
@@ -62,13 +62,13 @@ const Header: React.FC = () => {
             <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-3xl mx-4">
               <div className="relative w-full">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                       d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 </div>
                 <input
-                  className="w-full pl-8 pr-4 py-2.5 border-2 border-[#6f7d95] rounded-2xl focus:outline-none text-sm"
+                  className="w-full pl-10 pr-4 py-2.5 border-2 border-[#6f7d95] rounded-2xl focus:outline-none text-base"
                   type="text"
                   placeholder="Search products, brands..."
                   value={searchTerm}
@@ -84,11 +84,11 @@ const Header: React.FC = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center bg-[#39536f] text-white rounded-full px-4 py-2 hover:bg-[#2a405a] transition-colors">
-                    <Avatar className="w-6 h-6 mr-2">
+                    <Avatar className="w-7 h-7 mr-2">
                       <AvatarImage src={profile?.avatar_url || ''} alt={profile?.username || 'User'} />
                       <AvatarFallback>{profile?.username?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase()}</AvatarFallback>
                     </Avatar>
-                    <span className="font-medium">
+                    <span className="font-medium text-base">
                       {profile?.username 
                         ? profile.username.length > 20 
                           ? profile.username.substring(0, 17) + '...'
@@ -100,39 +100,39 @@ const Header: React.FC = () => {
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuItem asChild>
                     <Link to="/profile" className="flex items-center">
-                      <Settings className="mr-2 h-4 w-4" />
-                      <span>Profile Settings</span>
+                      <Settings className="mr-2 h-5 w-5" />
+                      <span className="text-base">Profile Settings</span>
                     </Link>
                   </DropdownMenuItem>
                   
                   {isAdmin && (
                     <DropdownMenuItem asChild>
                       <Link to="/admin" className="flex items-center">
-                        <Shield className="mr-2 h-4 w-4" />
-                        <span>Admin Dashboard</span>
+                        <Shield className="mr-2 h-5 w-5" />
+                        <span className="text-base">Admin Dashboard</span>
                       </Link>
                     </DropdownMenuItem>
                   )}
                   
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Log out</span>
+                    <LogOut className="mr-2 h-5 w-5" />
+                    <span className="text-base">Log out</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
               <Link to="/login">
                 <button className="flex items-center bg-[#39536f] text-white rounded-full px-4 py-2 hover:bg-[#2a405a] transition-colors">
-                  <User className="w-5 h-5 mr-2" />
-                  <span className="font-medium">Login</span>
+                  <User className="w-6 h-6 mr-2" />
+                  <span className="font-medium text-base">Login</span>
                 </button>
               </Link>
             )}
             <Link to="/cart">
-            <button className="flex items-center bg-[#39536f] text-white rounded-full px-4 py-2 hover:bg-[#2a405a] transition-colors">
-            <ShoppingCart className="w-5 h-5 mr-2" />
-                <span className="font-medium">CART ({cartItemCount})</span>
+              <button className="flex items-center bg-[#39536f] text-white rounded-full px-4 py-2 hover:bg-[#2a405a] transition-colors">
+                <ShoppingCart className="w-6 h-6 mr-2" />
+                <span className="font-medium text-base">CART ({cartItemCount})</span>
               </button>
             </Link>
           </div>
@@ -152,13 +152,13 @@ const Header: React.FC = () => {
             <form onSubmit={handleSearch} className="md:hidden w-full mt-2">
               <div className="relative w-full">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                       d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 </div>
                 <input
-                  className="w-full pl-8 pr-4 py-1.5 border-2 border-[#6f7d95] rounded-2xl focus:outline-none text-sm"
+                  className="w-full pl-10 pr-4 py-2 border-2 border-[#6f7d95] rounded-2xl focus:outline-none text-base"
                   type="text"
                   placeholder="Search products, brands, categories..."
                   value={searchTerm}
@@ -175,12 +175,12 @@ const Header: React.FC = () => {
         {/* Desktop menu */}
         <div className="hidden md:flex max-w-7xl mx-auto">
           <nav className="flex">
-            <Link to="/" className="text-white font-semibold px-5 py-3 hover:bg-[#2a405a] transition-colors">Home</Link>
-            <Link to="/shop" className="text-white font-semibold px-5 py-3 hover:bg-[#2a405a] transition-colors">Shop</Link>
-            <Link to="/about" className="text-white font-semibold px-5 py-3 hover:bg-[#2a405a] transition-colors">About Us</Link>
-            <Link to="/contact" className="text-white font-semibold px-5 py-3 hover:bg-[#2a405a] transition-colors">Contact Us</Link>
+            <Link to="/" className="text-white font-semibold text-base px-5 py-3 hover:bg-[#2a405a] transition-colors">Home</Link>
+            <Link to="/shop" className="text-white font-semibold text-base px-5 py-3 hover:bg-[#2a405a] transition-colors">Shop</Link>
+            <Link to="/about" className="text-white font-semibold text-base px-5 py-3 hover:bg-[#2a405a] transition-colors">About Us</Link>
+            <Link to="/contact" className="text-white font-semibold text-base px-5 py-3 hover:bg-[#2a405a] transition-colors">Contact Us</Link>
             {isAdmin && (
-              <Link to="/admin" className="text-white font-semibold px-5 py-3 hover:bg-[#2a405a] transition-colors bg-purple-700">
+              <Link to="/admin" className="text-white font-semibold text-base px-5 py-3 hover:bg-[#2a405a] transition-colors bg-purple-700">
                 Admin
               </Link>
             )}
@@ -196,15 +196,15 @@ const Header: React.FC = () => {
         )}
       >
         <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-          <Link to="/" className="text-white block px-3 py-2 font-semibold hover:bg-[#39536f] rounded-md">Home</Link>
-          <Link to="/shop" className="text-white block px-3 py-2 font-semibold hover:bg-[#39536f] rounded-md">Shop</Link>
-          <Link to="/about" className="text-white block px-3 py-2 font-semibold hover:bg-[#39536f] rounded-md">About Us</Link>
-          <Link to="/contact" className="text-white block px-3 py-2 font-semibold hover:bg-[#39536f] rounded-md">Contact Us</Link>
+          <Link to="/" className="text-white block px-3 py-2 font-semibold text-base hover:bg-[#39536f] rounded-md">Home</Link>
+          <Link to="/shop" className="text-white block px-3 py-2 font-semibold text-base hover:bg-[#39536f] rounded-md">Shop</Link>
+          <Link to="/about" className="text-white block px-3 py-2 font-semibold text-base hover:bg-[#39536f] rounded-md">About Us</Link>
+          <Link to="/contact" className="text-white block px-3 py-2 font-semibold text-base hover:bg-[#39536f] rounded-md">Contact Us</Link>
           {user && (
-            <Link to="/profile" className="text-white block px-3 py-2 font-semibold hover:bg-[#39536f] rounded-md">Profile</Link>
+            <Link to="/profile" className="text-white block px-3 py-2 font-semibold text-base hover:bg-[#39536f] rounded-md">Profile</Link>
           )}
           {isAdmin && (
-            <Link to="/admin" className="text-white block px-3 py-2 font-semibold hover:bg-[#39536f] rounded-md bg-purple-700">Admin</Link>
+            <Link to="/admin" className="text-white block px-3 py-2 font-semibold text-base hover:bg-[#39536f] rounded-md bg-purple-700">Admin</Link>
           )}
         </div>
       </div>

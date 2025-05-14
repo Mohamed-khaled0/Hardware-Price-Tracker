@@ -174,30 +174,28 @@ const ProductDetail: React.FC = () => {
                 </div>
               </div>
 
-              {/* Best Price Provider */}
-              {lowestPriceSource && (
-                <div className="mt-4 sm:mt-6">
-                  <Button 
-                    size="sm" 
-                    variant="outline" 
-                    className="w-full text-xs sm:text-sm border-green-600 text-green-600 hover:bg-green-50"
-                    onClick={() => window.open(lowestPriceSource.url, '_blank')}
-                  >
-                    <ExternalLink size={12} className="mr-1 sm:w-3.5 sm:h-3.5" />
-                    {lowestPriceSource.store}
-                  </Button>
-                </div>
-              )}
+             
 
-              <div className="mt-6 sm:mt-8 flex gap-2 sm:gap-4">
+              <div className="mt-6 sm:mt-8 flex flex-col gap-2 sm:gap-3">
                 <Button 
-                  className="flex-1 py-4 sm:py-6 bg-[#39536f] hover:bg-[#2a405a] text-white text-sm sm:text-lg"
+                  className="w-full gap-2 bg-[#39536f] hover:bg-[#2a405a] text-xs sm:text-base py-1.5 sm:py-3"
                   onClick={handleAddToCart}
                   disabled={product.stock <= 0}
                 >
-                  <ShoppingCart className="mr-2 w-4 h-4 sm:w-5 sm:h-5" />
-                  Add to Cart
+                  <ShoppingCart size={14} className="sm:w-5 sm:h-5" />
+                  <span>Add to Cart</span>
                 </Button>
+                
+                {lowestPriceSource && (
+                  <Button 
+                    variant="outline" 
+                    className="w-full border-[#39536f] text-[#39536f] hover:bg-[#e6eef1] text-xs sm:text-base py-1.5 sm:py-3"
+                    onClick={() => window.open(lowestPriceSource.url, '_blank')}
+                  >
+                    <ExternalLink size={14} className="mr-1 sm:w-5 sm:h-5" />
+                    {lowestPriceSource.store}
+                  </Button>
+                )}
               </div>
             </div>
           </div>
