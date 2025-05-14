@@ -79,7 +79,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const lowestPriceStore = getLowestPriceStore();
   
   return (
-    <Card className="overflow-hidden flex flex-col h-full border-2 rounded-xl max-w-[280px] sm:max-w-none mx-auto">
+    <Card className="overflow-hidden flex flex-col h-full border-2 rounded-xl w-full max-w-[100%] sm:max-w-[280px] mx-auto">
       <Link to={`/product/${id}`} className="block">
         <div className="relative aspect-square overflow-hidden">
           <img 
@@ -100,13 +100,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
       
       <CardHeader className="p-3 sm:p-4 pb-0">
         <div className="flex justify-between items-start">
-          <div>
+          <div className="flex-1 min-w-0">
             <Link to={`/product/${id}`}>
-              <CardTitle className="text-base sm:text-lg hover:text-[#39536f] hover:underline">{title}</CardTitle>
+              <CardTitle className="text-sm sm:text-base lg:text-lg hover:text-[#39536f] hover:underline line-clamp-2">{title}</CardTitle>
             </Link>
             <CardDescription className="text-xs sm:text-sm mt-1">{brand}</CardDescription>
           </div>
-          <div className="flex items-center">
+          <div className="flex items-center ml-2">
             <span className="text-yellow-500 mr-1">★</span>
             <span className="text-xs sm:text-sm font-medium">{rating.toFixed(1)}</span>
           </div>

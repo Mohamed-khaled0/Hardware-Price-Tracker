@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Filter, Search, Tag, History, X } from "lucide-react";
+import { Filter, Search, Tag, History, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -92,6 +92,8 @@ const Shop: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const { currentSearch, setCurrentSearch, searchHistory, addToHistory, clearHistory } = useSearch();
   const [categories, setCategories] = useState<string[]>([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
   const {
     data: products,
@@ -211,22 +213,56 @@ const Shop: React.FC = () => {
 
             {['all', ...categories].map((cat) => (
               <TabsContent key={cat} value={cat}>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {filterProducts(products!, cat, currentSearch).map((p) => (
-                    <ProductCard 
-                      key={p.id}
-                      id={p.id}
-                      title={p.title}
-                      description={p.description}
-                      price={p.price}
-                      discountPercentage={p.discountPercentage}
-                      rating={p.rating}
-                      brand={p.brand}
-                      thumbnail={p.thumbnail}
-                      priceComparisons={p.priceComparisons}
-                    />
-                  ))}
+                <div className="mt-6 sm:mt-8">
+                  {isLoading ? (
+                    <div className="flex justify-center items-center h-64">
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#39536f]"></div>
+                    </div>
+                  ) : error ? (
+                    <div className="text-red-600 text-center">Error loading products</div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+                      {filterProducts(products!, cat, currentSearch).map((product) => (
+                        <ProductCard
+                          key={product.id}
+                          id={product.id}
+                          title={product.title}
+                          description={product.description}
+                          price={product.price}
+                          discountPercentage={product.discountPercentage}
+                          rating={product.rating}
+                          brand={product.brand}
+                          thumbnail={product.thumbnail}
+                          priceComparisons={product.priceComparisons}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
+
+                {/* Pagination */}
+                {!isLoading && !error && (
+                  <div className="mt-8 sm:mt-12 flex justify-center">
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        onClick={() => setPage(p => Math.max(1, p - 1))}
+                        disabled={page === 1}
+                        className="w-10 h-10 p-0"
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => setPage(p => p + 1)}
+                        disabled={!hasMore}
+                        className="w-10 h-10 p-0"
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </TabsContent>
             ))}
           </Tabs>
