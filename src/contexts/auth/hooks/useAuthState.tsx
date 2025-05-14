@@ -12,6 +12,7 @@ export const useAuthState = () => {
   const [userRoles, setUserRoles] = useState<AppRole[]>(['user']);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
+  const [profileLoading, setProfileLoading] = useState(true);
   const prevSession = useRef<Session | null>(null);
   const isInitialLoad = useRef(true);
 
@@ -21,19 +22,26 @@ export const useAuthState = () => {
       (event, newSession) => {
         setSession(newSession);
         setUser(newSession?.user ?? null);
+        setProfile(null);
+        setProfileLoading(true);
         
         if (newSession?.user) {
           setTimeout(() => {
+            setProfileLoading(true);
             fetchUserProfile(newSession.user.id).then(profileData => {
               if (profileData) {
                 setProfile(profileData);
+              } else {
+                setProfile(null);
               }
+              setProfileLoading(false);
             });
           }, 0);
         } else {
           setProfile(null);
           setUserRoles(['user']);
           setIsAdmin(false);
+          setProfileLoading(false);
         }
 
         // Only show toast for sign out
@@ -48,13 +56,19 @@ export const useAuthState = () => {
     supabase.auth.getSession().then(({ data: { session: existingSession } }) => {
       setSession(existingSession);
       setUser(existingSession?.user ?? null);
-      
+      setProfile(null);
+      setProfileLoading(true);
       if (existingSession?.user) {
         fetchUserProfile(existingSession.user.id).then(profileData => {
           if (profileData) {
             setProfile(profileData);
+          } else {
+            setProfile(null);
           }
+          setProfileLoading(false);
         });
+      } else {
+        setProfileLoading(false);
       }
       setLoading(false);
       prevSession.current = existingSession;
@@ -92,5 +106,6 @@ export const useAuthState = () => {
     isAdmin,
     loading,
     setProfile,
+    profileLoading,
   };
 };

@@ -19,7 +19,7 @@ const Header: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { getItemCount } = useCart();
-  const { user, profile, signOut, userRoles, isAdmin } = useAuth();
+  const { user, profile, signOut, userRoles, isAdmin, profileLoading } = useAuth();
 
   const cartItemCount = getItemCount();
   const isShopPage = location.pathname === '/shop';
@@ -81,46 +81,50 @@ const Header: React.FC = () => {
           {/* Login/User and Cart Buttons */}
           <div className="flex items-center gap-2">
             {user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="flex items-center bg-[#39536f] text-white rounded-full px-4 py-2 hover:bg-[#2a405a] transition-colors">
-                    <Avatar className="w-7 h-7 mr-2">
-                      <AvatarImage src={profile?.avatar_url || ''} alt={profile?.username || 'User'} />
-                      <AvatarFallback>{profile?.username?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase()}</AvatarFallback>
-                    </Avatar>
-                    <span className="font-medium text-base">
-                      {profile?.username 
-                        ? profile.username.length > 20 
-                          ? profile.username.substring(0, 17) + '...'
-                          : profile.username
-                        : user.email?.split('@')[0]}
-                    </span>
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuItem asChild>
-                    <Link to="/profile" className="flex items-center">
-                      <Settings className="mr-2 h-5 w-5" />
-                      <span className="text-base">Profile Settings</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  
-                  {isAdmin && (
+              profileLoading ? (
+                <span className="animate-pulse text-gray-400 px-4 py-2">Loading...</span>
+              ) : (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="flex items-center bg-[#39536f] text-white rounded-full px-4 py-2 hover:bg-[#2a405a] transition-colors">
+                      <Avatar className="w-7 h-7 mr-2">
+                        <AvatarImage src={profile?.avatar_url || ''} alt={profile?.username || 'User'} />
+                        <AvatarFallback>{profile?.username?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase()}</AvatarFallback>
+                      </Avatar>
+                      <span className="font-medium text-base">
+                        {profile?.username 
+                          ? profile.username.length > 20 
+                            ? profile.username.substring(0, 17) + '...'
+                            : profile.username
+                          : user.email?.split('@')[0]}
+                      </span>
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
                     <DropdownMenuItem asChild>
-                      <Link to="/admin" className="flex items-center">
-                        <Shield className="mr-2 h-5 w-5" />
-                        <span className="text-base">Admin Dashboard</span>
+                      <Link to="/profile" className="flex items-center">
+                        <Settings className="mr-2 h-5 w-5" />
+                        <span className="text-base">Profile Settings</span>
                       </Link>
                     </DropdownMenuItem>
-                  )}
-                  
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
-                    <LogOut className="mr-2 h-5 w-5" />
-                    <span className="text-base">Log out</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                    
+                    {isAdmin && (
+                      <DropdownMenuItem asChild>
+                        <Link to="/admin" className="flex items-center">
+                          <Shield className="mr-2 h-5 w-5" />
+                          <span className="text-base">Admin Dashboard</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                    
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
+                      <LogOut className="mr-2 h-5 w-5" />
+                      <span className="text-base">Log out</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )
             ) : (
               <Link to="/login">
                 <button className="flex items-center bg-[#39536f] text-white rounded-full px-4 py-2 hover:bg-[#2a405a] transition-colors">
