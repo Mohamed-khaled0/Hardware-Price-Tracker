@@ -218,12 +218,6 @@ const Profile: React.FC = () => {
         </Card>
       </div>
       <Footer />
-      <h2>User Roles:</h2>
-      <ul>
-        {roles.map((role) => (
-          <li key={role}>{role}</li>
-        ))}
-      </ul>
     </div>
   );
 };
