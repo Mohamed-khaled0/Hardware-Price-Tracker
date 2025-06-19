@@ -21,11 +21,11 @@ const queryClient = new QueryClient();
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <WishlistProvider>
-          <ComparisonProvider>
-            <SearchProvider>
-              <BrowserRouter>
+      <BrowserRouter>
+        <AuthProvider>
+          <WishlistProvider>
+            <ComparisonProvider>
+              <SearchProvider>
                 <div className="min-h-screen bg-background font-sans antialiased">
                   <Toaster />
                   <Routes>
@@ -40,11 +40,11 @@ function App() {
                     <Route path="/compare" element={<Compare />} />
                   </Routes>
                 </div>
-              </BrowserRouter>
-            </SearchProvider>
-          </ComparisonProvider>
-        </WishlistProvider>
-      </AuthProvider>
+              </SearchProvider>
+            </ComparisonProvider>
+          </WishlistProvider>
+        </AuthProvider>
+      </BrowserRouter>
     </QueryClientProvider>
   );
 }
