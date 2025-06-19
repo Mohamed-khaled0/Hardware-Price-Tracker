@@ -21,9 +21,9 @@ const queryClient = new QueryClient();
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <WishlistProvider>
-        <ComparisonProvider>
-          <AuthProvider>
+      <AuthProvider>
+        <WishlistProvider>
+          <ComparisonProvider>
             <SearchProvider>
               <BrowserRouter>
                 <div className="min-h-screen bg-background font-sans antialiased">
@@ -42,9 +42,9 @@ function App() {
                 </div>
               </BrowserRouter>
             </SearchProvider>
-          </AuthProvider>
-        </ComparisonProvider>
-      </WishlistProvider>
+          </ComparisonProvider>
+        </WishlistProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
