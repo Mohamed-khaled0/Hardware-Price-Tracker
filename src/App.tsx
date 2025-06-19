@@ -12,14 +12,16 @@ import SignUp from '@/pages/SignUp';
 import ForgotPassword from '@/pages/ForgotPassword';
 import UpdatePassword from '@/pages/UpdatePassword';
 import Admin from '@/pages/Admin';
-import { QueryClient } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WishlistProvider } from '@/contexts/wishlist';
 import { ComparisonProvider } from '@/contexts/comparison';
 import Compare from '@/pages/Compare';
 
+const queryClient = new QueryClient();
+
 function App() {
   return (
-    <QueryClient>
+    <QueryClientProvider client={queryClient}>
       <WishlistProvider>
         <ComparisonProvider>
           <AuthProvider>
@@ -45,7 +47,7 @@ function App() {
           </AuthProvider>
         </ComparisonProvider>
       </WishlistProvider>
-    </QueryClient>
+    </QueryClientProvider>
   );
 }
 

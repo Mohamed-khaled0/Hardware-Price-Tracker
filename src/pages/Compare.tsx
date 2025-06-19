@@ -43,6 +43,30 @@ const Compare = () => {
     { key: 'discountPercentage', label: 'Discount' }
   ];
 
+  const getProductValue = (product: any, key: string) => {
+    const value = product[key];
+    return value !== undefined ? value : 'N/A';
+  };
+
+  const formatPrice = (price: any) => {
+    if (typeof price === 'number') {
+      return price.toFixed(2);
+    }
+    return String(price || '0.00');
+  };
+
+  const formatDiscount = (discount: any) => {
+    if (typeof discount === 'number' && discount > 0) {
+      return `${Math.round(discount)}% OFF`;
+    }
+    return 'No discount';
+  };
+
+  const formatStock = (stock: any) => {
+    const stockValue = typeof stock === 'number' ? stock : parseInt(String(stock)) || 0;
+    return stockValue > 0 ? `${stockValue} in stock` : 'Out of stock';
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
@@ -113,27 +137,23 @@ const Compare = () => {
                       <TableCell key={product.id} className="text-center">
                         {feature.key === 'price' ? (
                           <span className="font-bold text-[#39536f]">
-                            ${product[feature.key as keyof typeof product]?.toFixed(2)}
+                            ${formatPrice(getProductValue(product, feature.key))}
                           </span>
                         ) : feature.key === 'rating' ? (
                           <div className="flex items-center justify-center gap-1">
                             <Star className="h-4 w-4 text-yellow-400 fill-yellow-400" />
-                            <span>{product[feature.key as keyof typeof product]}</span>
+                            <span>{getProductValue(product, feature.key)}</span>
                           </div>
                         ) : feature.key === 'discountPercentage' ? (
-                          product[feature.key as keyof typeof product] ? (
-                            <span className="text-red-600 font-medium">
-                              {Math.round(product[feature.key as keyof typeof product] as number)}% OFF
-                            </span>
-                          ) : (
-                            'No discount'
-                          )
+                          <span className="text-red-600 font-medium">
+                            {formatDiscount(getProductValue(product, feature.key))}
+                          </span>
                         ) : feature.key === 'stock' ? (
-                          <span className={product.stock > 0 ? 'text-green-600' : 'text-red-600'}>
-                            {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
+                          <span className={parseInt(String(getProductValue(product, feature.key))) > 0 ? 'text-green-600' : 'text-red-600'}>
+                            {formatStock(getProductValue(product, feature.key))}
                           </span>
                         ) : (
-                          String(product[feature.key as keyof typeof product] || 'N/A')
+                          String(getProductValue(product, feature.key))
                         )}
                       </TableCell>
                     ))}
