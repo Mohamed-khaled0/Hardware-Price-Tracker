@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useParams, Link, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
@@ -5,10 +6,12 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { ShoppingCart, Star, ExternalLink } from "lucide-react";
+import { Heart, Star, ExternalLink, GitCompare } from "lucide-react";
 import { Product } from "./Shop";
-import { useCart } from "@/contexts/cart";
-import PriceForecastChart from "@/components/PriceForecastChart";
+import { useWishlist } from "@/contexts/wishlist";
+import { useComparison } from "@/contexts/comparison";
+import PriceHistoryChart from "@/components/PriceHistoryChart";
+import ProductReviews from "@/components/ProductReviews";
 
 const fetchProductById = async (id: string): Promise<Product> => {
   const res = await fetch(`https://dummyjson.com/products/${id}`);
@@ -41,7 +44,8 @@ const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
   const selectedProvider = searchParams.get('provider');
-  const { addToCart } = useCart();
+  const { addToWishlist, isInWishlist } = useWishlist();
+  const { addToComparison, isInComparison } = useComparison();
   
   const { data: product, isLoading, error } = useQuery({
     queryKey: ["product", id],
@@ -49,9 +53,15 @@ const ProductDetail: React.FC = () => {
     enabled: !!id,
   });
 
-  const handleAddToCart = () => {
+  const handleAddToWishlist = () => {
     if (product) {
-      addToCart(product);
+      addToWishlist(product);
+    }
+  };
+
+  const handleAddToComparison = () => {
+    if (product) {
+      addToComparison(product);
     }
   };
 
@@ -175,17 +185,33 @@ const ProductDetail: React.FC = () => {
                 </div>
               </div>
 
-             
-
               <div className="mt-6 sm:mt-8 flex flex-col gap-2 sm:gap-3">
-                <Button 
-                  className="w-full gap-2 bg-[#39536f] hover:bg-[#2a405a] text-xs sm:text-base py-1.5 sm:py-3"
-                  onClick={handleAddToCart}
-                  disabled={product.stock <= 0}
-                >
-                  <ShoppingCart size={14} className="sm:w-5 sm:h-5" />
-                  <span>Add to Cart</span>
-                </Button>
+                <div className="flex gap-2">
+                  <Button 
+                    className={`flex-1 gap-2 text-xs sm:text-base py-1.5 sm:py-3 ${
+                      isInWishlist(product.id) 
+                        ? 'bg-red-500 hover:bg-red-600' 
+                        : 'bg-[#39536f] hover:bg-[#2a405a]'
+                    }`}
+                    onClick={handleAddToWishlist}
+                  >
+                    <Heart size={14} className={`sm:w-5 sm:h-5 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
+                    <span>{isInWishlist(product.id) ? 'In Wishlist' : 'Add to Wishlist'}</span>
+                  </Button>
+                  
+                  <Button 
+                    variant="outline"
+                    className={`gap-2 text-xs sm:text-base py-1.5 sm:py-3 ${
+                      isInComparison(product.id) 
+                        ? 'border-green-500 text-green-600 bg-green-50' 
+                        : 'border-[#39536f] text-[#39536f] hover:bg-[#e6eef1]'
+                    }`}
+                    onClick={handleAddToComparison}
+                  >
+                    <GitCompare size={14} className="sm:w-5 sm:h-5" />
+                    <span>{isInComparison(product.id) ? 'Added' : 'Compare'}</span>
+                  </Button>
+                </div>
                 
                 {lowestPriceSource && (
                   <Button 
@@ -194,18 +220,21 @@ const ProductDetail: React.FC = () => {
                     onClick={() => window.open(lowestPriceSource.url, '_blank')}
                   >
                     <ExternalLink size={14} className="mr-1 sm:w-5 sm:h-5" />
-                    {lowestPriceSource.store}
+                    Buy at {lowestPriceSource.store}
                   </Button>
                 )}
               </div>
             </div>
           </div>
 
-          {/* Price Forecast Chart */}
-          <PriceForecastChart 
+          {/* Price History Chart */}
+          <PriceHistoryChart 
+            productId={product.id}
             currentPrice={product.price}
-            productName={product.title}
           />
+
+          {/* Product Reviews */}
+          <ProductReviews productId={product.id} />
         </div>
       </main>
 

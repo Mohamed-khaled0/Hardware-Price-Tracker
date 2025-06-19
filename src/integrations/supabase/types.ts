@@ -36,27 +36,180 @@ export type Database = {
         }
         Relationships: []
       }
+      newsletters: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id?: string
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      price_history: {
+        Row: {
+          id: string
+          price: number
+          product_id: number
+          recorded_at: string
+          source: string
+        }
+        Insert: {
+          id?: string
+          price: number
+          product_id: number
+          recorded_at?: string
+          source?: string
+        }
+        Update: {
+          id?: string
+          price?: number
+          product_id?: number
+          recorded_at?: string
+          source?: string
+        }
+        Relationships: []
+      }
+      product_comparisons: {
+        Row: {
+          created_at: string
+          id: string
+          product_ids: number[]
+          session_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_ids: number[]
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_ids?: number[]
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      product_reviews: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          product_id: number
+          rating: number
+          reviewer_name: string
+          session_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          product_id: number
+          rating: number
+          reviewer_name: string
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          product_id?: number
+          rating?: number
+          reviewer_name?: string
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      products: {
+        Row: {
+          created_at: string | null
+          id: number
+          price: number
+          thumbnail: string | null
+          title: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: number
+          price: number
+          thumbnail?: string | null
+          title: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: number
+          price?: number
+          thumbnail?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
+          blocked: boolean | null
           created_at: string
           id: string
+          roles: string[]
           updated_at: string
           username: string | null
         }
         Insert: {
           avatar_url?: string | null
+          blocked?: boolean | null
           created_at?: string
           id: string
+          roles?: string[]
           updated_at?: string
           username?: string | null
         }
         Update: {
           avatar_url?: string | null
+          blocked?: boolean | null
           created_at?: string
           id?: string
+          roles?: string[]
           updated_at?: string
           username?: string | null
+        }
+        Relationships: []
+      }
+      wishlist_items: {
+        Row: {
+          created_at: string
+          id: string
+          product_id: number
+          session_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_id: number
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_id?: number
+          session_id?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -65,7 +218,35 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      add_user_role: {
+        Args: { uid: string; new_role: string }
+        Returns: string[]
+      }
+      is_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      is_blocked: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      list_users_with_profiles: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          email: string
+          username: string
+          avatar_url: string
+          blocked: boolean
+          roles: string[]
+          created_at: string
+          updated_at: string
+        }[]
+      }
+      remove_user_role: {
+        Args: { uid: string; old_role: string }
+        Returns: string[]
+      }
     }
     Enums: {
       [_ in never]: never

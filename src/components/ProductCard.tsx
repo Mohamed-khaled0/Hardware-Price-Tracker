@@ -1,10 +1,12 @@
+
 import React from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, ExternalLink } from 'lucide-react';
+import { Heart, ExternalLink, GitCompare } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
 import { Link } from 'react-router-dom';
-import { useCart } from '@/contexts/cart';
+import { useWishlist } from '@/contexts/wishlist';
+import { useComparison } from '@/contexts/comparison';
 
 interface PriceComparison {
   store: string;
@@ -35,7 +37,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
   thumbnail,
   priceComparisons,
 }) => {
-  const { addToCart } = useCart();
+  const { addToWishlist, isInWishlist } = useWishlist();
+  const { addToComparison, isInComparison } = useComparison();
   
   // Find the lowest price among all sources
   const getLowestPrice = (): number => {
@@ -59,8 +62,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
     );
   };
 
-  const handleAddToCart = () => {
-    addToCart({ 
+  const handleAddToWishlist = () => {
+    addToWishlist({ 
       id, 
       title, 
       description, 
@@ -70,9 +73,26 @@ const ProductCard: React.FC<ProductCardProps> = ({
       brand, 
       thumbnail, 
       priceComparisons,
-      stock: 10, // Default value, not used in cart display
-      category: '', // Default value, not used in cart display
-      images: [thumbnail] // Default value, not used in cart display
+      stock: 10,
+      category: '',
+      images: [thumbnail]
+    });
+  };
+
+  const handleAddToComparison = () => {
+    addToComparison({ 
+      id, 
+      title, 
+      description, 
+      price: getLowestPrice(), 
+      discountPercentage, 
+      rating, 
+      brand, 
+      thumbnail, 
+      priceComparisons,
+      stock: 10,
+      category: '',
+      images: [thumbnail]
     });
   };
 
@@ -146,13 +166,30 @@ const ProductCard: React.FC<ProductCardProps> = ({
       
       <CardFooter className="p-2 sm:p-4 pt-0">
         <div className="flex flex-col w-full gap-1 sm:gap-2">
-          <Button 
-            className="w-full gap-1 sm:gap-2 bg-[#39536f] hover:bg-[#2a405a] text-xs sm:text-base py-1.5 sm:py-3"
-            onClick={handleAddToCart}
-          >
-            <ShoppingCart size={14} className="sm:w-5 sm:h-5" />
-            <span>Add to Cart</span>
-          </Button>
+          <div className="flex gap-1 sm:gap-2">
+            <Button 
+              className={`flex-1 gap-1 sm:gap-2 text-xs sm:text-base py-1.5 sm:py-3 ${
+                isInWishlist(id) 
+                  ? 'bg-red-500 hover:bg-red-600' 
+                  : 'bg-[#39536f] hover:bg-[#2a405a]'
+              }`}
+              onClick={handleAddToWishlist}
+            >
+              <Heart size={14} className={`sm:w-5 sm:h-5 ${isInWishlist(id) ? 'fill-current' : ''}`} />
+              <span>{isInWishlist(id) ? 'In Wishlist' : 'Wishlist'}</span>
+            </Button>
+            <Button 
+              variant="outline"
+              className={`gap-1 sm:gap-2 text-xs sm:text-base py-1.5 sm:py-3 ${
+                isInComparison(id) 
+                  ? 'border-green-500 text-green-600 bg-green-50' 
+                  : 'border-[#39536f] text-[#39536f] hover:bg-[#e6eef1]'
+              }`}
+              onClick={handleAddToComparison}
+            >
+              <GitCompare size={14} className="sm:w-5 sm:h-5" />
+            </Button>
+          </div>
           
           {lowestPriceStore && (
             <Button 
@@ -161,7 +198,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
               onClick={() => window.open(lowestPriceStore.url, '_blank')}
             >
               <ExternalLink size={14} className="mr-1 sm:w-5 sm:h-5" />
-              {lowestPriceStore.store}
+              Buy at {lowestPriceStore.store}
             </Button>
           )}
         </div>
