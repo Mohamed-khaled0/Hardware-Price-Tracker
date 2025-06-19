@@ -10,7 +10,6 @@ import Profile from '@/pages/Profile';
 import Login from '@/pages/Login';
 import SignUp from '@/pages/SignUp';
 import ForgotPassword from '@/pages/ForgotPassword';
-import UpdatePassword from '@/pages/UpdatePassword';
 import Admin from '@/pages/Admin';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WishlistProvider } from '@/contexts/wishlist';
@@ -37,7 +36,6 @@ function App() {
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<SignUp />} />
                     <Route path="/forgot-password" element={<ForgotPassword />} />
-                    <Route path="/update-password" element={<UpdatePassword />} />
                     <Route path="/admin" element={<Admin />} />
                     <Route path="/compare" element={<Compare />} />
                   </Routes>
