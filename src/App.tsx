@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'sonner';
@@ -7,7 +8,7 @@ import Shop from '@/pages/Shop';
 import ProductDetail from '@/pages/ProductDetail';
 import Profile from '@/pages/Profile';
 import Login from '@/pages/Login';
-import Register from '@/pages/Register';
+import SignUp from '@/pages/SignUp';
 import ForgotPassword from '@/pages/ForgotPassword';
 import UpdatePassword from '@/pages/UpdatePassword';
 import Admin from '@/pages/Admin';
@@ -32,7 +33,7 @@ function App() {
                     <Route path="/product/:id" element={<ProductDetail />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
+                    <Route path="/register" element={<SignUp />} />
                     <Route path="/forgot-password" element={<ForgotPassword />} />
                     <Route path="/update-password" element={<UpdatePassword />} />
                     <Route path="/admin" element={<Admin />} />
