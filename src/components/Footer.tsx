@@ -1,3 +1,4 @@
+
 import { Link } from 'react-router-dom';
 import { Mail, MapPin, Phone } from 'lucide-react';
 
@@ -11,16 +12,12 @@ const Footer = () => {
           <div className="col-span-1">
             <Link to="/" className="flex-shrink-0">
               <h1 className="text-2xl md:text-xl font-bold tracking-tight">
-              <span className="text-[#39536f]">H</span>
-              <span className="text-[#6f7d95]">ardware</span>
-                <span className="text-[#39536f]"> P</span>
-                <span className="text-[#6f7d95]">rice</span>
-                <span className="text-[#39536f]"> T</span>
-                <span className="text-[#6f7d95]">racker</span>
+              <span className="text-[#39536f]">E</span>
+              <span className="text-[#6f7d95]">-Commerce</span>
               </h1>
             </Link>
             <p className="text-sm text-gray-700 mb-2">
-            Hardware Price Tracker helps you track electronics prices across Egypt's top stores.
+            Your one-stop shop for all your needs. Quality products at great prices.
             </p>
           </div>
 
@@ -49,7 +46,7 @@ const Footer = () => {
 
         {/* Footer Bottom */}
         <div className="mt-10 text-center text-sm text-gray-500">
-          &copy; {new Date().getFullYear()} Hardware Price Tracker. All rights reserved.
+          &copy; {new Date().getFullYear()} E-Commerce. All rights reserved.
         </div>
       </div>
     </footer>

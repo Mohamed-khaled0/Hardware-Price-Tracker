@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Button } from "@/components/ui/button";
 
@@ -5,13 +6,13 @@ const PromoBanners = () => {
   return (
     <div className="py-12 bg-white">
       <div className="container mx-auto px-4">
-        {/* First banner - Mega Sales */}
+        {/* First banner - Sales */}
         <div className="bg-[#d0e0ec] rounded-lg mb-8">
           <div className="flex flex-col md:flex-row">
             <div className="p-8 md:p-12 md:w-1/2 flex flex-col justify-center">
-              <h2 className="text-3xl md:text-4xl font-bold mb-2">Save Big on Tech Today</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-2">Amazing Deals Every Day</h2>
               <p className="text-gray-700 mb-6">
-                Compare deals, set alerts, and buy at the absolute lowest price.
+                Discover great products at unbeatable prices with fast shipping.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button className="bg-[#39536f] hover:bg-[#2a405a]">Start Shopping</Button>
@@ -20,7 +21,7 @@ const PromoBanners = () => {
             <div className="md:w-1/2 hidden md:flex items-end justify-end relative">
               <img 
                 src="/lovable-uploads/iphoneHero.webp" 
-                alt="Mega sales" 
+                alt="Featured products" 
                 className="max-h-[180px] md:max-h-[200px] lg:max-h-[300px] object-contain"
               />
             </div>
@@ -29,37 +30,38 @@ const PromoBanners = () => {
 
         {/* Two-column banners */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Laptop Surface Pro banner */}
+          {/* Electronics banner */}
           <div className="bg-[#d0e0ec] rounded-lg overflow-hidden">
             <div className="p-8 relative">
               <div className="max-w-[60%]">
-                <h3 className="text-2xl font-bold mb-2">Get the Best Deal, Every Time</h3>
+                <h3 className="text-2xl font-bold mb-2">Electronics Sale</h3>
                 <p className="text-sm text-gray-700 mb-4">
-                Live price updates & drop alerts so you never miss a bargain
+                Latest gadgets and electronics at amazing prices
                 </p>
-                <Button className="bg-[#39536f] hover:bg-[#2a405a]">$699 Or Off</Button>
+                <Button className="bg-[#39536f] hover:bg-[#2a405a]">Up to 30% Off</Button>
               </div>
               <img 
                 src="/lovable-uploads/camera.webp" 
-                alt="Laptop Surface Pro" 
+                alt="Electronics" 
                 className="absolute right-0 bottom-0 max-h-[100px] md:max-h-[110px] lg:max-h-[160px] object-contain"
               />
             </div>
           </div>
 
-          {/* HP Monitor banner */}
+          {/* Tech Accessories banner */}
           <div className="bg-[#d0e0ec] rounded-lg overflow-hidden">
             <div className="p-8 relative">
               <div className="max-w-[60%]">
-                <h3 className="text-2xl font-bold mb-2">Seasonal Price Drop</h3>
+                <h3 className="text-2xl font-bold mb-2">Tech Accessories</h3>
                 <p className="text-sm text-gray-700 mb-4">
-                Predictive AI flags today's lowest price—see what you save.                </p>
-                <Button className="bg-[#39536f] hover:bg-[#2a405a]">Upto 50 Off</Button>
+                Essential accessories for all your devices
+                </p>
+                <Button className="bg-[#39536f] hover:bg-[#2a405a]">Shop Now</Button>
               </div>
               <img 
                 src="/lovable-uploads/tablet.webp" 
                 loading="lazy"
-                alt="HP Monitor" 
+                alt="Tech Accessories" 
                 className="absolute right-0 bottom-0 max-h-[100px] md:max-h-[110px] lg:max-h-[160px] object-contain"
               />
             </div>

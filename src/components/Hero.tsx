@@ -1,9 +1,10 @@
+
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
 const heroData = {
-  title: "Never Overpay Again!",
-  description: "Real‑time price tracking across all your favorite electronics stores",
+  title: "Shop the Best Products Online!",
+  description: "Discover amazing products with great deals and fast shipping",
   buttonText: "Shop Now",
   buttonLink: "/shop",
   image: "/lovable-uploads/display.webp",

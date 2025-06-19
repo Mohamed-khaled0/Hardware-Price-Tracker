@@ -6,7 +6,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { Heart, Star, ExternalLink, GitCompare } from "lucide-react";
+import { Heart, Star, ShoppingCart, GitCompare } from "lucide-react";
 import { Product } from "./Shop";
 import { useWishlist } from "@/contexts/wishlist";
 import { useComparison } from "@/contexts/comparison";
@@ -17,33 +17,12 @@ const fetchProductById = async (id: string): Promise<Product> => {
   const res = await fetch(`https://dummyjson.com/products/${id}`);
   if (!res.ok) throw new Error("Failed to fetch product details");
   const product = await res.json();
-  
-  // Add mock price comparisons
-  product.priceComparisons = [
-    {
-      store: "Amazon",
-      price: product.price * 0.95,
-      url: "https://amazon.com"
-    },
-    {
-      store: "Best Buy",
-      price: product.price * 1.05,
-      url: "https://bestbuy.com"
-    },
-    {
-      store: "Newegg",
-      price: product.price * 0.98,
-      url: "https://newegg.com"
-    }
-  ];
-  
   return product;
 };
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
-  const selectedProvider = searchParams.get('provider');
   const { addToWishlist, isInWishlist } = useWishlist();
   const { addToComparison, isInComparison } = useComparison();
   
@@ -65,26 +44,6 @@ const ProductDetail: React.FC = () => {
     }
   };
 
-  // Find the source with the lowest price or the selected provider
-  const getLowestPriceSource = () => {
-    if (!product?.priceComparisons || product.priceComparisons.length === 0) {
-      return null;
-    }
-    
-    if (selectedProvider) {
-      return product.priceComparisons.find(pc => pc.store === selectedProvider) || 
-             product.priceComparisons.reduce(
-               (lowest, current) => current.price < lowest.price ? current : lowest,
-               product.priceComparisons[0]
-             );
-    }
-    
-    return product.priceComparisons.reduce(
-      (lowest, current) => current.price < lowest.price ? current : lowest,
-      product.priceComparisons[0]
-    );
-  };
-
   if (isLoading) {
     return <div className="flex justify-center items-center h-screen">Loading product details...</div>;
   }
@@ -92,8 +51,6 @@ const ProductDetail: React.FC = () => {
   if (error || !product) {
     return <div className="text-red-600 text-center mt-10">Error: Product not found</div>;
   }
-
-  const lowestPriceSource = getLowestPriceSource();
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -188,41 +145,36 @@ const ProductDetail: React.FC = () => {
               <div className="mt-6 sm:mt-8 flex flex-col gap-2 sm:gap-3">
                 <div className="flex gap-2">
                   <Button 
-                    className={`flex-1 gap-2 text-xs sm:text-base py-1.5 sm:py-3 ${
+                    className="flex-1 gap-2 text-xs sm:text-base py-1.5 sm:py-3 bg-[#39536f] hover:bg-[#2a405a]"
+                  >
+                    <ShoppingCart size={14} className="sm:w-5 sm:h-5" />
+                    <span>Add to Cart</span>
+                  </Button>
+                  
+                  <Button 
+                    className={`gap-2 text-xs sm:text-base py-1.5 sm:py-3 ${
                       isInWishlist(product.id) 
                         ? 'bg-red-500 hover:bg-red-600' 
-                        : 'bg-[#39536f] hover:bg-[#2a405a]'
+                        : 'bg-gray-500 hover:bg-gray-600'
                     }`}
                     onClick={handleAddToWishlist}
                   >
                     <Heart size={14} className={`sm:w-5 sm:h-5 ${isInWishlist(product.id) ? 'fill-current' : ''}`} />
-                    <span>{isInWishlist(product.id) ? 'In Wishlist' : 'Add to Wishlist'}</span>
-                  </Button>
-                  
-                  <Button 
-                    variant="outline"
-                    className={`gap-2 text-xs sm:text-base py-1.5 sm:py-3 ${
-                      isInComparison(product.id) 
-                        ? 'border-green-500 text-green-600 bg-green-50' 
-                        : 'border-[#39536f] text-[#39536f] hover:bg-[#e6eef1]'
-                    }`}
-                    onClick={handleAddToComparison}
-                  >
-                    <GitCompare size={14} className="sm:w-5 sm:h-5" />
-                    <span>{isInComparison(product.id) ? 'Added' : 'Compare'}</span>
                   </Button>
                 </div>
                 
-                {lowestPriceSource && (
-                  <Button 
-                    variant="outline" 
-                    className="w-full border-[#39536f] text-[#39536f] hover:bg-[#e6eef1] text-xs sm:text-base py-1.5 sm:py-3"
-                    onClick={() => window.open(lowestPriceSource.url, '_blank')}
-                  >
-                    <ExternalLink size={14} className="mr-1 sm:w-5 sm:h-5" />
-                    Buy at {lowestPriceSource.store}
-                  </Button>
-                )}
+                <Button 
+                  variant="outline"
+                  className={`gap-2 text-xs sm:text-base py-1.5 sm:py-3 ${
+                    isInComparison(product.id) 
+                      ? 'border-green-500 text-green-600 bg-green-50' 
+                      : 'border-[#39536f] text-[#39536f] hover:bg-[#e6eef1]'
+                  }`}
+                  onClick={handleAddToComparison}
+                >
+                  <GitCompare size={14} className="sm:w-5 sm:h-5" />
+                  <span>{isInComparison(product.id) ? 'Added to Compare' : 'Compare Product'}</span>
+                </Button>
               </div>
             </div>
           </div>

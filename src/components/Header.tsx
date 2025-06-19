@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/auth';
@@ -47,11 +48,10 @@ const Header = () => {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link to="/" className="flex-shrink-0">
-              <img
-                className="h-8 w-auto"
-                src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"
-                alt="Workflow"
-              />
+              <h1 className="text-2xl font-bold tracking-tight">
+                <span className="text-[#39536f]">E</span>
+                <span className="text-[#6f7d95]">-Commerce</span>
+              </h1>
             </Link>
 
             {/* Navigation - Desktop */}
@@ -96,7 +96,7 @@ const Header = () => {
                 </div>
               </form>
 
-              {/* Cart Icon */}
+              {/* Wishlist Icon */}
               <Link to="/cart" className="text-gray-700 hover:text-[#39536f] relative p-2">
                 <Heart className="h-6 w-6" />
                 {getItemCount() > 0 && (

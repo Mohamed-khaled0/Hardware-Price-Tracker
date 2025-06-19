@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
@@ -23,12 +24,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 // --- Types ---
-interface PriceComparison {
-  store: string;
-  price: number;
-  url: string;
-}
-
 export interface Product {
   id: number;
   title: string;
@@ -41,7 +36,6 @@ export interface Product {
   category: string;
   thumbnail: string;
   images: string[];
-  priceComparisons?: PriceComparison[];
 }
 
 // --- Helpers ---
@@ -49,23 +43,7 @@ const fetchProducts = async (): Promise<Product[]> => {
   const res = await fetch("https://dummyjson.com/products");
   if (!res.ok) throw new Error("Failed to fetch products");
   const json = (await res.json()) as { products: Product[] };
-
-  const stores = ["Amazon", "eBay", "Walmart", "Target", "Best Buy"];
-  return json.products.map((product) => {
-    const comps: PriceComparison[] = [];
-    const count = Math.floor(Math.random() * 3) + 1;
-    for (let i = 0; i < count; i++) {
-      const store = stores[i % stores.length];
-      const factor = 0.8 + Math.random() * 0.4;
-      comps.push({
-        store,
-        price: Math.round(product.price * factor * 100) / 100,
-        url: "#",
-      });
-    }
-    comps.sort((a, b) => a.price - b.price);
-    return { ...product, priceComparisons: comps };
-  });
+  return json.products;
 };
 
 const getUniqueCategories = (products: Product[]): string[] =>
@@ -233,7 +211,6 @@ const Shop: React.FC = () => {
                           rating={product.rating}
                           brand={product.brand}
                           thumbnail={product.thumbnail}
-                          priceComparisons={product.priceComparisons}
                         />
                       ))}
                     </div>
