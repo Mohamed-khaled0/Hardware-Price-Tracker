@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
-import { ExternalLink, Trash } from "lucide-react";
+import { Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Header from "@/components/Header";
@@ -10,20 +10,6 @@ import { useWishlist } from "@/contexts/wishlist";
 
 const Cart = () => {
   const { items, removeFromWishlist, clearWishlist } = useWishlist();
-  
-  // Find best source for each product
-  const getBestSource = (productId: string) => {
-    const item = items.find(item => item.id === productId);
-    
-    if (!item?.priceComparisons || item.priceComparisons.length === 0) {
-      return null;
-    }
-    
-    return item.priceComparisons.reduce(
-      (best, current) => current.price < best.price ? current : best, 
-      item.priceComparisons[0]
-    );
-  };
   
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -58,67 +44,41 @@ const Cart = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {items.map((item) => {
-                      const bestSource = getBestSource(item.id);
-                      
-                      return (
-                        <TableRow key={item.id}>
-                          <TableCell>
-                            <Link to={`/product/${item.product_id}`}>
-                              <div className="w-24 h-24 rounded border overflow-hidden">
-                                <img 
-                                  src={item.thumbnail} 
-                                  loading="lazy"
-                                  alt={item.title} 
-                                  className="w-full h-full object-cover"
-                                />
-                              </div>
-                            </Link>
-                          </TableCell>
-                          <TableCell className="font-medium">
-                            <Link to={`/product/${item.product_id}`} className="hover:text-[#39536f] hover:underline">
-                              {item.title}
-                            </Link>
-                            {bestSource && (
-                              <div className="mt-1 text-sm text-gray-500">
-                                Best price from: {bestSource.store}
-                              </div>
-                            )}
-                          </TableCell>
-                          <TableCell className="text-right">${item.price.toFixed(2)}</TableCell>
-                          <TableCell className="text-right">
-                            <div className="flex justify-end gap-2">
-                              {bestSource && (
-                                <a 
-                                  href={bestSource.url}
-                                  target="_blank" 
-                                  rel="noopener noreferrer" 
-                                  className="inline-flex items-center text-blue-600 hover:text-blue-800"
-                                >
-                                  <Button 
-                                    variant="outline" 
-                                    size="sm" 
-                                    className="border-blue-600 text-blue-600"
-                                  >
-                                    <ExternalLink className="h-4 w-4 mr-1" />
-                                    Buy Now
-                                  </Button>
-                                </a>
-                              )}
-                              <Button 
-                                variant="ghost" 
-                                size="sm"
-                                className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                                onClick={() => removeFromWishlist(item.id)}
-                              >
-                                <Trash className="h-4 w-4 mr-1" />
-                                Remove
-                              </Button>
+                    {items.map((item) => (
+                      <TableRow key={item.id}>
+                        <TableCell>
+                          <Link to={`/product/${item.product_id}`}>
+                            <div className="w-24 h-24 rounded border overflow-hidden">
+                              <img 
+                                src={item.thumbnail} 
+                                loading="lazy"
+                                alt={item.title} 
+                                className="w-full h-full object-cover"
+                              />
                             </div>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
+                          </Link>
+                        </TableCell>
+                        <TableCell className="font-medium">
+                          <Link to={`/product/${item.product_id}`} className="hover:text-[#39536f] hover:underline">
+                            {item.title}
+                          </Link>
+                        </TableCell>
+                        <TableCell className="text-right">${item.price.toFixed(2)}</TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2">
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                              onClick={() => removeFromWishlist(item.id)}
+                            >
+                              <Trash className="h-4 w-4 mr-1" />
+                              Remove
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
                   </TableBody>
                 </Table>
               </div>
