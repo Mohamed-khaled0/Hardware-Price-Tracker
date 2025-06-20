@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/auth';
-import { Product } from '@/pages/Shop';
+import { Product } from '@/types/product';
 import { CartContext } from './CartContext';
 import { CartItem } from './types';
 

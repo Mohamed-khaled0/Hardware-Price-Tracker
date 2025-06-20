@@ -1,7 +1,7 @@
 
 import React, { ReactNode, useState } from 'react';
 import { toast } from 'sonner';
-import { Product } from '@/pages/Shop';
+import { Product } from '@/types/product';
 import { ComparisonContext } from './ComparisonContext';
 
 interface ComparisonProviderProps {

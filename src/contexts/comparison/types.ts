@@ -1,5 +1,5 @@
 
-import { Product } from '@/pages/Shop';
+import { Product } from '@/types/product';
 
 export interface ComparisonContextType {
   items: Product[];

@@ -3,7 +3,7 @@ import React, { ReactNode, useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/auth';
-import { Product } from '@/pages/Shop';
+import { Product } from '@/types/product';
 import { WishlistContext } from './WishlistContext';
 import { WishlistItem } from './types';
 

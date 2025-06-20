@@ -7,7 +7,7 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Heart, Star, ShoppingCart, GitCompare } from "lucide-react";
-import { Product } from "./Shop";
+import { Product } from "@/types/product";
 import { useWishlist } from "@/contexts/wishlist";
 import { useComparison } from "@/contexts/comparison";
 import PriceHistoryChart from "@/components/PriceHistoryChart";

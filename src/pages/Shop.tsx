@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
@@ -22,6 +21,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Product } from "@/types/product";
+
+// Re-export Product for backward compatibility
+export type { Product };
 
 // FakeStore API Product interface
 interface FakeStoreProduct {
