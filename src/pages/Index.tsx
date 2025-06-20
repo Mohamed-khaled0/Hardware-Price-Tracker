@@ -7,7 +7,6 @@ import PopularCategories from "@/components/PopularCategories";
 import PromoBanners from "@/components/PromoBanners";
 import FeaturedBrands from "@/components/FeaturedBrands";
 import Newsletter from "@/components/Newsletter";
-import FeaturedProducts from "@/components/FeaturedProducts";
 
 const Index = () => {
   return (
@@ -18,7 +17,6 @@ const Index = () => {
         <Hero />
         <FeaturesBar />
         <PopularCategories />
-        <FeaturedProducts />
         <PromoBanners />
         <FeaturedBrands />
         <Newsletter />
