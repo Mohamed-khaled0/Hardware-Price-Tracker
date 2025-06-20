@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
@@ -9,7 +10,7 @@ import {
 } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, History, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, History, X } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -22,9 +23,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Product } from "@/types/product";
-
-// Re-export Product for backward compatibility
-export type { Product };
 
 // FakeStore API Product interface
 interface FakeStoreProduct {
@@ -40,33 +38,79 @@ interface FakeStoreProduct {
   };
 }
 
+// Platzi API Product interface
+interface PlatziProduct {
+  id: number;
+  title: string;
+  price: number;
+  description: string;
+  category: {
+    id: number;
+    name: string;
+    image: string;
+  };
+  images: string[];
+}
+
 // Convert FakeStore product to our Product interface
-const convertToProduct = (fakeProduct: FakeStoreProduct) => ({
-  id: fakeProduct.id,
+const convertFakeStoreProduct = (fakeProduct: FakeStoreProduct, idOffset: number = 0): Product => ({
+  id: fakeProduct.id + idOffset,
   title: fakeProduct.title,
   description: fakeProduct.description,
   price: fakeProduct.price,
-  discountPercentage: Math.floor(Math.random() * 30) + 5, // Random discount for demo
+  discountPercentage: Math.floor(Math.random() * 30) + 5,
   rating: fakeProduct.rating.rate,
-  stock: Math.floor(Math.random() * 50) + 10, // Random stock for demo
+  stock: Math.floor(Math.random() * 50) + 10,
   brand: fakeProduct.category.charAt(0).toUpperCase() + fakeProduct.category.slice(1),
   category: fakeProduct.category,
   thumbnail: fakeProduct.image,
   images: [fakeProduct.image]
 });
 
-const fetchAllProducts = async () => {
-  const res = await fetch("https://fakestoreapi.com/products");
-  if (!res.ok) throw new Error("Failed to fetch products");
-  const fakeProducts: FakeStoreProduct[] = await res.json();
-  return fakeProducts.map(convertToProduct);
+// Convert Platzi product to our Product interface
+const convertPlatziProduct = (platziProduct: PlatziProduct, idOffset: number = 1000): Product => ({
+  id: platziProduct.id + idOffset,
+  title: platziProduct.title,
+  description: platziProduct.description,
+  price: platziProduct.price,
+  discountPercentage: Math.floor(Math.random() * 25) + 10,
+  rating: Math.random() * 2 + 3, // Random rating between 3-5
+  stock: Math.floor(Math.random() * 30) + 5,
+  brand: platziProduct.category.name,
+  category: platziProduct.category.name.toLowerCase(),
+  thumbnail: platziProduct.images[0] || '/placeholder.svg',
+  images: platziProduct.images
+});
+
+const fetchAllProducts = async (): Promise<Product[]> => {
+  try {
+    // Fetch from FakeStore API
+    const fakeStoreResponse = await fetch("https://fakestoreapi.com/products");
+    const fakeStoreProducts: FakeStoreProduct[] = await fakeStoreResponse.json();
+    
+    // Fetch from Platzi API
+    const platziResponse = await fetch("https://api.escuelajs.co/api/v1/products?limit=50");
+    const platziProducts: PlatziProduct[] = await platziResponse.json();
+    
+    // Convert and combine products
+    const convertedFakeStore = fakeStoreProducts.map(product => convertFakeStoreProduct(product));
+    const convertedPlatzi = platziProducts.map(product => convertPlatziProduct(product));
+    
+    return [...convertedFakeStore, ...convertedPlatzi];
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    // Fallback to FakeStore only if Platzi fails
+    const fakeStoreResponse = await fetch("https://fakestoreapi.com/products");
+    const fakeStoreProducts: FakeStoreProduct[] = await fakeStoreResponse.json();
+    return fakeStoreProducts.map(product => convertFakeStoreProduct(product));
+  }
 };
 
-const getUniqueCategories = (products: any[]): string[] =>
+const getUniqueCategories = (products: Product[]): string[] =>
   Array.from(new Set(products.map((p) => p.category)));
 
 const filterProducts = (
-  products: any[],
+  products: Product[],
   category: string,
   term: string
 ) =>
@@ -85,8 +129,6 @@ const Shop: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const { currentSearch, setCurrentSearch, searchHistory, addToHistory, clearHistory } = useSearch();
   const [categories, setCategories] = useState<string[]>([]);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
 
   const {
     data: products,
@@ -105,9 +147,15 @@ const Shop: React.FC = () => {
 
   useEffect(() => {
     const search = searchParams.get("search");
+    const category = searchParams.get("category");
+    
     if (search) {
       setCurrentSearch(search);
       addToHistory(search);
+    }
+    
+    if (category) {
+      setSelectedCategory(category);
     }
   }, [searchParams, setCurrentSearch, addToHistory]);
 
@@ -145,6 +193,8 @@ const Shop: React.FC = () => {
   }
 
   const filteredProducts = filterProducts(products || [], selectedCategory, currentSearch);
+  const categoryFromUrl = searchParams.get("category");
+  const showCategoryMessage = categoryFromUrl && filteredProducts.length === 0;
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -154,7 +204,15 @@ const Shop: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 md:px-8">
           <div className="mb-6">
             <h1 className="text-3xl font-bold text-gray-800 mb-2">Shop All Products</h1>
-            <p className="text-gray-600">Discover amazing products at the best prices</p>
+            <p className="text-gray-600">Discover amazing products from multiple sources at the best prices</p>
+            {showCategoryMessage && (
+              <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                <p className="text-yellow-800">
+                  We don't have products for "{categoryFromUrl}" category right now, but we're working on adding more items soon! 
+                  Browse all our available products below.
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Search & Filter */}
@@ -216,7 +274,7 @@ const Shop: React.FC = () => {
 
           {/* Category Tabs */}
           <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
-            <TabsList className="mb-6">
+            <TabsList className="mb-6 flex-wrap h-auto">
               <TabsTrigger value="all">All Products ({products?.length || 0})</TabsTrigger>
               {categories.map((cat) => (
                 <TabsTrigger key={cat} value={cat} className="capitalize">

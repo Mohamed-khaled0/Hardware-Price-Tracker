@@ -5,39 +5,39 @@ import { Link } from "react-router-dom";
 const categories = [
   {
     id: 1,
-    name: "Laptops",
+    name: "Electronics",
     image: "/lovable-uploads/laptop.webp",
-    link: "/categories/laptops",
+    link: "/shop?category=electronics",
   },
   {
     id: 2,
     name: "Smartphones",
     image: "/lovable-uploads/smartphone.webp",
-    link: "/categories/smartphones",
+    link: "/shop?category=mobile",
   },
   {
     id: 3,
-    name: "Cameras",
+    name: "Clothes",
     image: "/lovable-uploads/camera.webp",
-    link: "/categories/cameras",
+    link: "/shop?category=clothes",
   },
   {
     id: 4,
-    name: "Headphones",
+    name: "Shoes",
     image: "/lovable-uploads/headphone.webp",
-    link: "/categories/headphones",
+    link: "/shop?category=shoes",
   },
   {
     id: 5,
-    name: "Smart TV",
+    name: "Furniture",
     image: "/lovable-uploads/display2.webp",
-    link: "/categories/smart-tv",
+    link: "/shop?category=furniture",
   },
   {
     id: 6,
-    name: "Smart Watches",
+    name: "Miscellaneous",
     image: "/lovable-uploads/applewatch.webp",
-    link: "/categories/smart-watches",
+    link: "/shop?category=miscellaneous",
   },
 ];
 
