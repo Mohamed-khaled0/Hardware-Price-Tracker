@@ -80,21 +80,30 @@ const ProductCard: React.FC<ProductCardProps> = ({
       images: [thumbnail]
     });
   };
+
+  // Handle image error by using a placeholder
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    e.currentTarget.src = 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=400&fit=crop';
+  };
   
   return (
     <Card className="overflow-hidden flex flex-col h-full border-2 rounded-xl w-full max-w-[100%] sm:max-w-[280px] mx-auto">
       <Link to={`/product/${id}`} className="block w-full">
-        <div className="relative w-full h-[140px] sm:h-[220px] md:h-[250px] overflow-hidden">
+        <div className="relative w-full h-[180px] sm:h-[220px] md:h-[250px] overflow-hidden bg-gray-50">
           <img 
             src={thumbnail} 
             alt={title} 
-            width={300}
-            height={300}
             loading="lazy"
-            className="w-full h-full object-contain p-0.5 sm:p-2 md:p-0 sm:object-cover transition-transform hover:scale-105"
+            onError={handleImageError}
+            className="w-full h-full object-contain hover:object-cover transition-all duration-300 hover:scale-105 p-2"
+            style={{
+              objectPosition: 'center',
+              maxWidth: '100%',
+              maxHeight: '100%'
+            }}
           />
           {discountPercentage && (
-            <div className="absolute top-1 right-1 sm:top-2 sm:right-2 bg-red-500 text-white px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md text-xs sm:text-sm font-bold">
+            <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-md text-sm font-bold z-10">
               {Math.round(discountPercentage)}% OFF
             </div>
           )}
@@ -105,11 +114,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <div className="flex justify-between items-start">
           <div className="flex-1 min-w-0">
             <Link to={`/product/${id}`}>
-              <CardTitle className="text-sm sm:text-lg lg:text-xl hover:text-[#39536f] hover:underline line-clamp-2">{title}</CardTitle>
+              <CardTitle className="text-sm sm:text-lg lg:text-xl hover:text-[#39536f] hover:underline line-clamp-2 leading-tight">{title}</CardTitle>
             </Link>
             <CardDescription className="text-xs sm:text-base mt-0.5 sm:mt-1">{brand}</CardDescription>
           </div>
-          <div className="flex items-center ml-1 sm:ml-2">
+          <div className="flex items-center ml-1 sm:ml-2 flex-shrink-0">
             <span className="text-yellow-500 mr-0.5 sm:mr-1 text-xs sm:text-base">★</span>
             <span className="text-xs sm:text-base font-medium">{rating.toFixed(1)}</span>
           </div>
@@ -117,7 +126,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       </CardHeader>
       
       <CardContent className="p-2 sm:p-4 flex-grow">
-        <p className="text-xs sm:text-base text-gray-600 line-clamp-2">{description}</p>
+        <p className="text-xs sm:text-base text-gray-600 line-clamp-2 mb-2">{description}</p>
         
         <div className="mt-2 sm:mt-4">
           <div className="flex items-center gap-2">
