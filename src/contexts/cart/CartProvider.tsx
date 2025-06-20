@@ -17,7 +17,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  // Load cart items from Supabase or localStorage when user state changes or on component mount
+  // Load cart items from Supabase when user state changes or on component mount
   useEffect(() => {
     const loadCart = async () => {
       if (user) {
@@ -35,19 +35,30 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
           if (data) {
             // Transform database cart items to our CartItem interface
-            // Need to fetch product details for each item
             const cartItems = await Promise.all(
               data.map(async (item) => {
-                // In a real app, you'd fetch product details from your product API/database
-                // For now, we'll simulate with minimal information
-                return {
-                  id: item.id,
-                  product_id: item.product_id,
-                  title: `Product ${item.product_id}`, // This would be fetched from product database
-                  price: 0, // This would be fetched from product database
-                  quantity: item.quantity,
-                  thumbnail: 'placeholder.svg' // This would be fetched from product database
-                };
+                try {
+                  const productRes = await fetch(`https://dummyjson.com/products/${item.product_id}`);
+                  const product = await productRes.json();
+                  
+                  return {
+                    id: item.id,
+                    product_id: item.product_id,
+                    title: product.title,
+                    price: product.price,
+                    quantity: item.quantity,
+                    thumbnail: product.thumbnail
+                  };
+                } catch {
+                  return {
+                    id: item.id,
+                    product_id: item.product_id,
+                    title: `Product ${item.product_id}`,
+                    price: 0,
+                    quantity: item.quantity,
+                    thumbnail: 'placeholder.svg'
+                  };
+                }
               })
             );
             setItems(cartItems);
@@ -56,7 +67,6 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
           console.error('Error loading cart from Supabase:', error);
         }
       } else {
-        // No local storage cart support anymore
         setItems([]);
       }
     };
@@ -114,8 +124,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
           title: product.title,
           price: product.price,
           quantity: 1,
-          thumbnail: product.thumbnail,
-          priceComparisons: product.priceComparisons // Add the price comparisons from the product
+          thumbnail: product.thumbnail
         };
         
         setItems(prevItems => [...prevItems, newItem]);

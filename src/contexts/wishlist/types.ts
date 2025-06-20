@@ -7,11 +7,6 @@ export interface WishlistItem {
   title: string;
   price: number;
   thumbnail: string;
-  priceComparisons?: {
-    store: string;
-    price: number;
-    url: string;
-  }[];
 }
 
 export interface WishlistContextType {

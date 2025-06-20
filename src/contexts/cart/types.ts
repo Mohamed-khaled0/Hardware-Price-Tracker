@@ -1,12 +1,6 @@
 
 import { Product } from '@/pages/Shop';
 
-export interface PriceComparison {
-  store: string;
-  price: number;
-  url: string;
-}
-
 export interface CartItem {
   id: string;
   product_id: number;
@@ -14,7 +8,6 @@ export interface CartItem {
   price: number;
   quantity: number;
   thumbnail: string;
-  priceComparisons?: PriceComparison[];
 }
 
 export interface CartContextType {

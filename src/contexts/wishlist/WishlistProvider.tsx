@@ -55,8 +55,7 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
                 product_id: item.product_id,
                 title: product.title,
                 price: product.price,
-                thumbnail: product.thumbnail,
-                priceComparisons: product.priceComparisons
+                thumbnail: product.thumbnail
               };
             } catch {
               return {
@@ -108,8 +107,7 @@ export const WishlistProvider: React.FC<WishlistProviderProps> = ({ children }) 
           product_id: product.id,
           title: product.title,
           price: product.price,
-          thumbnail: product.thumbnail,
-          priceComparisons: product.priceComparisons
+          thumbnail: product.thumbnail
         };
         
         setItems(prevItems => [...prevItems, newItem]);

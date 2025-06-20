@@ -2,17 +2,11 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Heart, ExternalLink, GitCompare } from 'lucide-react';
-import { Separator } from "@/components/ui/separator";
+import { Heart, ShoppingCart, GitCompare } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useWishlist } from '@/contexts/wishlist';
 import { useComparison } from '@/contexts/comparison';
-
-interface PriceComparison {
-  store: string;
-  price: number;
-  url: string;
-}
+import { useCart } from '@/contexts/cart';
 
 interface ProductCardProps {
   id: number;
@@ -23,7 +17,6 @@ interface ProductCardProps {
   rating: number;
   brand: string;
   thumbnail: string;
-  priceComparisons?: PriceComparison[];
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({
@@ -35,44 +28,21 @@ const ProductCard: React.FC<ProductCardProps> = ({
   rating,
   brand,
   thumbnail,
-  priceComparisons,
 }) => {
   const { addToWishlist, isInWishlist } = useWishlist();
   const { addToComparison, isInComparison } = useComparison();
-  
-  // Find the lowest price among all sources
-  const getLowestPrice = (): number => {
-    if (!priceComparisons || priceComparisons.length === 0) {
-      return price;
-    }
-    
-    const lowestComparisonPrice = Math.min(...priceComparisons.map(pc => pc.price));
-    return Math.min(price, lowestComparisonPrice);
-  };
-
-  // Find the store with the lowest price
-  const getLowestPriceStore = (): PriceComparison | null => {
-    if (!priceComparisons || priceComparisons.length === 0) {
-      return null;
-    }
-    
-    return priceComparisons.reduce((lowest, current) => 
-      current.price < lowest.price ? current : lowest, 
-      priceComparisons[0]
-    );
-  };
+  const { addToCart } = useCart();
 
   const handleAddToWishlist = () => {
     addToWishlist({ 
       id, 
       title, 
       description, 
-      price: getLowestPrice(), 
+      price, 
       discountPercentage, 
       rating, 
       brand, 
       thumbnail, 
-      priceComparisons,
       stock: 10,
       category: '',
       images: [thumbnail]
@@ -84,23 +54,36 @@ const ProductCard: React.FC<ProductCardProps> = ({
       id, 
       title, 
       description, 
-      price: getLowestPrice(), 
+      price, 
       discountPercentage, 
       rating, 
       brand, 
       thumbnail, 
-      priceComparisons,
       stock: 10,
       category: '',
       images: [thumbnail]
     });
   };
 
-  const lowestPriceStore = getLowestPriceStore();
+  const handleAddToCart = () => {
+    addToCart({ 
+      id, 
+      title, 
+      description, 
+      price, 
+      discountPercentage, 
+      rating, 
+      brand, 
+      thumbnail, 
+      stock: 10,
+      category: '',
+      images: [thumbnail]
+    });
+  };
   
   return (
     <Card className="overflow-hidden flex flex-col h-full border-2 rounded-xl w-full max-w-[100%] sm:max-w-[280px] mx-auto">
-      <Link to={`/product/${id}?provider=${lowestPriceStore?.store || ''}`} className="block w-full">
+      <Link to={`/product/${id}`} className="block w-full">
         <div className="relative w-full h-[140px] sm:h-[220px] md:h-[250px] overflow-hidden">
           <img 
             src={thumbnail} 
@@ -121,7 +104,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       <CardHeader className="p-2 sm:p-4 pb-0">
         <div className="flex justify-between items-start">
           <div className="flex-1 min-w-0">
-            <Link to={`/product/${id}?provider=${lowestPriceStore?.store || ''}`}>
+            <Link to={`/product/${id}`}>
               <CardTitle className="text-sm sm:text-lg lg:text-xl hover:text-[#39536f] hover:underline line-clamp-2">{title}</CardTitle>
             </Link>
             <CardDescription className="text-xs sm:text-base mt-0.5 sm:mt-1">{brand}</CardDescription>
@@ -136,71 +119,53 @@ const ProductCard: React.FC<ProductCardProps> = ({
       <CardContent className="p-2 sm:p-4 flex-grow">
         <p className="text-xs sm:text-base text-gray-600 line-clamp-2">{description}</p>
         
-        {priceComparisons && priceComparisons.length > 0 && (
-          <div className="mt-1 sm:mt-3">
-            <p className="text-xs sm:text-base font-medium text-gray-600 mb-0.5 sm:mb-1">Available at:</p>
-            {priceComparisons.map((comparison, index) => (
-              <div key={index} className="flex justify-between items-center mb-0.5 sm:mb-1">
-                <span className="text-xs sm:text-base">{comparison.store}</span>
-                <div className="flex items-center gap-0.5 sm:gap-1">
-                  <span className="text-xs sm:text-base font-medium">${comparison.price}</span>
-                  <a 
-                    href={comparison.url} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-blue-500 hover:text-blue-700"
-                  >
-                    <ExternalLink size={12} className="sm:w-4 sm:h-4" />
-                  </a>
-                </div>
-              </div>
-            ))}
-            <Separator className="my-1 sm:my-2" />
-            <div className="flex justify-between items-center">
-              <span className="text-xs sm:text-sm text-gray-500">Lowest price:</span>
-              <span className="text-xs sm:text-base text-[#39536f] font-bold">${getLowestPrice()}</span>
-            </div>
+        <div className="mt-2 sm:mt-4">
+          <div className="flex items-center gap-2">
+            <span className="text-lg sm:text-xl font-bold text-[#39536f]">${price.toFixed(2)}</span>
+            {discountPercentage && (
+              <span className="text-sm sm:text-base text-gray-500 line-through">
+                ${(price / (1 - discountPercentage / 100)).toFixed(2)}
+              </span>
+            )}
           </div>
-        )}
+        </div>
       </CardContent>
       
       <CardFooter className="p-2 sm:p-4 pt-0">
         <div className="flex flex-col w-full gap-1 sm:gap-2">
           <div className="flex gap-1 sm:gap-2">
             <Button 
-              className={`flex-1 gap-1 sm:gap-2 text-xs sm:text-base py-1.5 sm:py-3 ${
+              className="flex-1 gap-1 sm:gap-2 text-xs sm:text-base py-1.5 sm:py-3 bg-[#39536f] hover:bg-[#2a405a]"
+              onClick={handleAddToCart}
+            >
+              <ShoppingCart size={14} className="sm:w-5 sm:h-5" />
+              <span>Add to Cart</span>
+            </Button>
+            
+            <Button 
+              className={`gap-1 sm:gap-2 text-xs sm:text-base py-1.5 sm:py-3 ${
                 isInWishlist(id) 
                   ? 'bg-red-500 hover:bg-red-600' 
-                  : 'bg-[#39536f] hover:bg-[#2a405a]'
+                  : 'bg-gray-500 hover:bg-gray-600'
               }`}
               onClick={handleAddToWishlist}
             >
               <Heart size={14} className={`sm:w-5 sm:h-5 ${isInWishlist(id) ? 'fill-current' : ''}`} />
-              <span>{isInWishlist(id) ? 'In Wishlist' : 'Wishlist'}</span>
-            </Button>
-            <Button 
-              variant="outline"
-              className={`gap-1 sm:gap-2 text-xs sm:text-base py-1.5 sm:py-3 ${
-                isInComparison(id) 
-                  ? 'border-green-500 text-green-600 bg-green-50' 
-                  : 'border-[#39536f] text-[#39536f] hover:bg-[#e6eef1]'
-              }`}
-              onClick={handleAddToComparison}
-            >
-              <GitCompare size={14} className="sm:w-5 sm:h-5" />
             </Button>
           </div>
           
-          {lowestPriceStore && (
-            <Button 
-              variant="outline" 
-              className="w-full border-[#39536f] text-[#39536f] hover:bg-[#e6eef1] text-xs sm:text-base py-1.5 sm:py-3"
-              onClick={() => window.open(lowestPriceStore.url, '_blank')}
-            >
-              <ExternalLink size={14} className="mr-1 sm:w-5 sm:h-5" />
-              Buy at {lowestPriceStore.store}
-            </Button>
-          )}
+          <Button 
+            variant="outline"
+            className={`gap-1 sm:gap-2 text-xs sm:text-base py-1.5 sm:py-3 w-full ${
+              isInComparison(id) 
+                ? 'border-green-500 text-green-600 bg-green-50' 
+                : 'border-[#39536f] text-[#39536f] hover:bg-[#e6eef1]'
+            }`}
+            onClick={handleAddToComparison}
+          >
+            <GitCompare size={14} className="sm:w-5 sm:h-5" />
+            <span>{isInComparison(id) ? 'Added to Compare' : 'Compare'}</span>
+          </Button>
         </div>
       </CardFooter>
     </Card>
