@@ -17,7 +17,7 @@ const Footer = () => {
               </h1>
             </Link>
             <p className="text-sm text-gray-700 mb-2">
-            Your one-stop shop for all your needs. Quality products at great prices.
+            Find the best prices across multiple retailers and save money on every purchase.
             </p>
           </div>
 

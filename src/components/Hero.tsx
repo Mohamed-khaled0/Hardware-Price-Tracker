@@ -3,9 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
 const heroData = {
-  title: "Shop the Best Products Online!",
-  description: "Discover amazing products with great deals and fast shipping",
-  buttonText: "Shop Now",
+  title: "Find the Best Price for Any Product",
+  description: "Compare prices across multiple retailers and save money on your purchases",
+  buttonText: "Start Searching",
   buttonLink: "/shop",
   image: "/lovable-uploads/display.webp",
   bgColor: "bg-[#d0e0ec]",

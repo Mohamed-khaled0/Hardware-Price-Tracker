@@ -5,6 +5,7 @@ import { Toaster } from 'sonner';
 import { AuthProvider } from '@/contexts/auth';
 import { SearchProvider } from '@/contexts/search';
 import { CartProvider } from '@/contexts/cart';
+import Index from '@/pages/Index';
 import Shop from '@/pages/Shop';
 import ProductDetail from '@/pages/ProductDetail';
 import Profile from '@/pages/Profile';
@@ -32,7 +33,7 @@ function App() {
                   <div className="min-h-screen bg-background font-sans antialiased">
                     <Toaster />
                     <Routes>
-                      <Route path="/" element={<Shop />} />
+                      <Route path="/" element={<Index />} />
                       <Route path="/shop" element={<Shop />} />
                       <Route path="/product/:id" element={<ProductDetail />} />
                       <Route path="/profile" element={<Profile />} />
