@@ -62,9 +62,6 @@ const Header = () => {
               <Link to="/shop" className="text-gray-700 hover:text-[#39536f] px-3 py-2 text-sm font-medium">
                 Shop
               </Link>
-              <Link to="/about" className="text-gray-700 hover:text-[#39536f] px-3 py-2 text-sm font-medium">
-                About
-              </Link>
               <Link 
                 to="/compare" 
                 className="text-gray-700 hover:text-[#39536f] px-3 py-2 text-sm font-medium transition-colors relative"
@@ -178,9 +175,6 @@ const Header = () => {
                     </Link>
                     <Link to="/shop" className="block text-gray-700 hover:text-[#39536f] px-3 py-2 text-sm font-medium">
                       Shop
-                    </Link>
-                    <Link to="/about" className="block text-gray-700 hover:text-[#39536f] px-3 py-2 text-sm font-medium">
-                      About
                     </Link>
                      <Link to="/cart" className="block text-gray-700 hover:text-[#39536f] px-3 py-2 text-sm font-medium relative">
                       Wishlist
