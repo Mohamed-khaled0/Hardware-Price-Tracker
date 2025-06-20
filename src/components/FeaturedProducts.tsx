@@ -54,17 +54,17 @@ const FeaturedProducts = () => {
     );
   }
 
-  // Filter for electronics (includes phones and cameras-like products)
-  const electronicsProducts = products?.filter(product => 
-    product.category === 'electronics'
-  ).slice(0, 6) || [];
+  // Show first 6 products as featured
+  const featuredProducts = products?.slice(0, 6) || [];
 
   return (
     <div className="py-12 bg-gray-50">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-10">Featured Electronics</h2>
+        <h2 className="text-3xl font-bold text-center mb-4">Featured Products</h2>
+        <p className="text-center text-gray-600 mb-10">Check out our handpicked selection of amazing products</p>
+        
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {electronicsProducts.map((product) => (
+          {featuredProducts.map((product) => (
             <Card key={product.id} className="overflow-hidden hover:shadow-lg transition-shadow">
               <div className="relative h-48 overflow-hidden">
                 <img 
@@ -75,7 +75,7 @@ const FeaturedProducts = () => {
               </div>
               <CardHeader className="pb-2">
                 <CardTitle className="text-lg line-clamp-2">{product.title}</CardTitle>
-                <CardDescription className="line-clamp-2">{product.description}</CardDescription>
+                <CardDescription className="line-clamp-2 capitalize">{product.category}</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center justify-between mb-4">
@@ -87,16 +87,17 @@ const FeaturedProducts = () => {
                 </div>
                 <Link to="/shop">
                   <Button className="w-full bg-[#39536f] hover:bg-[#2a405a]">
-                    Compare Prices
+                    View Product
                   </Button>
                 </Link>
               </CardContent>
             </Card>
           ))}
         </div>
+        
         <div className="text-center mt-8">
           <Link to="/shop">
-            <Button variant="outline" className="border-[#39536f] text-[#39536f] hover:bg-[#39536f] hover:text-white">
+            <Button variant="outline" className="border-[#39536f] text-[#39536f] hover:bg-[#39536f] hover:text-white px-8 py-3">
               View All Products
             </Button>
           </Link>

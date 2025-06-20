@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Filter, Search, Tag, History, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, History, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -23,37 +23,50 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-// --- Types ---
-export interface Product {
+// FakeStore API Product interface
+interface FakeStoreProduct {
   id: number;
   title: string;
-  description: string;
   price: number;
-  discountPercentage?: number;
-  rating: number;
-  stock: number;
-  brand: string;
+  description: string;
   category: string;
-  thumbnail: string;
-  images: string[];
+  image: string;
+  rating: {
+    rate: number;
+    count: number;
+  };
 }
 
-// --- Helpers ---
-const fetchProducts = async (): Promise<Product[]> => {
-  const res = await fetch("https://dummyjson.com/products");
+// Convert FakeStore product to our Product interface
+const convertToProduct = (fakeProduct: FakeStoreProduct) => ({
+  id: fakeProduct.id,
+  title: fakeProduct.title,
+  description: fakeProduct.description,
+  price: fakeProduct.price,
+  discountPercentage: Math.floor(Math.random() * 30) + 5, // Random discount for demo
+  rating: fakeProduct.rating.rate,
+  stock: Math.floor(Math.random() * 50) + 10, // Random stock for demo
+  brand: fakeProduct.category.charAt(0).toUpperCase() + fakeProduct.category.slice(1),
+  category: fakeProduct.category,
+  thumbnail: fakeProduct.image,
+  images: [fakeProduct.image]
+});
+
+const fetchAllProducts = async () => {
+  const res = await fetch("https://fakestoreapi.com/products");
   if (!res.ok) throw new Error("Failed to fetch products");
-  const json = (await res.json()) as { products: Product[] };
-  return json.products;
+  const fakeProducts: FakeStoreProduct[] = await res.json();
+  return fakeProducts.map(convertToProduct);
 };
 
-const getUniqueCategories = (products: Product[]): string[] =>
+const getUniqueCategories = (products: any[]): string[] =>
   Array.from(new Set(products.map((p) => p.category)));
 
 const filterProducts = (
-  products: Product[],
+  products: any[],
   category: string,
   term: string
-): Product[] =>
+) =>
   products.filter((p) => {
     const inCat = category === "all" || p.category === category;
     const t = term.toLowerCase();
@@ -64,7 +77,6 @@ const filterProducts = (
     return inCat && (term === "" || inText);
   });
 
-// --- Component ---
 const Shop: React.FC = () => {
   const [searchParams] = useSearchParams();
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
@@ -77,9 +89,9 @@ const Shop: React.FC = () => {
     data: products,
     isLoading,
     error,
-  } = useQuery<Product[], Error>({
-    queryKey: ["products"],
-    queryFn: fetchProducts,
+  } = useQuery({
+    queryKey: ["allProducts"],
+    queryFn: fetchAllProducts,
   });
 
   useEffect(() => {
@@ -108,12 +120,28 @@ const Shop: React.FC = () => {
   };
 
   if (isLoading) {
-    return <div className="flex justify-center items-center h-screen">Loading products...</div>;
+    return (
+      <div className="flex flex-col min-h-screen">
+        <Header />
+        <div className="flex justify-center items-center h-screen">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#39536f]"></div>
+        </div>
+        <Footer />
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="text-red-600 text-center mt-10">Error: {error.message}</div>;
+    return (
+      <div className="flex flex-col min-h-screen">
+        <Header />
+        <div className="text-red-600 text-center mt-10">Error: {error.message}</div>
+        <Footer />
+      </div>
+    );
   }
+
+  const filteredProducts = filterProducts(products || [], selectedCategory, currentSearch);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -121,6 +149,11 @@ const Shop: React.FC = () => {
 
       <main className="flex-1 py-6">
         <div className="max-w-7xl mx-auto px-4 md:px-8">
+          <div className="mb-6">
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">Shop All Products</h1>
+            <p className="text-gray-600">Discover amazing products at the best prices</p>
+          </div>
+
           {/* Search & Filter */}
           <div className="flex flex-col md:flex-row gap-4 mb-6">
             <form onSubmit={handleSearchSubmit} className="relative flex-1">
@@ -180,11 +213,11 @@ const Shop: React.FC = () => {
 
           {/* Category Tabs */}
           <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
-            <TabsList>
-              <TabsTrigger value="all">All</TabsTrigger>
+            <TabsList className="mb-6">
+              <TabsTrigger value="all">All Products ({products?.length || 0})</TabsTrigger>
               {categories.map((cat) => (
-                <TabsTrigger key={cat} value={cat}>
-                  {cat}
+                <TabsTrigger key={cat} value={cat} className="capitalize">
+                  {cat.replace(/'/g, '')} ({products?.filter(p => p.category === cat).length || 0})
                 </TabsTrigger>
               ))}
             </TabsList>
@@ -192,15 +225,31 @@ const Shop: React.FC = () => {
             {['all', ...categories].map((cat) => (
               <TabsContent key={cat} value={cat}>
                 <div className="mt-6 sm:mt-8">
-                  {isLoading ? (
-                    <div className="flex justify-center items-center h-64">
-                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#39536f]"></div>
+                  <div className="mb-4">
+                    <p className="text-gray-600">
+                      Showing {filteredProducts.length} products
+                      {cat !== 'all' && ` in ${cat.replace(/'/g, '')}`}
+                      {currentSearch && ` matching "${currentSearch}"`}
+                    </p>
+                  </div>
+                  
+                  {filteredProducts.length === 0 ? (
+                    <div className="text-center py-12">
+                      <p className="text-gray-500 text-lg">No products found matching your criteria</p>
+                      <Button
+                        variant="outline"
+                        className="mt-4"
+                        onClick={() => {
+                          setCurrentSearch('');
+                          setSelectedCategory('all');
+                        }}
+                      >
+                        Clear Filters
+                      </Button>
                     </div>
-                  ) : error ? (
-                    <div className="text-red-600 text-center">Error loading products</div>
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-                      {filterProducts(products!, cat, currentSearch).map((product) => (
+                      {filteredProducts.map((product) => (
                         <ProductCard
                           key={product.id}
                           id={product.id}
@@ -216,30 +265,6 @@ const Shop: React.FC = () => {
                     </div>
                   )}
                 </div>
-
-                {/* Pagination */}
-                {!isLoading && !error && (
-                  <div className="mt-8 sm:mt-12 flex justify-center">
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        onClick={() => setPage(p => Math.max(1, p - 1))}
-                        disabled={page === 1}
-                        className="w-10 h-10 p-0"
-                      >
-                        <ChevronLeft className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        onClick={() => setPage(p => p + 1)}
-                        disabled={!hasMore}
-                        className="w-10 h-10 p-0"
-                      >
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                )}
               </TabsContent>
             ))}
           </Tabs>
