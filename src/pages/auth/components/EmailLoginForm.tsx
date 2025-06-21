@@ -1,11 +1,10 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Eye, EyeOff, LogIn } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { FcGoogle } from "react-icons/fc";
-import { Separator } from "@/components/ui/separator";
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -27,7 +26,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 const EmailLoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const { signIn, signInWithGoogle, loading } = useAuth();
+  const { signIn, loading } = useAuth();
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -43,14 +42,6 @@ const EmailLoginForm = () => {
     } catch (error) {
       console.error('Login error:', error);
       // Error is handled in the AuthContext
-    }
-  };
-
-  const handleGoogleSignIn = async () => {
-    try {
-      await signInWithGoogle();
-    } catch (error) {
-      console.error('Google sign in error:', error);
     }
   };
 
@@ -115,26 +106,6 @@ const EmailLoginForm = () => {
           disabled={loading}
         >
           <LogIn className="mr-2 h-5 w-5" /> {loading ? 'Logging in...' : 'Log In'}
-        </Button>
-        
-        <div className="relative my-6">
-          <div className="absolute inset-0 flex items-center">
-            <Separator className="w-full" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-white px-2 text-gray-500">Or continue with</span>
-          </div>
-        </div>
-        
-        <Button
-          type="button"
-          variant="outline"
-          className="flex items-center justify-center gap-2 w-full py-5"
-          onClick={handleGoogleSignIn}
-          disabled={loading}
-        >
-          <FcGoogle size={20} />
-          {loading ? 'Processing...' : 'Sign in with Google'}
         </Button>
       </form>
     </Form>
