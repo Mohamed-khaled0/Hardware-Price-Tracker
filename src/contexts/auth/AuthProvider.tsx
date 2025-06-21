@@ -25,7 +25,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     loading: authMethodsLoading,
     signUp,
     signIn,
-    signInWithGoogle,
     signOut,
     resetPassword
   } = useAuthMethods();
@@ -50,7 +49,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     isAdmin,
     signUp,
     signIn,
-    signInWithGoogle,
     signOut,
     resetPassword,
     loading,
