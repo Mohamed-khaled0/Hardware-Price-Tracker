@@ -40,6 +40,7 @@ function App() {
                       <Route path="/profile" element={<Profile />} />
                       <Route path="/login" element={<Login />} />
                       <Route path="/register" element={<SignUp />} />
+                      <Route path="/signup" element={<SignUp />} />
                       <Route path="/forgot-password" element={<ForgotPassword />} />
                       <Route path="/admin" element={<Admin />} />
                       <Route path="/cart" element={<Cart />} />
